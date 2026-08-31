@@ -11,6 +11,7 @@ import {
   FINAL_BYTES,
   FINAL_SHA256,
   INITIAL_SHA256,
+  PREPEND_ONLY_SHA256,
   SCHEMA,
   aggregateOperations,
   applyEdits,
@@ -37,7 +38,12 @@ assert.equal(final.length, FINAL_BYTES);
 assert.equal(sha256(final), FINAL_SHA256);
 
 const ids = ["create", ...plan.map(({ id }) => id), "prepend", "read"];
-const operations = ids.map((id, index) => ({ id, comparable_ns: index + 1 }));
+const acknowledgement = { crash_durable: false, journal_mode: "memory", synchronous: 0 };
+const operations = ids.map((id, index) => ({
+  id,
+  comparable_ns: index + 1,
+  acknowledgement,
+}));
 const aggregates = aggregateOperations(operations);
 assert.deepEqual(aggregates, {
   create_ns: 1,
@@ -51,9 +57,22 @@ assert.equal(
     schema: SCHEMA,
     candidate: CANDIDATE,
     status: "PASS",
+    workload: { container_prewarm: false },
+    setup: Object.fromEntries(
+      ["cold_create", "edit16", "prepend", "read"].map((name) => [
+        name,
+        { helper_invocations: 0, shell_invocations: 0 },
+      ]),
+    ),
     operations,
     aggregates,
-    verification: { final_bytes: FINAL_BYTES, final_sha256: FINAL_SHA256, reopen_passed: true },
+    verification: {
+      cold_create_sha256: INITIAL_SHA256,
+      edit16_sha256: AFTER_EDITS_SHA256,
+      prepend_sha256: PREPEND_ONLY_SHA256,
+      read_sha256: INITIAL_SHA256,
+      reopen_passed: true,
+    },
   }),
   true,
 );
@@ -65,11 +84,49 @@ assert.throws(
       schema: SCHEMA,
       candidate: CANDIDATE,
       status: "PASS",
+      workload: { container_prewarm: false },
+      setup: Object.fromEntries(
+        ["cold_create", "edit16", "prepend", "read"].map((name) => [
+          name,
+          { helper_invocations: 0, shell_invocations: 0 },
+        ]),
+      ),
       operations,
       aggregates: { ...aggregates, read_ns: 0 },
-      verification: { final_bytes: FINAL_BYTES, final_sha256: FINAL_SHA256, reopen_passed: true },
+      verification: {
+        cold_create_sha256: INITIAL_SHA256,
+        edit16_sha256: AFTER_EDITS_SHA256,
+        prepend_sha256: PREPEND_ONLY_SHA256,
+        read_sha256: INITIAL_SHA256,
+        reopen_passed: true,
+      },
     }),
   /aggregates/,
+);
+assert.throws(
+  () =>
+    validateSummaryShape({
+      schema: SCHEMA,
+      candidate: CANDIDATE,
+      status: "PASS",
+      workload: { container_prewarm: true },
+      setup: Object.fromEntries(
+        ["cold_create", "edit16", "prepend", "read"].map((name) => [
+          name,
+          { helper_invocations: name === "edit16" ? 1 : 0, shell_invocations: 0 },
+        ]),
+      ),
+      operations,
+      aggregates,
+      verification: {
+        cold_create_sha256: INITIAL_SHA256,
+        edit16_sha256: AFTER_EDITS_SHA256,
+        prepend_sha256: PREPEND_ONLY_SHA256,
+        read_sha256: INITIAL_SHA256,
+        reopen_passed: true,
+      },
+    }),
+  /prewarmed/,
 );
 
 console.log("PASS computer fs-benchmark-pro workload/oracle/schema self-check");

@@ -9,7 +9,7 @@ Measured smoke: `smoke-20260830-a047e5dc-03`
 Computer pin: commit `de87919a4fd37242e960e13b7b3ba802d1eef0a0`, tree `4fb409d7e1356e1098439293d77d2fdc2dbf2190`
 
 In this repository the durable benchmark package is named
-`benchmark/fs-benchmark-pro`. This report uses **fs-bench-plus** as the
+`benchmark/fs-bench-pro`. This report uses **fs-bench-plus** as the
 user-facing name for that same durable create/edit/persist/reopen comparison.
 It is not the older FUSE-only `benchmark/fs-bench` suite.
 
@@ -42,7 +42,7 @@ formal current-harness population. The formal 30-pair campaign remains blocked
 by the previously recorded Docker Desktop Debian ARM64 proxy failure; see:
 
 ```text
-benchmark-results/fs-benchmark-pro/computer-sealed-build-blocker-20260830.txt
+benchmark-results/fs-bench-pro/computer-sealed-build-blocker-20260830.txt
 ```
 
 ## 2. Executive verdict
@@ -1051,14 +1051,14 @@ the existing suite therefore does not clear those P0 findings.
 ## 13. Raw evidence
 
 ```text
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/comparison.md
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/comparison.json
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/manifest.json
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/pairs/001/computer-upstream/summary.json
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/summary.json
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/layerfs-reference.jsonl
-benchmark-results/fs-benchmark-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/layerfs-reference-store/branch.sqlite.runtime/monitor/operations.jsonl
-benchmark-results/fs-benchmark-pro/computer-sealed-build-blocker-20260830.txt
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/comparison.md
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/comparison.json
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/manifest.json
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/pairs/001/computer-upstream/summary.json
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/summary.json
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/layerfs-reference.jsonl
+benchmark-results/fs-bench-pro/smoke-20260830-a047e5dc-03/pairs/001/layerfs-reference/layerfs-reference-store/branch.sqlite.runtime/monitor/operations.jsonl
+benchmark-results/fs-bench-pro/computer-sealed-build-blocker-20260830.txt
 ```
 
 ## 14. Final recommendation

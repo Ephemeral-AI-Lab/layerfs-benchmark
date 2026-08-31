@@ -4,12 +4,9 @@ import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { once } from "node:events";
 import {
-  closeSync,
   createReadStream,
   existsSync,
-  fsyncSync,
   mkdirSync,
-  openSync,
   readFileSync,
   statSync,
   writeFileSync,
@@ -18,7 +15,7 @@ import { registerHooks } from "node:module";
 import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-export const SCHEMA = "fs-benchmark-pro-sample-v2";
+export const SCHEMA = "fs-benchmark-pro-computer-v3";
 export const CANDIDATE = "computer-upstream";
 export const COMPUTER_COMMIT = "de87919a4fd37242e960e13b7b3ba802d1eef0a0";
 export const COMPUTER_TREE = "4fb409d7e1356e1098439293d77d2fdc2dbf2190";
@@ -36,15 +33,15 @@ export const PREPEND = "PREPEND010";
 export const FINAL_BYTES = FILE_BYTES + PREPEND.length;
 export const FINAL_SHA256 =
   "7b86abcd0e9d2016bbb8b16722e1439475feff84e31fe9801a4ec74e99dc74c3";
+export const PREPEND_ONLY_SHA256 =
+  "d5f0fb52a686e6f912a56d3fcc26da2111a8bdf48679fab77cb0921be97163ba";
 
 const PRODUCT_ROOT = process.env.CLOUDFLARE_COMPUTER_ROOT ?? "/opt/cloudflare-computer";
 const SCRIPT = fileURLToPath(import.meta.url);
 const MOUNT = "/workspace";
 const BENCH_DIR = `${MOUNT}/fs-benchmark-pro`;
 const TARGET = `${BENCH_DIR}/payload.bin`;
-const WORKLOAD = "/benchmark/fs-benchmark-workload";
-const PORT = 45678;
-const COMPUTERD = resolve(PRODUCT_ROOT, "packages/computerd/dist/cli/computerd.cjs");
+const WORKLOAD = process.env.COMPUTER_BENCH_WORKLOAD ?? "/benchmark/fs-benchmark-workload";
 const INTERNAL_VERIFY = "--verify-authority";
 
 // @cloudflare/computer's official barrel exports Workers-only proxy classes.
@@ -107,9 +104,15 @@ class FileSQLiteStorage {
     this.raw = new DatabaseSync(filename, readOnly ? { readOnly: true } : {});
     this.cache = new Map();
     if (!readOnly) {
-      this.raw.exec("PRAGMA journal_mode=WAL");
-      this.raw.exec("PRAGMA synchronous=FULL");
-      this.raw.exec("PRAGMA wal_autocheckpoint=0");
+      this.raw.exec("PRAGMA foreign_keys=ON");
+      this.raw.exec("PRAGMA journal_mode=MEMORY");
+      this.raw.exec("PRAGMA synchronous=OFF");
+      this.raw.exec("PRAGMA temp_store=MEMORY");
+      this.raw.exec("PRAGMA cache_size=-32768");
+      this.raw.exec("PRAGMA cache_spill=OFF");
+      this.raw.exec("PRAGMA mmap_size=0");
+      this.raw.exec("PRAGMA threads=0");
+      this.raw.exec("PRAGMA busy_timeout=5000");
     }
     this.sql = {
       exec: (query, ...bindings) => {
@@ -141,34 +144,37 @@ class FileSQLiteStorage {
     return row;
   }
 
-  durableBarrier() {
-    const checkpoint = this.raw.prepare("PRAGMA wal_checkpoint(TRUNCATE)").get();
-    if (checkpoint.busy !== 0 || checkpoint.log !== 0 || checkpoint.checkpointed !== 0) {
-      throw new Error(`incomplete WAL checkpoint: ${JSON.stringify(checkpoint)}`);
+  acknowledgementProfile() {
+    const value = (name) => this.raw.prepare(`PRAGMA ${name}`).get()[name];
+    const profile = {
+      journal_mode: String(value("journal_mode")).toLowerCase(),
+      synchronous: Number(value("synchronous")),
+      temp_store: Number(value("temp_store")),
+      cache_size: Number(value("cache_size")),
+      mmap_size: Number(value("mmap_size")),
+    };
+    if (
+      profile.journal_mode !== "memory" ||
+      profile.synchronous !== 0 ||
+      profile.temp_store !== 2 ||
+      profile.cache_size !== -32768 ||
+      profile.mmap_size !== 0
+    ) {
+      throw new Error(`unmatched SQLite acknowledgement profile: ${JSON.stringify(profile)}`);
     }
-    fsyncPath(this.filename, false);
-    const directory = fsyncPath(dirname(this.filename), true);
-    return { checkpoint, database_fsync: true, directory_fsync: directory };
+    return {
+      contract: "transaction-committed-and-readable-from-live-local-process",
+      crash_durable: false,
+      database_fsync: false,
+      directory_fsync: false,
+      checkpoint: false,
+      ...profile,
+    };
   }
 
   close() {
     this.cache.clear();
     this.raw.close();
-  }
-}
-
-function fsyncPath(path, allowUnsupported) {
-  const fd = openSync(path, "r");
-  try {
-    fsyncSync(fd);
-    return { supported: true, reason: null };
-  } catch (error) {
-    if (allowUnsupported && ["EINVAL", "ENOTSUP", "EOPNOTSUPP"].includes(error?.code)) {
-      return { supported: false, reason: `${error.code}: ${error.message}` };
-    }
-    throw error;
-  } finally {
-    closeSync(fd);
   }
 }
 
@@ -224,16 +230,36 @@ export function validateSummaryShape(summary) {
     throw new Error("summary identity mismatch");
   }
   if (summary.status !== "PASS") throw new Error("summary did not pass");
+  const setups = Object.values(summary.setup ?? {});
+  if (
+    summary.workload?.container_prewarm !== false ||
+    setups.length !== 4 ||
+    setups.some((setup) => setup.helper_invocations !== 0 || setup.shell_invocations !== 0)
+  ) {
+    throw new Error("summary edit scenario was prewarmed");
+  }
   const aggregate = aggregateOperations(summary.operations);
   if (JSON.stringify(aggregate) !== JSON.stringify(summary.aggregates)) {
     throw new Error("summary aggregates are not derived from operations");
   }
   if (
-    summary.verification?.final_bytes !== FINAL_BYTES ||
-    summary.verification?.final_sha256 !== FINAL_SHA256 ||
+    summary.verification?.cold_create_sha256 !== INITIAL_SHA256 ||
+    summary.verification?.edit16_sha256 !== AFTER_EDITS_SHA256 ||
+    summary.verification?.prepend_sha256 !== PREPEND_ONLY_SHA256 ||
+    summary.verification?.read_sha256 !== INITIAL_SHA256 ||
     summary.verification?.reopen_passed !== true
   ) {
-    throw new Error("summary final oracle mismatch");
+    throw new Error("summary isolated-scenario oracle mismatch");
+  }
+  if (
+    summary.operations.some(
+      (operation) =>
+        operation.acknowledgement?.crash_durable !== false ||
+        operation.acknowledgement?.journal_mode !== "memory" ||
+        operation.acknowledgement?.synchronous !== 0,
+    )
+  ) {
+    throw new Error("summary acknowledgement profile mismatch");
   }
   return true;
 }
@@ -278,8 +304,7 @@ function storageSnapshot(storage) {
     database_bytes: database.bytes,
     wal_bytes: wal.bytes,
     shm_bytes: shm.bytes,
-    durable_allocated_bytes:
-      database.allocated_bytes + wal.allocated_bytes + shm.allocated_bytes,
+    allocated_bytes: database.allocated_bytes + wal.allocated_bytes + shm.allocated_bytes,
     semantic_payload_bytes: Number(blobs.bytes),
     wire_bytes: null,
     file_count: Number(files.count),
@@ -306,44 +331,23 @@ async function waitForExit(child, timeoutMs) {
   ]);
 }
 
-function fuseMountLine() {
-  return readFileSync("/proc/self/mountinfo", "utf8")
-    .split("\n")
-    .find((line) => {
-      const fields = line.split(" ");
-      const separator = fields.indexOf("-");
-      return fields[4] === MOUNT && separator >= 0 && fields[separator + 1]?.startsWith("fuse");
-    });
-}
-
-async function startComputerd(logPath) {
-  if (fuseMountLine() !== undefined) throw new Error(`${MOUNT} is already a FUSE mount`);
-  const logFd = openSync(logPath, "wx");
-  const child = spawn(process.execPath, [COMPUTERD], {
-    env: {
-      ...process.env,
-      FUSE_MOUNT: "fuse",
-      MOUNT_POINT: MOUNT,
-      PORT: String(PORT),
-    },
-    stdio: ["ignore", logFd, logFd],
-  });
-  closeSync(logFd);
+async function connectComputerd(label) {
+  const envName = `COMPUTERD_${label.toUpperCase()}_URL`;
+  const url = process.env[envName];
+  if (!url?.startsWith("http://127.0.0.1:")) {
+    throw new Error(`${envName} must be an http://127.0.0.1 URL`);
+  }
   const deadline = Date.now() + 60_000;
   let lastError;
   while (Date.now() < deadline) {
-    if (child.exitCode !== null) {
-      throw new Error(`computerd ${child.pid} exited early with ${child.exitCode}`);
-    }
     try {
-      const response = await fetch(`http://127.0.0.1:${PORT}/__computerd/info`);
+      const response = await fetch(`${url}/__computerd/info`);
       if (response.ok) {
         const info = await response.json();
-        const mountinfo = fuseMountLine();
-        if (info?.backend?.kind !== "fuse" || info.mountPoint !== MOUNT || mountinfo === undefined) {
+        if (info?.backend?.kind !== "fuse" || info.mountPoint !== MOUNT) {
           throw new Error(`computerd did not select real FUSE: ${JSON.stringify(info)}`);
         }
-        return { child, pid: child.pid, info, mountinfo, log: logPath };
+        return { label, url, info };
       }
       lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {
@@ -351,24 +355,7 @@ async function startComputerd(logPath) {
     }
     await new Promise((done) => setTimeout(done, 100));
   }
-  child.kill("SIGTERM");
-  await waitForExit(child, 10_000).catch(() => undefined);
-  throw new Error(`computerd not ready: ${lastError?.message ?? "timeout"}`);
-}
-
-async function stopComputerd(daemon) {
-  if (!daemon) return null;
-  daemon.child.kill("SIGTERM");
-  const exit = await waitForExit(daemon.child, 20_000);
-  if (exit.code !== 143 && exit.signal !== "SIGTERM") {
-    throw new Error(`computerd ${daemon.pid} stopped unexpectedly: ${JSON.stringify(exit)}`);
-  }
-  const deadline = Date.now() + 10_000;
-  while (Date.now() < deadline && fuseMountLine() !== undefined) {
-    await new Promise((done) => setTimeout(done, 50));
-  }
-  if (fuseMountLine() !== undefined) throw new Error(`${MOUNT} remained mounted after computerd exit`);
-  return exit;
+  throw new Error(`${label} computerd not ready: ${lastError?.message ?? "timeout"}`);
 }
 
 function checkExecResult(id, result) {
@@ -404,26 +391,21 @@ async function execOperation(workspace, storage, id, command) {
   } finally {
     handle[Symbol.dispose]();
   }
-  const apiDone = process.hrtime.bigint();
+  const visibleDone = process.hrtime.bigint();
   checkExecResult(id, result);
-  const barrier = storage.durableBarrier();
-  const durableDone = process.hrtime.bigint();
-  const apiNs = Number(apiDone - started);
-  const persistenceNs = Number(durableDone - apiDone);
-  const toDurableNs = Number(durableDone - started);
-  if (apiNs + persistenceNs !== toDurableNs) throw new Error(`${id}: non-additive timers`);
+  const apiNs = Number(visibleDone - started);
   return completeOperation({
     id,
     api_ns: apiNs,
-    persistence_ns: persistenceNs,
-    to_durable_ns: toDurableNs,
-    phases: { workspace_runtime_exec_sync_wait_ns: apiNs, sqlite_barrier_ns: persistenceNs },
+    persistence_ns: 0,
+    to_visible_ns: apiNs,
+    phases: { workspace_runtime_exec_sync_wait_ns: apiNs, extra_durability_barrier_ns: 0 },
     pushed: result.pushed,
     pulled: result.pulled,
     skipped: result.skipped.length,
     sync: result.sync,
     stdout: result.stdout,
-    barrier,
+    acknowledgement: storage.acknowledgementProfile(),
     storage_before: null,
     storage_after: null,
   });
@@ -435,7 +417,7 @@ function completeOperation(
 ) {
   operation.workspace_create_ns = workspaceCreateNs;
   operation.workspace_end_ns = workspaceEndNs;
-  operation.complete_turn_ns = workspaceCreateNs + operation.to_durable_ns + workspaceEndNs;
+  operation.complete_turn_ns = workspaceCreateNs + operation.to_visible_ns + workspaceEndNs;
   operation.comparable_ns = operation.complete_turn_ns;
   operation.storage_before = storageBefore;
   operation.storage_after = storageAfter;
@@ -467,10 +449,10 @@ async function verifyProvider(dbFile, expectedHash, expectedBytes) {
   }
 }
 
-async function freshProcessAuthorityProof(dbFile) {
+async function freshProcessAuthorityProof(dbFile, expectedHash, expectedBytes) {
   const child = spawn(
     process.execPath,
-    ["--no-warnings", SCRIPT, INTERNAL_VERIFY, dbFile, FINAL_SHA256, String(FINAL_BYTES)],
+    ["--no-warnings", SCRIPT, INTERNAL_VERIFY, dbFile, expectedHash, String(expectedBytes)],
     { stdio: ["ignore", "pipe", "pipe"] },
   );
   let stdout = "";
@@ -497,6 +479,33 @@ async function openWorkspace(dbFile, daemonUrl) {
   return { workspace, storage };
 }
 
+async function prepareAuthority(dbFile, fixture) {
+  const started = process.hrtime.bigint();
+  const { Database, SQLiteWorkspaceProvider, initializeSchema } = await productModules();
+  const storage = new FileSQLiteStorage(dbFile);
+  try {
+    const database = new Database(storage);
+    initializeSchema(database, Date.now);
+    const provider = new SQLiteWorkspaceProvider(database, { now: Date.now });
+    provider.mkdirSync(BENCH_DIR, { recursive: true, mode: 0o755 });
+    if (fixture !== undefined) {
+      provider.writeFileSync(TARGET, readFileSync(fixture), { mode: 0o644 });
+    }
+    const acknowledgement = storage.acknowledgementProfile();
+    return {
+      mode: "direct-authority-setup",
+      elapsed_ns: Number(process.hrtime.bigint() - started),
+      helper_invocations: 0,
+      shell_invocations: 0,
+      target_present: fixture !== undefined,
+      acknowledgement,
+      storage: storageSnapshot(storage),
+    };
+  } finally {
+    storage.close();
+  }
+}
+
 function parseArgs(argv) {
   if (argv[0] === INTERNAL_VERIFY) {
     if (argv.length !== 4) throw new Error("internal verifier requires DB HASH BYTES");
@@ -506,18 +515,25 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 2) {
     const name = argv[index];
     const value = argv[index + 1];
-    if (!["--fixture", "--output"].includes(name) || value === undefined) {
-      throw new Error("usage: computer.mjs --fixture ABSOLUTE_PATH --output ABSOLUTE_PATH");
+    if (!["--fixture", "--container-fixture", "--output"].includes(name) || value === undefined) {
+      throw new Error(
+        "usage: computer.mjs --fixture HOST_PATH --container-fixture CONTAINER_PATH --output PATH",
+      );
     }
     if (values[name] !== undefined) throw new Error(`duplicate option: ${name}`);
     values[name] = value;
   }
   const fixture = values["--fixture"];
+  const containerFixture = values["--container-fixture"];
   const output = values["--output"];
-  if (!isAbsolute(fixture ?? "") || !isAbsolute(output ?? "")) {
-    throw new Error("--fixture and --output must be absolute paths");
+  if (
+    !isAbsolute(fixture ?? "") ||
+    !isAbsolute(containerFixture ?? "") ||
+    !isAbsolute(output ?? "")
+  ) {
+    throw new Error("fixture, container fixture, and output must be absolute paths");
   }
-  return { verify: false, fixture, output };
+  return { verify: false, fixture, containerFixture, output };
 }
 
 async function runBenchmark(args) {
@@ -530,9 +546,13 @@ async function runBenchmark(args) {
   }
   if (existsSync(args.output)) throw new Error(`refusing to overwrite ${args.output}`);
   mkdirSync(dirname(args.output), { recursive: true });
-  const coldDb = resolve(dirname(args.output), "computer-cold-create.sqlite");
-  const editDb = resolve(dirname(args.output), "computer-reference-edit.sqlite");
-  if (existsSync(coldDb) || existsSync(editDb)) {
+  const databases = {
+    cold: resolve(dirname(args.output), "computer-cold-create.sqlite"),
+    edit: resolve(dirname(args.output), "computer-edit16.sqlite"),
+    prepend: resolve(dirname(args.output), "computer-prepend.sqlite"),
+    read: resolve(dirname(args.output), "computer-read.sqlite"),
+  };
+  if (Object.values(databases).some((path) => existsSync(path))) {
     throw new Error("refusing to reuse Computer authority databases");
   }
 
@@ -561,8 +581,20 @@ async function runBenchmark(args) {
       edits: editPlan(),
       prepend: PREPEND,
       mount: "real FUSE",
+      container_prewarm: false,
+      registered_edit_argv: [
+        "/bin/sh",
+        "-c",
+        WORKLOAD,
+        "edit",
+        TARGET,
+        "<index>",
+        String(FILE_BYTES),
+      ],
       pipeline:
-        "authority SQLite -> Workspace.runtime.exec(sync=wait) -> computerd/FUSE -> pull -> authority SQLite -> WAL checkpoint/fsync",
+        "native authority SQLite MEMORY/OFF -> Workspace.runtime.exec(sync=wait) -> prepared computerd/FUSE -> pull -> authority-visible transaction",
+      acknowledgement:
+        "transaction committed and readable from the live local process; no crash or power-loss durability",
     },
     operations: [],
     unavailable: {
@@ -573,104 +605,34 @@ async function runBenchmark(args) {
     },
   };
 
-  let daemon;
   let workspace;
   let storage;
   try {
-    daemon = await startComputerd(resolve(dirname(args.output), "computerd-cold-create.log"));
-    ({ workspace, storage } = await openWorkspace(coldDb, `http://127.0.0.1:${PORT}`));
-
-    const setup = await execOperation(
-      workspace,
-      storage,
-      "setup-unmeasured",
-      `mkdir -p -- ${shellQuote(BENCH_DIR)}`,
-    );
-    receipt.setup = { cold_create: { ...setup, comparable_ns: null }, reference_seed: null };
-    await workspace.close();
-    workspace = undefined;
-    storage.close();
-    storage = undefined;
-
-    const createOpenStarted = process.hrtime.bigint();
-    ({ workspace, storage } = await openWorkspace(coldDb, `http://127.0.0.1:${PORT}`));
-    const createOpenNs = Number(process.hrtime.bigint() - createOpenStarted);
-    const createStorageBefore = storageSnapshot(storage);
-    receipt.storage = { initial: createStorageBefore, final: null };
-    const create = await execOperation(
-      workspace,
-      storage,
-      "create",
-      `${shellQuote(WORKLOAD)} create ${shellQuote(args.fixture)} ${shellQuote(TARGET)}`,
-    );
-    const createStorageAfter = storageSnapshot(storage);
-    const createCloseNs = await closeWorkspace(workspace);
-    workspace = undefined;
-    completeOperation(create, {
-      workspaceCreateNs: createOpenNs,
-      workspaceEndNs: createCloseNs,
-      storageBefore: createStorageBefore,
-      storageAfter: createStorageAfter,
-    });
-    receipt.operations.push(create);
+    receipt.setup = {
+      cold_create: await prepareAuthority(databases.cold),
+      edit16: await prepareAuthority(databases.edit, args.fixture),
+      prepend: await prepareAuthority(databases.prepend, args.fixture),
+      read: await prepareAuthority(databases.read, args.fixture),
+    };
+    receipt.storage = { cold_create: null, edit16: null, prepend: null, read: null };
     receipt.verification = {
-      initial_bytes: FILE_BYTES,
-      initial_sha256: (await verifyProvider(coldDb, INITIAL_SHA256, FILE_BYTES)).sha256,
-      after_edits_sha256: null,
-      final_bytes: null,
-      final_sha256: null,
+      cold_create_sha256: null,
+      edit16_sha256: null,
+      prepend_sha256: null,
+      read_sha256: null,
       reopen_passed: false,
     };
-
-    storage.close();
-    storage = undefined;
-    const coldStop = await stopComputerd(daemon);
-    receipt.executor_cold_create = {
-      pid: daemon.pid,
-      info: daemon.info,
-      mountinfo: daemon.mountinfo,
-      stop: coldStop,
+    const daemons = {
+      cold: await connectComputerd("cold"),
+      edit: await connectComputerd("edit"),
+      prepend: await connectComputerd("prepend"),
+      read: await connectComputerd("read"),
     };
-    daemon = undefined;
+    receipt.executors = daemons;
 
-    daemon = await startComputerd(resolve(dirname(args.output), "computerd-reference-seed.log"));
-    ({ workspace, storage } = await openWorkspace(editDb, `http://127.0.0.1:${PORT}`));
-    const editSetup = await execOperation(
-      workspace,
-      storage,
-      "reference-setup-unmeasured",
-      `mkdir -p -- ${shellQuote(BENCH_DIR)}`,
-    );
-    const seed = await execOperation(
-      workspace,
-      storage,
-      "reference-seed-unmeasured",
-      `${shellQuote(WORKLOAD)} create ${shellQuote(args.fixture)} ${shellQuote(TARGET)}`,
-    );
-    receipt.setup.reference_seed = {
-      directory: { ...editSetup, comparable_ns: null },
-      file: { ...seed, comparable_ns: null },
-    };
-    const seedProof = await verifyProvider(editDb, INITIAL_SHA256, FILE_BYTES);
-    if (seedProof.sha256 !== INITIAL_SHA256) throw new Error("Computer seed oracle mismatch");
-    await workspace.close();
-    workspace = undefined;
-    storage.close();
-    storage = undefined;
-    const seedStop = await stopComputerd(daemon);
-    receipt.executor_reference_seed = {
-      pid: daemon.pid,
-      info: daemon.info,
-      mountinfo: daemon.mountinfo,
-      stop: seedStop,
-    };
-    daemon = undefined;
-
-    daemon = await startComputerd(resolve(dirname(args.output), "computerd-edit.log"));
     const editOpenStarted = process.hrtime.bigint();
-    ({ workspace, storage } = await openWorkspace(editDb, `http://127.0.0.1:${PORT}`));
+    ({ workspace, storage } = await openWorkspace(databases.edit, daemons.edit.url));
     const editOpenNs = Number(process.hrtime.bigint() - editOpenStarted);
-    receipt.storage.seeded_reopen = storageSnapshot(storage);
     const editStorageBefore = storageSnapshot(storage);
     const editOperations = [];
 
@@ -680,7 +642,7 @@ async function runBenchmark(args) {
           workspace,
           storage,
           edit.id,
-          `/bin/bash -lc ${shellQuote('"$@"')} fs-bench-shell ${shellQuote(WORKLOAD)} edit ${shellQuote(TARGET)} ${index} ${FILE_BYTES}`,
+          `${shellQuote(WORKLOAD)} edit ${shellQuote(TARGET)} ${index} ${FILE_BYTES}`,
         ),
       );
     }
@@ -698,12 +660,13 @@ async function runBenchmark(args) {
       storageAfter: editStorageAfter,
     });
     receipt.operations.push(...editOperations);
-    receipt.verification.after_edits_sha256 = (
-      await verifyProvider(editDb, AFTER_EDITS_SHA256, FILE_BYTES)
+    receipt.storage.edit16 = { before: editStorageBefore, after: editStorageAfter };
+    receipt.verification.edit16_sha256 = (
+      await verifyProvider(databases.edit, AFTER_EDITS_SHA256, FILE_BYTES)
     ).sha256;
 
     const prependOpenStarted = process.hrtime.bigint();
-    ({ workspace, storage } = await openWorkspace(editDb, `http://127.0.0.1:${PORT}`));
+    ({ workspace, storage } = await openWorkspace(databases.prepend, daemons.prepend.url));
     const prependOpenNs = Number(process.hrtime.bigint() - prependOpenStarted);
     const prependBefore = storageSnapshot(storage);
     const prepend = await execOperation(
@@ -724,9 +687,13 @@ async function runBenchmark(args) {
       storageAfter: prependAfter,
     });
     receipt.operations.push(prepend);
+    receipt.storage.prepend = { before: prependBefore, after: prependAfter };
+    receipt.verification.prepend_sha256 = (
+      await verifyProvider(databases.prepend, PREPEND_ONLY_SHA256, FINAL_BYTES)
+    ).sha256;
 
     const readOpenStarted = process.hrtime.bigint();
-    ({ workspace, storage } = await openWorkspace(editDb, `http://127.0.0.1:${PORT}`));
+    ({ workspace, storage } = await openWorkspace(databases.read, daemons.read.url));
     const readOpenNs = Number(process.hrtime.bigint() - readOpenStarted);
     const readBefore = storageSnapshot(storage);
     const read = await execOperation(
@@ -735,8 +702,8 @@ async function runBenchmark(args) {
       "read",
       `${shellQuote(WORKLOAD)} read ${shellQuote(TARGET)}`,
     );
-    if (read.stdout.trim().split(/\s+/).at(-1) !== FINAL_SHA256) {
-      throw new Error(`read operation digest mismatch: ${JSON.stringify(read.stdout)}`);
+    if (read.stdout.trim() !== `read_bytes=${FILE_BYTES}`) {
+      throw new Error(`read operation size mismatch: ${JSON.stringify(read.stdout)}`);
     }
     const readAfter = storageSnapshot(storage);
     const readCloseNs = await closeWorkspace(workspace);
@@ -748,40 +715,70 @@ async function runBenchmark(args) {
       storageAfter: readAfter,
     });
     receipt.operations.push(read);
-    const finalOracle = await verifyProvider(editDb, FINAL_SHA256, FINAL_BYTES);
-    receipt.verification.final_bytes = finalOracle.bytes;
-    receipt.verification.final_sha256 = finalOracle.sha256;
-    receipt.storage.final = readAfter;
-    receipt.aggregates = aggregateOperations(receipt.operations);
-
+    receipt.storage.read = { before: readBefore, after: readAfter };
+    receipt.verification.read_sha256 = (
+      await verifyProvider(databases.read, INITIAL_SHA256, FILE_BYTES)
+    ).sha256;
     storage.close();
     storage = undefined;
-    const firstStop = await stopComputerd(daemon);
-    receipt.executor_initial = { pid: daemon.pid, info: daemon.info, mountinfo: daemon.mountinfo, stop: firstStop };
-    daemon = undefined;
 
-    const authorityProof = await freshProcessAuthorityProof(editDb);
-    const reopenStarted = process.hrtime.bigint();
-    daemon = await startComputerd(resolve(dirname(args.output), "computerd-reopen.log"));
-    ({ workspace, storage } = await openWorkspace(editDb, `http://127.0.0.1:${PORT}`));
-    const reopened = await execOperation(
+    const createOpenStarted = process.hrtime.bigint();
+    ({ workspace, storage } = await openWorkspace(databases.cold, daemons.cold.url));
+    const createOpenNs = Number(process.hrtime.bigint() - createOpenStarted);
+    const createStorageBefore = storageSnapshot(storage);
+    const create = await execOperation(
       workspace,
       storage,
-      "reopen-verify-unmeasured",
-      `${shellQuote(WORKLOAD)} verify ${shellQuote(TARGET)} ${FINAL_BYTES} ${FINAL_SHA256}`,
+      "create",
+      `${shellQuote(WORKLOAD)} create ${shellQuote(args.containerFixture)} ${shellQuote(TARGET)}`,
     );
-    const reopenDigest = reopened.stdout.trim().split(/\s+/).at(-1);
-    const reopenedAuthority = await verifyProvider(editDb, FINAL_SHA256, FINAL_BYTES);
-    const reopenDone = process.hrtime.bigint();
-    if (daemon.pid === receipt.executor_initial.pid || reopenDigest !== FINAL_SHA256) {
-      throw new Error("fresh executor reopen proof failed");
+    const createStorageAfter = storageSnapshot(storage);
+    const createCloseNs = await closeWorkspace(workspace);
+    workspace = undefined;
+    completeOperation(create, {
+      workspaceCreateNs: createOpenNs,
+      workspaceEndNs: createCloseNs,
+      storageBefore: createStorageBefore,
+      storageAfter: createStorageAfter,
+    });
+    receipt.operations.unshift(create);
+    receipt.storage.cold_create = { before: createStorageBefore, after: createStorageAfter };
+    storage.close();
+    storage = undefined;
+    const coldProof = await verifyProvider(databases.cold, INITIAL_SHA256, FILE_BYTES);
+    if (coldProof.sha256 !== INITIAL_SHA256) throw new Error("Computer cold-create oracle mismatch");
+    receipt.verification.cold_create_sha256 = coldProof.sha256;
+    receipt.aggregates = aggregateOperations(receipt.operations);
+
+    const reopenStarted = process.hrtime.bigint();
+    const reopenCases = [
+      ["cold", databases.cold, daemons.cold.url, INITIAL_SHA256, FILE_BYTES],
+      ["edit", databases.edit, daemons.edit.url, AFTER_EDITS_SHA256, FILE_BYTES],
+      ["prepend", databases.prepend, daemons.prepend.url, PREPEND_ONLY_SHA256, FINAL_BYTES],
+      ["read", databases.read, daemons.read.url, INITIAL_SHA256, FILE_BYTES],
+    ];
+    const reopened = [];
+    for (const [name, database, url, hash, bytes] of reopenCases) {
+      const authority = await freshProcessAuthorityProof(database, hash, bytes);
+      ({ workspace, storage } = await openWorkspace(database, url));
+      const operation = await execOperation(
+        workspace,
+        storage,
+        `reopen-${name}-unmeasured`,
+        `${shellQuote(WORKLOAD)} verify ${shellQuote(TARGET)} ${bytes} ${hash}`,
+      );
+      const digest = operation.stdout.trim().split(/\s+/).at(-1);
+      await closeWorkspace(workspace);
+      workspace = undefined;
+      storage.close();
+      storage = undefined;
+      if (digest !== hash) throw new Error(`${name} executor reopen proof failed`);
+      reopened.push({ name, authority, operation: { ...operation, comparable_ns: null } });
     }
+    const reopenDone = process.hrtime.bigint();
     receipt.reopen = {
       elapsed_ns: Number(reopenDone - reopenStarted),
-      authority_fresh_process: authorityProof,
-      executor: { pid: daemon.pid, info: daemon.info, mountinfo: daemon.mountinfo },
-      operation: { ...reopened, comparable_ns: null },
-      authority: reopenedAuthority,
+      cases: reopened,
     };
     receipt.verification.reopen_passed = true;
     receipt.status = "PASS";
@@ -791,7 +788,6 @@ async function runBenchmark(args) {
   } finally {
     if (workspace !== undefined) await workspace.close().catch(() => undefined);
     if (storage !== undefined) storage.close();
-    if (daemon !== undefined) await stopComputerd(daemon);
   }
 }
 

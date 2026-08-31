@@ -18,8 +18,14 @@ fn run() -> Result<()> {
     match args.as_slice() {
         [command] if command == "self-check" => self_check(),
         [command] if command == "noop" => Ok(()),
-        [command, path] if command == "digest" || command == "read" => print_digest(path),
-        [command, fixture, path] if command == "create" => create(fixture, path),
+        [command, path] if command == "digest" => print_digest(path),
+        [command, path] if command == "read" => print_read(path),
+        [command, fixture, path] if command == "create" => {
+            let started = std::time::Instant::now();
+            create(fixture, path)?;
+            println!("inner_write_ns={}", started.elapsed().as_nanos());
+            Ok(())
+        }
         [command, path, index, base_size] if command == "edit" => {
             edit(path, index.parse()?, base_size.parse()?)
         }
@@ -102,6 +108,13 @@ fn print_digest(path: impl AsRef<Path>) -> Result<()> {
     Ok(())
 }
 
+fn print_read(path: impl AsRef<Path>) -> Result<()> {
+    let mut input = BufReader::with_capacity(1024 * 1024, File::open(path)?);
+    let bytes = std::io::copy(&mut input, &mut std::io::sink())?;
+    println!("read_bytes={bytes}");
+    Ok(())
+}
+
 fn digest(path: &Path) -> Result<(u64, String)> {
     let mut input = BufReader::with_capacity(1024 * 1024, File::open(path)?);
     let mut hash = Sha256::new();
@@ -133,6 +146,8 @@ fn self_check() -> Result<()> {
         let expected = (0_u16..8192).map(|value| value as u8).collect::<Vec<_>>();
         fs::write(&fixture, &expected)?;
         create(&fixture, &payload)?;
+        let mut read = BufReader::with_capacity(1024, File::open(&payload)?);
+        assert_eq!(std::io::copy(&mut read, &mut std::io::sink())?, expected.len() as u64);
         edit(&payload, 0, expected.len() as u64)?;
         prepend(&payload)?;
         let mut expected = expected;

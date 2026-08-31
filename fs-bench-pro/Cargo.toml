@@ -7,6 +7,7 @@ license.workspace = true
 
 [dependencies]
 layerfs-sdk = { path = "../../crates/layerfs-sdk" }
+rusqlite.workspace = true
 
 [[bin]]
 name = "fs-benchmark-pro"
