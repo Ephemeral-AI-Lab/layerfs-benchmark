@@ -5,6 +5,7 @@ pub(crate) const NAMESPACE_SCHEMA: &str = "fs-bench-pro-namespace-v3";
 pub(crate) const NAMESPACE_FIXTURE_SCHEMA: &str = "fs-bench-pro-namespace-fixture-v2";
 pub(crate) const NAMESPACE_FAILURE_SCHEMA: &str = "fs-bench-pro-namespace-failure-v3";
 pub(crate) const NAMESPACE_FIXTURE_PROFILE: &str = "synthetic-small-heavy-v2";
+pub(crate) const NAMESPACE_COMPACT_FIXTURE_PROFILE: &str = "synthetic-small-heavy-compact-v3";
 pub(crate) const NAMESPACE_DIGEST_PROFILE: &str = "namespace-file-digest-tree-v2";
 pub(crate) const NAMESPACE_EDIT_CONTRACT: &str = "content-only-normalized-mtime-v1";
 pub(crate) const NAMESPACE_LIFECYCLE_PROFILE: &str = "commit-head-exact-reopen-v2";
@@ -23,9 +24,11 @@ pub(crate) struct NamespaceScenario {
     pub(crate) id: &'static str,
     pub(crate) alias: &'static str,
     pub(crate) display_name: &'static str,
+    pub(crate) fixture_profile: &'static str,
     pub(crate) regular_files: u64,
     pub(crate) data_directories: u64,
     pub(crate) logical_bytes: u64,
+    pub(crate) anchor_bytes: u64,
     pub(crate) anchor_files: u64,
     pub(crate) empty_files: u64,
     pub(crate) tiny_files: u64,
@@ -35,12 +38,14 @@ pub(crate) struct NamespaceScenario {
 
 pub(crate) const NAMESPACE_SCENARIOS: [NamespaceScenario; 4] = [
     NamespaceScenario {
-        id: "namespace-100",
-        alias: "namespace-100-files-125mb",
-        display_name: "Initialize 100 files / 125 MB",
+        id: "namespace-100-compact-v3",
+        alias: "namespace-100-files-5mb-v3",
+        display_name: "Initialize 100 files / 5 MB",
+        fixture_profile: NAMESPACE_COMPACT_FIXTURE_PROFILE,
         regular_files: 100,
         data_directories: 1,
-        logical_bytes: 125_000_000,
+        logical_bytes: 5_000_000,
+        anchor_bytes: 1_000_000,
         anchor_files: 1,
         empty_files: 1,
         tiny_files: 78,
@@ -48,12 +53,14 @@ pub(crate) const NAMESPACE_SCENARIOS: [NamespaceScenario; 4] = [
         medium_files: 5,
     },
     NamespaceScenario {
-        id: "namespace-1000",
-        alias: "namespace-1000-files-200mb",
-        display_name: "Initialize 1,000 files / 200 MB",
+        id: "namespace-1000-compact-v3",
+        alias: "namespace-1000-files-20mb-v3",
+        display_name: "Initialize 1,000 files / 20 MB",
+        fixture_profile: NAMESPACE_COMPACT_FIXTURE_PROFILE,
         regular_files: 1_000,
         data_directories: 10,
-        logical_bytes: 200_000_000,
+        logical_bytes: 20_000_000,
+        anchor_bytes: 5_000_000,
         anchor_files: 1,
         empty_files: 10,
         tiny_files: 789,
@@ -64,9 +71,11 @@ pub(crate) const NAMESPACE_SCENARIOS: [NamespaceScenario; 4] = [
         id: "namespace-10000",
         alias: "namespace-10000-files-300mb",
         display_name: "Initialize 10,000 files / 300 MB",
+        fixture_profile: NAMESPACE_FIXTURE_PROFILE,
         regular_files: 10_000,
         data_directories: 100,
         logical_bytes: 300_000_000,
+        anchor_bytes: NAMESPACE_ANCHOR_BYTES,
         anchor_files: 1,
         empty_files: 100,
         tiny_files: 7_899,
@@ -77,9 +86,11 @@ pub(crate) const NAMESPACE_SCENARIOS: [NamespaceScenario; 4] = [
         id: "namespace-100000",
         alias: "namespace-100000-files-500mb",
         display_name: "Initialize 100,000 files / 500 MB",
+        fixture_profile: NAMESPACE_FIXTURE_PROFILE,
         regular_files: 100_000,
         data_directories: 1_000,
         logical_bytes: 500_000_000,
+        anchor_bytes: NAMESPACE_ANCHOR_BYTES,
         anchor_files: 2,
         empty_files: 1_000,
         tiny_files: 78_998,
@@ -98,36 +109,48 @@ pub(crate) fn namespace_scenario(id_or_alias: &str) -> Result<NamespaceScenario,
 pub(crate) fn self_check() -> Result<(), String> {
     let expected = [
         (
-            "namespace-100",
-            "namespace-100-files-125mb",
+            "namespace-100-compact-v3",
+            "namespace-100-files-5mb-v3",
             100,
-            125_000_000,
+            5_000_000,
+            1_000_000,
+            NAMESPACE_COMPACT_FIXTURE_PROFILE,
         ),
         (
-            "namespace-1000",
-            "namespace-1000-files-200mb",
+            "namespace-1000-compact-v3",
+            "namespace-1000-files-20mb-v3",
             1_000,
-            200_000_000,
+            20_000_000,
+            5_000_000,
+            NAMESPACE_COMPACT_FIXTURE_PROFILE,
         ),
         (
             "namespace-10000",
             "namespace-10000-files-300mb",
             10_000,
             300_000_000,
+            NAMESPACE_ANCHOR_BYTES,
+            NAMESPACE_FIXTURE_PROFILE,
         ),
         (
             "namespace-100000",
             "namespace-100000-files-500mb",
             100_000,
             500_000_000,
+            NAMESPACE_ANCHOR_BYTES,
+            NAMESPACE_FIXTURE_PROFILE,
         ),
     ];
-    for (index, (id, alias, files, bytes)) in expected.into_iter().enumerate() {
+    for (index, (id, alias, files, bytes, anchor_bytes, fixture_profile)) in
+        expected.into_iter().enumerate()
+    {
         let scenario = NAMESPACE_SCENARIOS[index];
         if scenario.id != id
             || scenario.alias != alias
             || scenario.regular_files != files
             || scenario.logical_bytes != bytes
+            || scenario.anchor_bytes != anchor_bytes
+            || scenario.fixture_profile != fixture_profile
             || namespace_scenario(id)? != scenario
             || namespace_scenario(alias)? != scenario
         {

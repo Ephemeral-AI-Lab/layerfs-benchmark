@@ -1,14 +1,20 @@
 use super::workspace_common::{Case, Entry, Receipt};
 use super::{ordinary_workloads, Result};
 
-pub(crate) const FAMILY_ID: &str = "git_tool_workflow";
+pub(crate) const FAMILY_ID: &str = "tiny_file_churn";
 
 pub(crate) fn cases() -> Vec<Case> {
     let mut rows = Vec::new();
-    for (kind, prefix, suffix) in [("git-tool", "git-tool-", "")] {
+    for (kind, prefix, suffix) in [
+        ("tiny-create", "tiny-create-", ""),
+        ("tiny-stat", "tiny-stat-", ""),
+        ("tiny-unlink", "tiny-unlink-", ""),
+        ("tiny-bulk-create", "tiny-bulk-create-", ""),
+        ("tiny-bulk-delete", "tiny-bulk-delete-", ""),
+    ] {
         for tier in [1, 10, 100, 500] {
             rows.push(Case {
-                id: format!("{prefix}{tier}{suffix}"),
+                id: format!("{prefix}{tier}{suffix}{}", if tier<=10 {"-compact-v2"} else {""}),
                 family: FAMILY_ID,
                 tier,
                 kind,
@@ -31,5 +37,5 @@ pub(crate) fn apply(case: &Case, seed: u8, step: usize, verify: bool) -> Result<
 }
 
 pub(crate) fn self_check() -> Result<()> {
-    ordinary_workloads::check_cases(&cases(), 4)
+    ordinary_workloads::check_cases(&cases(), 20)
 }

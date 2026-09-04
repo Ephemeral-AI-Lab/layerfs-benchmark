@@ -1,14 +1,14 @@
 use super::workspace_common::{Case, Entry, Receipt};
 use super::{ordinary_workloads, Result};
 
-pub(crate) const FAMILY_ID: &str = "mixed_load_bearing";
+pub(crate) const FAMILY_ID: &str = "git_tool_workflow";
 
 pub(crate) fn cases() -> Vec<Case> {
     let mut rows = Vec::new();
-    for (kind, prefix, suffix) in [("agent-episodes", "agent-episodes-", "")] {
+    for (kind, prefix, suffix) in [("git-tool", "git-tool-", "")] {
         for tier in [1, 10, 100, 500] {
             rows.push(Case {
-                id: format!("{prefix}{tier}{suffix}"),
+                id: format!("{prefix}{tier}{suffix}{}", if tier<=10 {"-compact-v2"} else {""}),
                 family: FAMILY_ID,
                 tier,
                 kind,

@@ -35,7 +35,7 @@ pub(crate) const IDS: [&str; 28] = [
 pub(crate) fn cases() -> Vec<Case> {
     IDS.iter()
         .map(|&kind| Case {
-            id: format!("workspace-{kind}-proof"),
+            id: format!("workspace-{kind}-compact-v2-proof"),
             family: FAMILY,
             tier: 1,
             kind,
@@ -62,7 +62,7 @@ pub(crate) fn fixture() -> Result<Vec<Entry>> {
         "work/dir/child",
         "dest",
     ]);
-    for i in 0..1000 {
+    for i in 0..8 {
         rows.push(Entry::file(
             format!("sentinels/f{i:04}.dat"),
             d::content(FAMILY, "fixture", 1, i, "bytes", 32768)?,
@@ -85,9 +85,9 @@ pub(crate) fn fixture() -> Result<Vec<Entry>> {
             FAMILY,
             "fixture",
             1,
-            1000,
+            8,
             "bytes",
-            33554432 - 1000 * 32768 - 32768 - size,
+            d::MIB - 8 * 32768 - 32768 - size,
         )?,
     ));
     Ok(rows)
@@ -312,12 +312,29 @@ pub(crate) fn self_check() -> Result<()> {
         return Err("reliability membership".into());
     }
     let initial = fixture()?;
-    if super::workspace_common::validate_entries(&initial)? != 33554432 {
-        return Err("reliability exact initial bytes".into());
+    if super::workspace_common::validate_entries(&initial)? != d::MIB
+        || initial
+            .iter()
+            .filter(|entry| matches!(&entry.kind, EntryKind::File(_) | EntryKind::Hardlink(_)))
+            .count()
+            != 10
+        || rows
+            .iter()
+            .any(|case| !case.id.ends_with("-compact-v2-proof"))
+    {
+        return Err("reliability compact fixture contract".into());
     }
     for c in rows {
         let expected = expected(&c, "done", 1)?;
-        if super::workspace_common::validate_entries(&expected)? > 48 * 1048576 {
+        if super::workspace_common::validate_entries(&expected)? > 50 * d::MIB
+            || expected
+                .iter()
+                .filter(|entry| {
+                    matches!(&entry.kind, EntryKind::File(_) | EntryKind::Hardlink(_))
+                })
+                .count()
+                > 1_000
+        {
             return Err("reliability transient bound".into());
         }
     }
