@@ -1,3 +1,4 @@
-#!/bin/sh
-set -eu
-exec python3 "$(dirname "$0")/../../shared/runner.py" --family historical_access --mode performance "$@"
+#!/usr/bin/env bash
+set -euo pipefail
+here=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
+exec python3 "$here/shared/runner.py" --family historical_access "$@"
