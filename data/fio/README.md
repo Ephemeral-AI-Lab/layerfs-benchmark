@@ -45,6 +45,25 @@ with an fsync after each, only because a Disposable Workspace's fsync does
 no disk flush. One `sandbox.commit` of the three data files (1.68 GB
 logical, 1.50 GB newly stored) took 26,423.3 ms.
 
+## Comparison scope: the reference is not like-for-like
+
+`sandbox-disk` is the container's own overlayfs `/tmp`: the kernel's
+in-memory page cache with no FUSE hop, no history and nothing kept after
+the container goes. It is a ceiling for this host, not a peer. A LayerFS
+Workspace differs by design:
+
+- every operation is a FUSE request to the daemon (any FUSE filesystem pays
+  this round trip);
+- kernel writeback caching is off under the FUSE contract, so each buffered
+  write reaches the daemon, where the reference only copies into page cache;
+- each change is recorded in the Workspace overlay so a Commit can capture
+  it, and the files remain mountable as history afterwards.
+
+The ratios below are therefore the cost of those properties against the
+kernel's fastest local path, not a ranking against another filesystem of
+the same kind. No FUSE baseline (for example a passthrough FUSE
+filesystem) was measured in v1.0.0.
+
 ## How to read it
 
 - `bw_mb_s` is decimal MB/s (fio's `bw_bytes` / 10^6). IOPS, runtime and

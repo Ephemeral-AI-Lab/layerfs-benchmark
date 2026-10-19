@@ -36,6 +36,25 @@ LayerFS at about 5,600–10,400 files/s; stat, chmod and
 read run at about 40,000–51,000 files/s. One `sandbox.commit` of the
 100,000 created files took 10,721.1 ms (about 107 µs per file).
 
+## Comparison scope: the reference is not like-for-like
+
+`sandbox-disk` is the container's own overlayfs `/tmp`: the kernel's
+in-memory page cache with no FUSE hop, no history and nothing kept after
+the container goes. It is a ceiling for this host, not a peer. A LayerFS
+Workspace differs by design:
+
+- every operation is a FUSE request to the daemon (any FUSE filesystem pays
+  this round trip);
+- kernel writeback caching is off under the FUSE contract, so each buffered
+  write reaches the daemon, where the reference only copies into page cache;
+- each change is recorded in the Workspace overlay so a Commit can capture
+  it, and the files remain mountable as history afterwards.
+
+The ratios below are therefore the cost of those properties against the
+kernel's fastest local path, not a ranking against another filesystem of
+the same kind. No FUSE baseline (for example a passthrough FUSE
+filesystem) was measured in v1.0.0.
+
 ## How to read it
 
 - files/s, MiB/s, elapsed and `pct_files_done` are smallfile's own

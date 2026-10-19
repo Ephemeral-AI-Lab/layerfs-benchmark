@@ -30,6 +30,25 @@ fails `EOPNOTSUPP` on the mount, so fsx disables them there and those ops
 were not exercised on LayerFS. One `sandbox.commit` of the Workspace
 afterwards: Committed in 457.2 ms (166,731,557 logical bytes).
 
+## By design: LayerFS's stored format
+
+Every LayerFS-only difference here is a deliberate limit of what a Workspace
+stores and serves, decided in source, not a defect found by this run:
+
+| Limit | What LayerFS does | Where it is decided |
+| --- | --- | --- |
+| Node types | Regular files, directories and symlinks only; FIFO, socket and device nodes are refused (EPERM) | `core/crates/layerfs-fuse/src/operations/unsupported.rs` (`node`) |
+| Mode bits | `0o777` on files, `0o1777` on directories; set-id bits and sticky on files are refused (EPERM); the mount is `nosuid` | `core/crates/layerfs-content/src/filesystem/attributes/portable.rs`, `core/crates/layerfs-fuse/src/mount/syscalls.rs` |
+| Times | One stored time (mtime); atime, ctime and crtime are reported as it; the mount is `noatime` | `core/crates/layerfs-fuse/src/attributes.rs`, `core/crates/layerfs-fuse/src/operations/write.rs` |
+| Absent FUSE operations | Extended attributes, fallocate, ioctl, copy_file_range, locks and lseek are not implemented (ENOSYS; the kernel falls back or returns EOPNOTSUPP) | `core/crates/layerfs-fuse/src/operations/unsupported.rs` (`absent`) |
+| Rename flags | `RENAME_NOREPLACE` only; exchange and whiteout are refused (EINVAL) | `core/crates/layerfs-fuse/src/operations/unsupported.rs` (`rename_replaces`) |
+| Hard links | Not to a directory or a symlink (EPERM) | `core/crates/layerfs-workspace/src/operations/types.rs` (`NotPermitted`) |
+| Ownership | One runtime identity per Workspace; chown to another is refused | `core/crates/layerfs-fuse/src/operations/unsupported.rs` (`ownership`) |
+
+These keep a Commit to portable, reproducible metadata (type, permission
+bits, mtime, content). Counts below are reported as recorded; read a
+LayerFS-only failure as "outside the format", not as a broken operation.
+
 ## How to read it
 
 - `PASS` is fsx's own `All N operations completed A-OK!` with exit 0. A
