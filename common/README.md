@@ -33,3 +33,16 @@ Images: each suite builds its own Sandbox image `FROM fs-bench-computer:gawk-202
 (checked against `sha256:66aeb6bb…`, Debian bookworm with gcc, make, git,
 perl, prove and python3), with tools from pinned upstream commits, and
 records the resulting digest.
+
+## FUSE baseline arm (`passthrough.sh`)
+
+smallfile, mdtest and fio also run a third arm, `passthrough-fuse`: libfuse's
+`passthrough_ll` (libfuse `fuse-3.14.0`, matching Debian bookworm's libfuse3)
+over a plain directory, the like-for-like FUSE reference. A Sandbox cannot
+host a second FUSE mount (no-new-privileges, no user namespaces, commands
+without capabilities), so the arm runs in a sibling container from the
+suite's own image plus `passthrough_ll` (`passthrough/Dockerfile`), on the
+same Docker VM and kernel, with `/dev/fuse` and `CAP_SYS_ADMIN`. Root mounts
+it with its defaults (multi-threaded, cache timeout 1.0 s, writeback off,
+as LayerFS); the measured command runs as uid 501, gid 20, `HOME=/tmp`
+through `docker exec`. It is not LayerFS and does not use the SDK.
