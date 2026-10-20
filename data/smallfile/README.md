@@ -55,6 +55,82 @@ kernel's fastest local path, not a ranking against another filesystem of
 the same kind. No FUSE baseline (for example a passthrough FUSE
 filesystem) was measured in v1.0.0.
 
+## Three-arm run
+
+[v1.0.0/three-arm](v1.0.0/three-arm/): a later run (`20261020T000127Z`)
+of the same v1.0.0 build, image and parameters, with a third arm,
+`passthrough-fuse`: libfuse's `passthrough_ll` (`fuse-3.14.0`) over a plain
+directory in a sibling container, the like-for-like FUSE reference. It is
+not LayerFS and uses no SDK call; smallfile runs there through
+`docker exec` as uid 501, gid 20. Per operation the arms ran layerfs, then
+sandbox-disk, then passthrough-fuse. The one `sandbox.commit` (LayerFS
+only, 10,430.5 ms) followed the layerfs create, so the layerfs read ran
+after it. The two-arm v1.0.0 section above is a different run and is
+unchanged.
+
+files/s is smallfile's own figure. Each ratio divides the first arm's
+files/s by the second's: above 1.0 the first arm is faster.
+
+| Operation | layerfs files/s | passthrough-fuse files/s | sandbox-disk files/s | **LayerFS ÷ passthrough-fuse** | LayerFS ÷ kernel overlayfs | passthrough-fuse ÷ kernel overlayfs |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| create | 6,693 | 3,293 | 204,225 | **2.032** | 0.033 | 0.016 |
+| read | 13,176 | 4,365 | 28,651 | **3.018** | 0.460 | 0.152 |
+| append | 8,213 | 4,790 | 199,550 | **1.715** | 0.041 | 0.024 |
+| stat | 52,136 | 4,868 | 1,050,826 | **10.709** | 0.050 | 0.005 |
+| chmod | 17,275 | 5,114 | 973,438 | **3.378** | 0.018 | 0.005 |
+| rename | 4,615 | 2,635 | 78,914 | **1.751** | 0.058 | 0.033 |
+| delete-renamed | 5,589 | 4,401 | 174,917 | **1.270** | 0.032 | 0.025 |
+| mkdir | 12,349 | 2,934 | 69,575 | **4.210** | 0.177 | 0.042 |
+| rmdir | 10,971 | 3,354 | 173,828 | **3.272** | 0.063 | 0.019 |
+
+- **LayerFS ÷ passthrough-fuse** (like for like): all 27 runs passed, and
+  LayerFS beat the FUSE baseline in every operation. It led narrowly in
+  delete-renamed (1.27×), append (1.72×), rename (1.75×) and create
+  (2.03×), and widely in read (3.0×), rmdir (3.3×), chmod (3.4×), mkdir
+  (4.2×) and stat (10.7×). It matched or trailed the baseline in no
+  operation.
+- **LayerFS ÷ kernel overlayfs** (reference, as in v1.0.0): slower in every
+  operation, 0.018 (chmod) to 0.460 (read).
+- **passthrough-fuse ÷ kernel overlayfs** (the cost of FUSE alone):
+  0.005 (stat, chmod) to 0.152 (read); on this host a plain FUSE
+  passthrough loses more to overlayfs than LayerFS does in every
+  operation.
+- The read, chmod and rmdir figures differ from the two-arm v1.0.0 run:
+  sandbox-disk read 28,651 against 356,019 files/s, layerfs read 13,176
+  against 40,835, layerfs chmod 17,275 against 40,326, sandbox-disk rmdir
+  173,828 against 69,543. Not diagnosed; page cache state was unknown
+  (the passthrough create added another 390.6 MiB of files on the same
+  8 GB Docker VM before the reads, and other suites ran on the host).
+  One sample per operation and arm, 1-minute load 6.66–11.51.
+
+Fairness notes (facts, not adjustments):
+
+- `passthrough_ll` runs as root and does no per-request credential switch.
+  Files it creates are owned by root, and it doesn't use
+  `default_permissions`. Its threading (up to 10 workers) and cache
+  timeout (1.0 s) are its defaults, not LayerFS's.
+- `passthrough_ll` keeps nothing beyond the directory. LayerFS also
+  records each change for Commit. Both have kernel writeback caching off.
+- `passthrough_ll` finds inodes by walking one linked list of every inode
+  it holds, under one mutex, on each lookup (`lo_find`). Its cost per
+  request grows with the inodes the kernel references: in the smoke runs
+  its create fell from 8,769 files/s at 4,000 files to 2,825 at 100,000,
+  while LayerFS's went from 6,747 to 5,777. Part of LayerFS's margin at
+  100,000 files is that list, not FUSE itself; a FUSE server with an
+  indexed inode table (for example libfuse's `passthrough_hp`) was not
+  measured.
+- The sibling container and the Sandbox share the Docker VM, kernel and
+  image layers, but they are different containers. `exec_ms` for
+  passthrough-fuse is the host-side `docker exec` time, not a
+  `sandbox.exec` time; `wall_ms` is timed inside the container in all
+  three arms.
+
+`three-arm/` holds `results.csv` and `commit.csv` (as below, with `arm`
+now including `passthrough-fuse`), `environment.csv` (with the `pt_*`
+passthrough identity lines) and `receipts/` copied unchanged from
+`benchmark-results/smallfile/20261020T000127Z/` (plus `pt-identity.txt`,
+`pt-mount.txt`, `pt-image.txt` and the run's `record.md`).
+
 ## How to read it
 
 - files/s, MiB/s, elapsed and `pct_files_done` are smallfile's own

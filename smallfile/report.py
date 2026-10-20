@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """smallfile report: results.csv, commit.csv and summary.json from a run's receipts.
 
-Reads RUN/results.jsonl (one row per operation and arm, op.mjs), each
+Reads RUN/results.jsonl (one row per operation and arm: op.mjs, or run.sh
+pt_op for the passthrough-fuse arm), each
 read-back RUN/ops/<op>-<arm>.txt (smallfile's output and its --output-json
 result), RUN/commands.log (the host's 1-minute load when each client
 started) and RUN/ledger.jsonl (the Commit after the layerfs create). Writes
@@ -84,22 +85,33 @@ def main():
                         c.get("id"), c.get("base"), c.get("logical"), c.get("newCanonical"), c.get("newStored"),
                         c.get("newMetadata")])
 
-    # LayerFS ÷ sandbox-disk per operation: files/s ratio (above 1 is
-    # faster on LayerFS) and in-Sandbox wall time ratio (above 1 is slower).
+    # Per operation, files/s ratios (above 1 is faster on the first arm) and
+    # in-container wall time ratios (above 1 is slower on the first arm):
+    # LayerFS ÷ sandbox-disk, and with the passthrough-fuse arm also LayerFS ÷
+    # passthrough-fuse (like for like) and passthrough-fuse ÷ sandbox-disk
+    # (the cost of FUSE alone).
     by = {(r["op"], r["arm"]): r for r in rows}
     ratios = []
     for op in dict.fromkeys(r["op"] for r in rows):
-        lf, disk = by.get((op, "layerfs")), by.get((op, "sandbox-disk"))
+        lf, disk, pt = (by.get((op, a)) for a in ("layerfs", "sandbox-disk", "passthrough-fuse"))
         if lf and disk and lf["files_per_s"] and disk["files_per_s"]:
-            ratios.append({"op": op, "layerfs_files_per_s": lf["files_per_s"], "disk_files_per_s": disk["files_per_s"],
-                           "files_per_s_ratio": round(lf["files_per_s"] / disk["files_per_s"], 3),
-                           "wall_ratio": round(lf["wall_ms"] / disk["wall_ms"], 3),
-                           "layerfs": lf["result"], "sandbox_disk": disk["result"]})
+            ratio = {"op": op, "layerfs_files_per_s": lf["files_per_s"], "disk_files_per_s": disk["files_per_s"],
+                     "files_per_s_ratio": round(lf["files_per_s"] / disk["files_per_s"], 3),
+                     "wall_ratio": round(lf["wall_ms"] / disk["wall_ms"], 3),
+                     "layerfs": lf["result"], "sandbox_disk": disk["result"]}
+            if pt and pt["files_per_s"]:
+                ratio.update({"pt_files_per_s": pt["files_per_s"],
+                              "layerfs_pt_files_per_s_ratio": round(lf["files_per_s"] / pt["files_per_s"], 3),
+                              "pt_disk_files_per_s_ratio": round(pt["files_per_s"] / disk["files_per_s"], 3),
+                              "layerfs_pt_wall_ratio": round(lf["wall_ms"] / pt["wall_ms"], 3),
+                              "pt_disk_wall_ratio": round(pt["wall_ms"] / disk["wall_ms"], 3),
+                              "passthrough_fuse": pt["result"]})
+            ratios.append(ratio)
     failures = [r for r in rows if r["result"] != "PASS"]
     summary = {"run": run.name, "ratios": ratios, "failures": failures,
                "commit": [{"commit_ms": r["commit_ms"], **r["value"]} for r in commits]}
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
-    print(json.dumps({"ratios": [(r["op"], r["files_per_s_ratio"]) for r in ratios], "failures": len(failures),
+    print(json.dumps({"ratios": [(r["op"], r["files_per_s_ratio"], r.get("layerfs_pt_files_per_s_ratio")) for r in ratios], "failures": len(failures),
                       "commits": [r["commit_ms"] for r in commits]}))
 
 
