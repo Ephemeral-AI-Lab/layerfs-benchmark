@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """fio report: results.csv, commit.csv and summary.json from a run's receipts.
 
-Reads RUN/results.jsonl (one row per job and arm, job.mjs), each read-back
-RUN/ops/<job>-<arm>.txt (fio's log and --output-format=json result),
+Reads RUN/results.jsonl (one row per job and arm, job.mjs or pt.mjs), each
+read-back RUN/ops/<job>-<arm>.txt (fio's log and --output-format=json result),
 RUN/commands.log (the host's 1-minute load when each client started) and
 RUN/ledger.jsonl (the Commit after the layerfs jobs). Writes the three files
 into RUN, or into OUT when given.
@@ -11,6 +11,10 @@ results.csv has one row per job, arm and data direction that moved bytes
 (randrw-70-30 has a read row and a write row). bw_mb_s is decimal MB/s
 (fio's bw_bytes / 1e6); clat percentiles are fio's completion latency in
 µs; sync_p50_us / sync_p99_us are fio's fsync latency (sync-write only).
+A run with the passthrough-fuse arm also gets ratios.csv (and
+summary.json "three_arm"): per job and direction each arm's MB/s, IOPS,
+clat p50 / p99 and the three bandwidth ratios layerfs ÷ passthrough-fuse,
+layerfs ÷ sandbox-disk and passthrough-fuse ÷ sandbox-disk.
 
   report.py RUN [OUT]
 """
@@ -80,6 +84,32 @@ def parse(row, text, loads):
     return out
 
 
+def three_arm(rows, path):
+    """Per job and direction: each arm's MB/s, IOPS, p50, p99 and the three bandwidth ratios; written to PATH."""
+    arms = {"lf": "layerfs", "disk": "sandbox-disk", "pt": "passthrough-fuse"}
+    by = {(r["job"], r["ddir"], r["arm"]): r for r in rows}
+    ratio = lambda a, b: round(a / b, 3) if a and b else None
+    # A failed run that moved no bytes has ddir None; it stands in that arm for each direction of its job.
+    keys = dict.fromkeys((r["job"], r["ddir"]) for r in rows if r["ddir"])
+    keys.update(dict.fromkeys((r["job"], None) for r in rows if not any(k[0] == r["job"] for k in keys)))
+    table = []
+    for job, ddir in keys:
+        got = {k: by.get((job, ddir, arm)) or by.get((job, None, arm), {}) for k, arm in arms.items()}
+        row = {"job": job, "ddir": ddir}
+        for k in arms:
+            for f in ("bw_mb_s", "iops", "clat_p50_us", "clat_p99_us", "result"):
+                row[f"{k}_{f}"] = got[k].get(f)
+        row["lf_over_pt"] = ratio(row["lf_bw_mb_s"], row["pt_bw_mb_s"])
+        row["lf_over_disk"] = ratio(row["lf_bw_mb_s"], row["disk_bw_mb_s"])
+        row["pt_over_disk"] = ratio(row["pt_bw_mb_s"], row["disk_bw_mb_s"])
+        table.append(row)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(table[0]))
+        w.writeheader()
+        w.writerows(table)
+    return table
+
+
 def main():
     run = Path(sys.argv[1])
     out = Path(sys.argv[2]) if len(sys.argv) > 2 else run
@@ -116,9 +146,13 @@ def main():
     failures = [r for r in rows if r["result"] != "PASS"]
     summary = {"run": run.name, "ratios": ratios, "failures": failures,
                "commit": [{"commit_ms": r["commit_ms"], **r["value"]} for r in commits]}
+    if any(r["arm"] == "passthrough-fuse" for r in rows):
+        summary["three_arm"] = three_arm(rows, out / "ratios.csv")
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
     print(json.dumps({"ratios": [(r["job"], r["ddir"], r["bw_ratio"]) for r in ratios], "failures": len(failures),
-                      "commits": [r["commit_ms"] for r in commits]}))
+                      "commits": [r["commit_ms"] for r in commits],
+                      "three_arm": [(r["job"], r["ddir"], r["lf_over_pt"], r["lf_over_disk"], r["pt_over_disk"])
+                                    for r in summary.get("three_arm", [])]}))
 
 
 if __name__ == "__main__":
