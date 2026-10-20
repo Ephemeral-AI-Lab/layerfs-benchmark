@@ -12,22 +12,38 @@ uses the shared harness in [benchmark/common](../common/README.md).
 ## Route and arms
 
 Everything goes through the public JavaScript SDK. mdtest itself runs only
-through `sandbox.exec`, as uid 501 in the suite's Sandbox image.
+through `sandbox.exec`, as uid 501 in the suite's Sandbox image. The one
+exception is the optional `passthrough-fuse` arm (below), which is not
+LayerFS and does not use the SDK.
 
 ```text
 setup     project.init(seed folder) → sandbox.create → branch.fork("bench", "main") → sandbox.mount
           exec: mdtest and MPI identity, kernel, both arms' filesystems; mkdir both md folders
+          three arms: the passthrough sibling started (common/passthrough.sh) and probed
 next      per case and arm: one exec of mpirun … mdtest (measured by mdtest), its output printed back
 commit    layerfs only: exec mdtest -C (create only) → sandbox.commit (timed, own client) → exec mdtest -r
-teardown  sandbox.unmount (terminal) → sandbox.close; volumes removed; lock released
+teardown  sibling removed (if any) → sandbox.unmount (terminal) → sandbox.close; volumes removed; lock released
 ```
 
 | Arm | Folder | Filesystem |
 | --- | --- | --- |
 | `layerfs` | `<mounted Workspace>/md/<case>/` | LayerFS FUSE mount |
 | `sandbox-disk` | `/tmp/md/<case>/` | the Sandbox container's overlayfs (reference) |
+| `passthrough-fuse` (three-arm runs) | `/tmp/pt/md/<case>/` in a sibling container | libfuse `passthrough_ll` over `/tmp/pt-src` (FUSE baseline) |
 
-Both arms run the same command in the same Sandbox, one after the other.
+`layerfs` and `sandbox-disk` run the same command in the same Sandbox, one
+after the other. `run.sh setup … three` adds `passthrough-fuse`: the same
+mpirun command, with the path changed, in a sibling container from
+`bench-mdtest:<date>-pt` (this suite's image plus `passthrough_ll`,
+`common/passthrough.sh`), through `docker exec` as uid 501, gid 20,
+`HOME=/tmp`, right after the other two arms of the same case. Open MPI
+needs no extra flag or environment variable there either. The Commit pass
+stays `layerfs` only. Because `bench_pt_exec`'s perl alarm does not stop
+the docker CLI (Go ignores SIGALRM), the passthrough command runs under
+GNU `timeout -k 3 110` inside the sibling (TERM to mpirun at 110 s, which
+stops its ranks; KILL 3 s later), so a case over the ceiling records
+`rc=124` (or 137) as a hang. The `command` field in `results.jsonl` is the
+mdtest command itself, without that wrapper.
 A measured run takes the measurement lock right after `bench_setup`,
 before the setup client mounts the Workspace, so no measured op runs
 without it and no Workspace waits for it.
@@ -61,7 +77,7 @@ container) is all `mpirun` needs; it starts local ranks without ssh.
 
 | Path | Role |
 | --- | --- |
-| `run.sh` | One step per command: `image`, `setup`, `start`, `next`, `commit`, `teardown`, `report` |
+| `run.sh` | One step per command: `image`, `pt-image`, `setup`, `start`, `next`, `commit`, `teardown`, `report`; the passthrough-fuse case (`pt_case`) |
 | `cases.tsv` | Measured plan (case, procs, items per process, mdtest args); the `commit` row sets the commit pass |
 | `cases-smoke.tsv` | Smoke plan (200 items per process) |
 | `sandbox/Dockerfile` | `FROM fs-bench-computer:gawk-20261020`; Open MPI from bookworm; hpc/ior at `f1172addabada77d13cf37773d1ffdb202b4fc4a`, `./bootstrap`, `./configure`, `make -j2`; `/usr/local/bin/mdtest` and `/opt/mdtest-identity.txt` |
@@ -69,7 +85,7 @@ container) is all `mpirun` needs; it starts local ranks without ssh.
 | `client/case.mjs` | One case in one arm: the mdtest exec, its output kept |
 | `client/commit.mjs` | The `sandbox.commit` between the `-C` and `-r` passes |
 | `client/teardown.mjs` | Unmount and close |
-| `report.py` | `results.csv`, `commit.csv` and `summary.json` (with layerfs ÷ sandbox-disk ratios) from the receipts |
+| `report.py` | `results.csv`, `commit.csv` and `summary.json` (with layerfs ÷ sandbox-disk ratios) from the receipts; for three-arm runs also `ratios.csv` and `summary.json` `three_arm` (layerfs ÷ passthrough-fuse, layerfs ÷ sandbox-disk, passthrough-fuse ÷ sandbox-disk, tree creation/removal left out) |
 | `records/` | One record per measured run |
 
 ## Running
@@ -88,13 +104,21 @@ $B/run.sh report $RUN
 A smoke run uses `benchmark-results/mdtest/smoke-<id>`, `cases-smoke.tsv`
 and `smoke` (no lock).
 
+Three arms: `$B/run.sh pt-image` once (writes
+`benchmark-results/mdtest/pt-image.txt`), then the same steps with
+`$B/run.sh setup $RUN $B/cases.tsv measured three`. Without the fourth
+argument a run has the two v1.0.0 arms, and `report.py` reproduces the
+v1.0.0 CSVs and summary byte for byte.
+
 ## Receipts
 
 `RUN/results.jsonl` (one row per case and arm: the mpirun command,
 mdtest's exit, the in-Sandbox wall time around mpirun, the Sandbox's
 1-minute load, the exec's client-side time), `RUN/cases/<case>-<arm>.txt`
 (mdtest's whole output), `ledger.jsonl` (setup, probe, Commit, teardown),
-`sandbox-identity.txt`, `identity.txt`, `deploy.env`, `cases.tsv`,
+`sandbox-identity.txt`, `identity.txt`, `deploy.env`, `cases.tsv`; for
+three arms `arms.txt`, `pt-mount.txt`, `pt-identity.txt` and the
+`pt_*` lines of `identity.txt`,
 `commands.log` (host 1-minute load per client), and each step's
 `.out` / `.err`.
 
@@ -116,5 +140,12 @@ mdtest's exit, the in-Sandbox wall time around mpirun, the Sandbox's
 
 - One node; MPI ranks share the Sandbox's 8 CPUs. No `-N` stride, random
   stat (`-R`), shared-file (`-S`) or written/read bytes (`-w`, `-e`).
-- The two arms share one Sandbox and run sequentially, not concurrently.
+- The two Sandbox arms share one Sandbox and run sequentially, not
+  concurrently. The passthrough sibling shares the Docker VM, kernel and
+  image layers with the Sandbox but is a different container.
+- `passthrough_ll` runs as root with no per-request credential switch (the
+  files it creates are owned by root) and without `default_permissions`;
+  its threading (up to 10 workers) and 1.0 s cache timeout are its
+  defaults, not LayerFS's. It keeps nothing beyond the directory, where
+  LayerFS also records each change for Commit. Writeback is off in both.
 - `sandbox-disk` is overlayfs in the container, not a raw block device.

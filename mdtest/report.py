@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """mdtest report: results.csv, commit.csv and summary.json from a run's receipts.
 
-Reads RUN/results.jsonl (one row per case and arm, case.mjs), each case's
+Reads RUN/results.jsonl (one row per case and arm, case.mjs or run.sh's
+pt_case), each case's
 mdtest output RUN/cases/<case>-<arm>.txt, RUN/ledger.jsonl (the Commit) and
 RUN/commands.log (the 1-minute host load at each client's start). Writes
 the three files into RUN, or into OUT when given.
@@ -11,6 +12,13 @@ the Mean column of its `SUMMARY time` table (printed with -P; mdtest labels
 it ms/op but prints each phase's seconds, 3 decimals), times 1000. With
 -i 1 Max, Min and Mean are the same one sample. Phases mdtest did not run
 (both values 0, as in the -C and -r passes) are left out.
+
+summary.json's `ratios` are layerfs ÷ sandbox-disk for every phase both
+ran. A run with the passthrough-fuse arm also gets ratios.csv and
+summary.json `three_arm`: each case and phase all three arms ran, without
+the tree creation and removal phases (1-21 folders, below mdtest's 1 ms
+resolution), with layerfs ÷ passthrough-fuse (like-for-like FUSE),
+layerfs ÷ sandbox-disk and passthrough-fuse ÷ sandbox-disk (FUSE alone).
 
   report.py RUN [OUT]
 """
@@ -57,6 +65,24 @@ def step_load(load, case, arm):
     return load[names[-1]] if names else None
 
 
+def ratio(a, b):
+    return round(a / b, 4) if b else None
+
+
+def three_arm(by):
+    """Rows for each case and phase all three arms ran, tree phases left out."""
+    out = []
+    for (c, p, a), v in by.items():
+        if a != "layerfs" or p in ("tree_creation", "tree_removal"):
+            continue
+        pt, disk = by.get((c, p, "passthrough-fuse")), by.get((c, p, "sandbox-disk"))
+        if pt is None or disk is None:
+            continue
+        out.append({"case": c, "phase": p, "layerfs": v, "passthrough_fuse": pt, "sandbox_disk": disk,
+                    "layerfs_over_pt": ratio(v, pt), "layerfs_over_disk": ratio(v, disk), "pt_over_disk": ratio(pt, disk)})
+    return out
+
+
 def main():
     run = Path(sys.argv[1])
     out = Path(sys.argv[2]) if len(sys.argv) > 2 else run
@@ -96,6 +122,12 @@ def main():
               for (c, p, a), v in by.items() if a == "layerfs" and (c, p, "sandbox-disk") in by]
     summary = {"run": run.name, "rows": len(rows), "failures": failures, "ratios": ratios,
                "commit": [{"commit_ms": r["commit_ms"], **r["value"]} for r in commits]}
+    if any(r["arm"] == "passthrough-fuse" for r in rows):
+        summary["three_arm"] = three_arm(by)
+        with open(out / "ratios.csv", "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=list(summary["three_arm"][0]) if summary["three_arm"] else ["case"])
+            w.writeheader()
+            w.writerows(summary["three_arm"])
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n")
     print(json.dumps({"rows": len(rows), "failures": len(failures), "commits": [r["commit_ms"] for r in commits]}))
 
