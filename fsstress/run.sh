@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # fsstress, one step per command. Each client step runs one SDK client
-# (common/client.sh) under a 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (lib.sh bench_client).
 #
 #   run.sh image                              build bench-fsstress:<yyyymmdd>, write image.txt
+#   run.sh lock     RUN                       take the measurement lock (measured runs: first)
 #   run.sh setup    RUN [NOTE]                volumes, deploy.env, identity; Init, create, fork, mount
-#   run.sh lock     RUN                       take the measurement lock (measured runs)
 #   run.sh case     RUN CASE ARM SEED PROCS OPS   one fsstress exec, then its logs read back
 #   run.sh capture  RUN                       manifest, Commit, fork, second mount, manifest, compare
 #   run.sh repro    RUN                       diagnostic: minimal repros of the layerfs-only failures

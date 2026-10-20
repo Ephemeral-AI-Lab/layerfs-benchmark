@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # fsx, one step per command. Each client step runs one SDK client
-# (common/client.sh) under the 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (common/lib.sh).
 #
 #   run.sh image                    build bench-fsx:<date>; benchmark-results/fsx/image.txt
@@ -22,7 +22,7 @@ suite=fsx
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 # shellcheck source=../common/lib.sh
 . "$here/../common/lib.sh"
-imagefile=$repo/benchmark-results/fsx/image.txt
+imagefile=$bench_repo/benchmark-results/fsx/image.txt
 step=${1:-}
 shift || true
 

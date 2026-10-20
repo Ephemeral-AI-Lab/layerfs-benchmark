@@ -78,8 +78,8 @@ teardown  sandbox.unmount → sandbox.close
 ```bash
 benchmark/fsstress/run.sh image
 RUN=$PWD/benchmark-results/fsstress/$(date -u +%Y%m%dT%H%M%SZ)
-benchmark/fsstress/run.sh setup $RUN
 benchmark/fsstress/run.sh lock $RUN          # exit 75: another suite measures; wait and ask again
+benchmark/fsstress/run.sh setup $RUN
 benchmark/fsstress/run.sh case $RUN c1 sandbox-disk 365001 1 10000
 benchmark/fsstress/run.sh case $RUN c1 layerfs 365001 1 10000
 benchmark/fsstress/run.sh case $RUN c2 sandbox-disk 365002 4 10000

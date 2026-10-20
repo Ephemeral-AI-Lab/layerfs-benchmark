@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # mdtest, one step per command. Each client step runs one SDK client
-# (common/client.sh) under the 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (common/lib.sh).
 #
 #   run.sh image                    build bench-mdtest:<date>; benchmark-results/mdtest/image.txt
@@ -31,8 +31,8 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 . "$here/../common/lib.sh"
 # shellcheck source=../common/passthrough.sh
 . "$here/../common/passthrough.sh"
-imagefile=$repo/benchmark-results/mdtest/image.txt
-ptimagefile=$repo/benchmark-results/mdtest/pt-image.txt
+imagefile=$bench_repo/benchmark-results/mdtest/image.txt
+ptimagefile=$bench_repo/benchmark-results/mdtest/pt-image.txt
 MPIRUN="mpirun --oversubscribe --bind-to none"
 step=${1:-}
 shift || true
@@ -47,10 +47,11 @@ arms() { if [[ -f "$1/arms.txt" ]]; then tr '\n' ' ' <"$1/arms.txt"; else echo "
 # arm with the same exec script and receipts as client/case.mjs: mdtest's
 # output in cases/<case>-passthrough-fuse.txt, one results.jsonl row (exec_ms
 # is the host-side docker exec time), one commands.log line.
-# bench_pt_exec's perl alarm does not stop the docker CLI (Go ignores
-# SIGALRM), so the 115 s ceiling is enforced in the sibling: GNU timeout
-# sends mpirun TERM after 110 s (it then stops its ranks; KILL 3 s later)
-# and the case records rc=124 (137 after KILL), a hang.
+# The case's own ceiling is enforced in the sibling: GNU timeout sends
+# mpirun TERM after 110 s (it then stops its ranks; KILL 3 s later) and the
+# case records rc=124 (137 after KILL), a hang. That is inside
+# bench_pt_exec's limits (113 s in the sibling, 115 s on the host), so the
+# rc line and the log still print.
 pt_case() {
   local run=$1 name=$2 procs=$3 items=$4 step start l0 t0 t1 status=0
   shift 4

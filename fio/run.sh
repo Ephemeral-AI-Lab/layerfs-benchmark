@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # fio, one step per command. Each client step runs one SDK client
-# (common/client.sh) under the 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (common/lib.sh); passthrough-fuse
 # steps run client/pt.mjs on the host the same way (common/passthrough.sh).
 #
@@ -32,10 +32,10 @@ suite=fio
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 # shellcheck source=../common/lib.sh
 . "$here/../common/lib.sh"
-imagefile=$repo/benchmark-results/fio/image.txt
-ptimagefile=$repo/benchmark-results/fio/pt-image.txt
+imagefile=$bench_repo/benchmark-results/fio/image.txt
+ptimagefile=$bench_repo/benchmark-results/fio/pt-image.txt
 # shellcheck source=../common/passthrough.sh
-. "$common/passthrough.sh"
+. "$bench_common/passthrough.sh"
 jobs=(seq-write seq-read rand-write rand-read rand-read-4j randrw-70-30 sync-write rand-write-direct rand-read-direct)
 
 # plan RUN: the steps of this run, from its params.env (no arms= is v1.0.0's two-arm plan).
@@ -56,13 +56,13 @@ plan() {
 }
 
 # pt_client RUN NAME MODE [ARG]: client/pt.mjs on the host under the 115 s
-# alarm, logged to RUN/commands.log as bench_client logs an SDK client.
+# limit (bench_timeout stops node and its docker exec children), logged to RUN/commands.log as bench_client logs an SDK client.
 pt_client() {
   local run=$1 name=$2 start status=0 l0
   shift 2
   start=$(date -u +%FT%TZ)
   l0=$(bench_load)
-  perl -e 'alarm 115; exec @ARGV' node "$here/client/pt.mjs" "$@" "$run" >"$run/$name.out" 2>"$run/$name.err" || status=$?
+  bench_timeout "$bench_limit" node "$here/client/pt.mjs" "$@" "$run" >"$run/$name.out" 2>"$run/$name.err" || status=$?
   printf '%s\t%s\t%s\texit=%s\tload=%s\n' "$name" "$start" "$(date -u +%FT%TZ)" "$status" "$l0" >>"$run/commands.log"
   tail -n 5 "$run/$name.out"
   [[ $status -eq 0 ]] || { echo "$name: exit $status (see $run/$name.err)" >&2; tail -n 8 "$run/$name.err" >&2; exit "$status"; }

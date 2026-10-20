@@ -38,9 +38,9 @@ mpirun command, with the path changed, in a sibling container from
 `common/passthrough.sh`), through `docker exec` as uid 501, gid 20,
 `HOME=/tmp`, right after the other two arms of the same case. Open MPI
 needs no extra flag or environment variable there either. The Commit pass
-stays `layerfs` only. Because `bench_pt_exec`'s perl alarm does not stop
-the docker CLI (Go ignores SIGALRM), the passthrough command runs under
-GNU `timeout -k 3 110` inside the sibling (TERM to mpirun at 110 s, which
+stays `layerfs` only. The passthrough command runs under GNU
+`timeout -k 3 110` inside the sibling, within `bench_pt_exec`'s own limits
+(113 s in the sibling, 115 s on the host) (TERM to mpirun at 110 s, which
 stops its ranks; KILL 3 s later), so a case over the ceiling records
 `rc=124` (or 137) as a hang. The `command` field in `results.jsonl` is the
 mdtest command itself, without that wrapper.
@@ -67,7 +67,7 @@ empty and the file read phase is an open and close.
 | `commit` row | 1 | 20,000 | `-F` | the commit pass: `-C`, then `sandbox.commit`, then `-r` (layerfs only) |
 
 Item counts come from the smoke run: 4 × 20,000 in one shared folder took
-about 35 s on `layerfs`, the longest exec, well under the 115 s alarm.
+about 35 s on `layerfs`, the longest exec, well under the 115 s limit.
 
 MPI is Debian bookworm's Open MPI 4.1.4. As uid 501 in the Sandbox,
 `--oversubscribe` (and `--bind-to none`, to leave CPU placement to the

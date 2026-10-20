@@ -63,7 +63,7 @@ finish  exec residue listing → sandbox.commit (timed) → sandbox.unmount → 
   `sh tests/DIR/FILE.t` (what `prove` does for a `#!/bin/sh` test) under a
   100 s timeout, starts no file after 40 s, starts a file that calls `sleep`
   (the ctime checks; `chown/00.t` sleeps about 76 s) only as the group's
-  first, and is cut at 105 s, so each client stays under its 115 s alarm.
+  first, and is cut at 105 s, so each client stays under its 115 s limit.
   Files it did not start are deferred to the next group; no file runs twice
   in an arm.
 - **Receipts.** Each group's TAP goes unchanged to `tap/<arm>-<dir>-<ms>.tap`
@@ -94,8 +94,8 @@ finish  exec residue listing → sandbox.commit (timed) → sandbox.unmount → 
 cd benchmark/pjdfstest
 ./run.sh image                                  # bench-pjdfstest:<yyyymmdd>, image.txt
 RUN=$PWD/../../benchmark-results/pjdfstest/$(date -u +%Y%m%dT%H%M%SZ)
-./run.sh setup $RUN                             # add DIR... for a smoke run of some directories
-./run.sh lock $RUN                              # exit 75: another suite measures; wait 90 s, ask again
+./run.sh lock $RUN                              # measured runs; exit 75: another suite measures; wait 90 s, ask again
+./run.sh setup $RUN                             # add DIR... for a smoke run of some directories (no lock)
 ./run.sh group $RUN                             # repeat until it prints DONE
 ./run.sh finish $RUN
 ./run.sh cleanup $RUN

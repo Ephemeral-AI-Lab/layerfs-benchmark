@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # smallfile, one step per command. Each client step runs one SDK client
-# (common/client.sh) under the 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (common/lib.sh).
 #
 #   run.sh image                    build bench-smallfile:<date>; benchmark-results/smallfile/image.txt
@@ -27,8 +27,8 @@ here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 . "$here/../common/lib.sh"
 # shellcheck source=../common/passthrough.sh
 . "$here/../common/passthrough.sh"
-imagefile=$repo/benchmark-results/smallfile/image.txt
-ptimagefile=$repo/benchmark-results/smallfile/pt-image.txt
+imagefile=$bench_repo/benchmark-results/smallfile/image.txt
+ptimagefile=$bench_repo/benchmark-results/smallfile/pt-image.txt
 pt_top=/tmp/pt/sf
 step=${1:-}
 shift || true

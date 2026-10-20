@@ -49,7 +49,7 @@ also gets `-N <ops> -S <seed> -P <folder> <folder>/f`.
 | `direct` | `-Z -R -W -r 4096 -w 4096` | `O_DIRECT`, page-aligned (fsx asks for `-R -W -r -w` with `-Z`) |
 
 Seeds 1 and 2 for every variant. Op counts keep each fsx exec near 30 s on
-this host, well under the 115 s client alarm; a longer run is split into
+this host, well under the 115 s client limit; a longer run is split into
 more seeds, not more ops.
 
 ## Files

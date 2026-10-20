@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pjdfstest, one step per command. Each client step runs one SDK client
-# (common/client.sh) under a 115 s alarm and logs its step, times, exit and
+# (common/client.sh) under the 115 s limit and logs its step, times, exit and
 # the 1-minute load to RUN/commands.log (lib.sh bench_client).
 #
 #   run.sh image                       build bench-pjdfstest:<yyyymmdd>, write image.txt
@@ -16,7 +16,7 @@
 # (/tmp/pjd/DIR in the Sandbox container); each directory runs in layerfs,
 # then sandbox-disk. RUN is a new absolute folder
 # under benchmark-results/pjdfstest/. A measured run takes the measurement
-# lock after setup (lock RUN) and releases it after cleanup (unlock RUN).
+# lock before setup (lock RUN) and releases it after cleanup (unlock RUN).
 set -euo pipefail
 suite=pjdfstest
 here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)

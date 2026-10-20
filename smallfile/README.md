@@ -53,7 +53,7 @@ The passthrough-fuse sibling is the suite's Sandbox image plus
 `/dev/fuse` and `CAP_SYS_ADMIN`, on the same Docker VM and kernel. Root
 runs `passthrough_ll -o source=/tmp/pt-src -o allow_other /tmp/pt` with its
 defaults (up to 10 worker threads, cache timeout 1.0 s, writeback off);
-smallfile runs as uid 501, gid 20, `HOME=/tmp`, under a 115 s alarm, timed
+smallfile runs as uid 501, gid 20, `HOME=/tmp`, under a 115 s limit, timed
 the same way as the other arms. `exec_ms` is the `docker exec` time seen by
 the host there, not a `sandbox.exec` time.
 
