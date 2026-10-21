@@ -85,6 +85,7 @@ fn setup(
                 namespaces: 8,
                 pager_kib: 1024,
                 serial_low_water: 256,
+                idle_exit_s: 0,
             },
             existing_store: installed,
         },
