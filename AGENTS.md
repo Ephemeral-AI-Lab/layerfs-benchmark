@@ -9,7 +9,7 @@ Read before any measurement:
 
 - root AGENTS.md §1–3;
 - [benchmark rules](../docs/general/benchmark_rules.md);
-- the [report template](../benchmark_agent_report.md);
+- the [report template](../docs/general/benchmark_agent_report.md);
 - the suite's own README.
 
 Read the [`layerfs-js-sdk` skill](../.agents/skills/layerfs-js-sdk/SKILL.md)

@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,os,subprocess,sys,time
 root=Path.cwd();case=Path(sys.argv[1]).resolve();volume=sys.argv[2]
 assert (case/'plan.json').is_file();plan=json.loads((case/'plan.json').read_text());run=case/'run-1';assert not run.exists()
-(root/'benchmark_agent_report.md').read_text()
+(root/'docs/general/benchmark_agent_report.md').read_text()
 binary=root/'core/target/issue323-checkpoints-host/release/deepseek-sdk-checkpoint'
 daemon=root/'core/target/deepseek-sdk/layerfs-daemon'
 source=root/'benchmark-results/fs-bench-pro/deepseek-probe-20261014/full-input'

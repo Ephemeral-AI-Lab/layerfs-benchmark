@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,os,subprocess,sys,time
 root=Path.cwd();case=Path(sys.argv[1]).resolve();volume=sys.argv[2]
 plan=json.loads((case/'plan.json').read_text());assert not (case/'run-1').exists()
-(root/'benchmark_agent_report.md').read_text()
+(root/'docs/general/benchmark_agent_report.md').read_text()
 binary=root/'core/target/issue323-checkpoints-host/release/deepseek-sdk-measure';daemon=root/'core/target/deepseek-sdk/layerfs-daemon';source=Path(plan['fixture'])
 files=[Path(__file__).resolve(),binary,daemon,root/'benchmark/deepseek-sdk-experiment/src/measure.rs',root/'benchmark/deepseek-sdk-experiment/Cargo.toml',root/'benchmark/deepseek-sdk-experiment/Cargo.lock',root/'.cargo/config.toml',case/'plan.json',case/'oracle.json']+list((case/'workloads').iterdir())
 command=['perl','core/target/r4-locked.pl','120',str(binary),str(case),str(source),volume,str(daemon)]
