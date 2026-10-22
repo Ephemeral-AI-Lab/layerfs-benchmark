@@ -7,8 +7,8 @@ experiment through public Rust SDK operations. It is outside production LOC.
 [Issue323](https://github.com/Ephemeral-AI-Lab/layerfs/issues/323) owns the original
 workload; [issue324](https://github.com/Ephemeral-AI-Lab/layerfs/issues/324) owns
 Commit optimization. The current registration and result are in
-[registration](../../docs/roadmap/0.1/0.1.7/issue324-current-main-deepseek-rerun-20261015.md)
-and [result](../../docs/roadmap/0.1/0.1.7/issue324-current-main-deepseek-result-20261015.md).
+[registration](https://github.com/Ephemeral-AI-Lab/layerfs/blob/792715f00a2dbfcf0cb8435ae84862cce972dc90/docs/roadmap/0.1/0.1.7/issue324-current-main-deepseek-rerun-20261015.md)
+and [result](https://github.com/Ephemeral-AI-Lab/layerfs/blob/792715f00a2dbfcf0cb8435ae84862cce972dc90/docs/roadmap/0.1/0.1.7/issue324-current-main-deepseek-result-20261015.md).
 
 The copied driver is mechanically adapted to current duplex names and
 Workspace-owned readers. Build Cargo1.85.1 locked/offline release, preserving
