@@ -1,18 +1,18 @@
 # AGENTS.md — benchmarks
 
-> **Status:** Current general guide, 2026-10-20. Root [AGENTS.md](../AGENTS.md)
-> §1–3 and the [measurement workflow](../docs/general/agent-measurement-policy.md)
+> **Status:** Current general guide, 2026-10-20. Root [AGENTS.md](https://github.com/Ephemeral-AI-Lab/layerfs/blob/main/AGENTS.md)
+> §1–3 and the [measurement workflow](https://github.com/Ephemeral-AI-Lab/layerfs/blob/main/docs/general/agent-measurement-policy.md)
 > govern; this file names the environment and the SDK route for suites in
-> `benchmark/`.
+> this repository (moved out of layerfs's `benchmark/` on 2026-10-23).
 
 Read before any measurement:
 
 - root AGENTS.md §1–3;
-- [benchmark rules](../docs/general/benchmark_rules.md);
-- the [report template](../docs/general/benchmark_agent_report.md);
+- [benchmark rules](https://github.com/Ephemeral-AI-Lab/layerfs/blob/main/docs/general/benchmark_rules.md);
+- the [report template](https://github.com/Ephemeral-AI-Lab/layerfs/blob/main/docs/general/benchmark_agent_report.md);
 - the suite's own README.
 
-Read the [`layerfs-js-sdk` skill](../.agents/skills/layerfs-js-sdk/SKILL.md)
+Read the [`layerfs-js-sdk` skill](https://github.com/Ephemeral-AI-Lab/layerfs/blob/main/.agents/skills/layerfs-js-sdk/SKILL.md)
 before writing any LayerFS client code.
 
 ## What lives here
