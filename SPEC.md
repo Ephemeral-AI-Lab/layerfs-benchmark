@@ -1,7 +1,8 @@
 # Six filesystem benchmark suites
 
-> Status: Follow-up implementation authorized for the three remaining suites.
-> Prior outcomes remain historical; no full-matrix PASS is claimed before execution.
+> Status: Completed scoped diagnostic campaign, 2026-11-06.
+> All 136 active rows passed execution with complete runtime cleanup, across two
+> explicit product identities. Timings remain INELIGIBLE; optional proof is SKIPPED.
 
 Implement [#55](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/55)
 fio, [#56](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/56) fsx,
@@ -10,8 +11,9 @@ fio, [#56](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/56) fsx,
 [#59](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/59) pjdfstest and
 [#60](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/60) smallfile,
 under [parent #54](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/54).
-Creating this specification does not start implementation or benchmark runs.
-Follow the root [AGENTS.md](AGENTS.md).
+The implementation and prospective corrections below have been executed. The
+final checkpoint records their actual scope; earlier selections retain their
+original outcomes. Follow the root [AGENTS.md](AGENTS.md).
 
 ## Layout and shared code
 
@@ -309,7 +311,7 @@ bytes. Prove fresh and inherited aliases through construction, qualification,
 Workspace mutation, Commit, unmount and a fresh mount. Reject child bindings
 under a dropped unreachable fresh directory; do not count them as live aliases.
 
-No database schema or object encoding change is planned. The accepted meaning of
+No database schema or object encoding changed. The accepted meaning of
 symlink reference counts expands, so older binaries may reject new multiply
 bound symlink trees. Pin the derived full source SHA and matching native CLI,
 daemon and Linux worker/daemon/helper bundle. Never mix old/new artifacts.
@@ -324,3 +326,56 @@ eight and pjdfstest v2's 32) at their original product/harness identities. The
 logical current target is still 136 PASS rows, with explicit source identity per
 suite and historical failures retained. This is a scoped diagnostic qualification,
 not a release candidate, full upstream test-suite claim or cold-cache claim.
+
+## Final delivery checkpoint (2026-11-06)
+
+The active 17-case selection is **136 execution PASS rows**. All case cleanup
+and final runtime infrastructure cleanup are COMPLETE. Optional independent
+benchmark verification remains SKIPPED; every timing and ratio is INELIGIBLE.
+This combines retained unaffected evidence with the affected successor profiles;
+it is not one full-matrix run at the corrected product commit.
+
+| Active suite / profile | Cases | PASS | Product source |
+| --- | ---: | ---: | --- |
+| fio v1 | 4 | 32 | `b919f50eaf9cce79671f8501a580279d23cc5f3c` |
+| fsx portable v2 | 1 | 8 | `b919f50eaf9cce79671f8501a580279d23cc5f3c` |
+| mdtest launcher v2 | 2 | 16 | `b919f50eaf9cce79671f8501a580279d23cc5f3c` |
+| pjdfstest unprivileged subset v2 | 4 | 32 | `b919f50eaf9cce79671f8501a580279d23cc5f3c` |
+| smallfile v1 | 5 | 40 | `b919f50eaf9cce79671f8501a580279d23cc5f3c` |
+| fsstress portable v2, corrected product | 1 | 8 | `b9ad9edd7ea3a9314625dee53466aa59a7ea69c7` |
+| Total | 17 | 136 | 128 original-product rows; eight corrected-product rows |
+
+The corrected fsstress checkpoint preserves the exact workload, summarizer,
+flags, bounds and expected-error policy; it changes only the product treatment
+and matched artifacts. Each of its eight rows completed 1,024 operation slots
+with zero unexpected errors. The maximum complete case wall across the active
+selection is 5.311325833 s; maximum row preparation is 5.593744292 s, both from
+retained smallfile L05/Lima/PostgreSQL. The fixed fsstress maxima are
+1.818915791 s for a complete case and 0.258450250 s for preparation.
+
+The product correction passed 135 focused checks (106 core, 21 Workspace, six
+NFS, two real FUSE) and a separate eight-configuration public CLI proof. That
+proof used one prospectively frozen ASCII dangling target, with maximum complete
+proof wall 4.185105791 s under its 9.5 s budget. Its prior native/SQLite proof
+failed before LINK when the macOS NFS client rejected a non-UTF8 target; the
+failure remains retained and its runtime cleanup was resolved explicitly.
+Canonical, Workspace, FUSE and NFS-wire non-UTF8 tests passed, which does not
+establish arbitrary-byte support through every host-client route. The initial
+captured-test lifecycle failure also remains retained alongside the corrected
+fixture's passing selection. No historical failure was relabeled.
+
+Runtime infrastructure release took 2.981238417 s, including 2.657856831 s of
+serial release commands. All owned campaign machines, server/data, tool image,
+home, secret and temporary input/archive were released, with borrowed Apple
+Container service restored. Separate build-cache cleanup released the private
+Linux target/Cargo volumes and an exact stopped test container. Native target
+artifacts remain protected because a live host VM holds them; pinned binaries,
+recipes and local evidence remain. This is not a claim that every cache was
+deleted.
+
+Retired selections are separate: fsx v1 6 PASS/2 NOT_RUN; fsstress v1
+6 PASS/2 NOT_RUN; fsstress v2 on the original product 2 PASS/1 FAIL/5 withdrawn
+NOT_RUN; pjdfstest v1 32 NOT_RUN; mdtest v1 4 PASS/1 FAIL/11 NOT_RUN. Current
+compact reports retain these tables and link immutable earlier reports at
+benchmark commit `11b252ab4bf530fdfd7dd02822ee6f571b496e14`.
+See the [result index](result/README.md) for the active report of each suite.

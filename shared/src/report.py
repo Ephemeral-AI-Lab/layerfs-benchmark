@@ -177,7 +177,10 @@ def render(suite, state, cleanup, config):
         (
             f"LayerFS `{state['source_sha']}` ({config.get('source_reference', 'remote `layerfs_v2_0_0`, resolved at campaign start')}). "
             f"Harness: {config.get('harness_commit', 'working source hashes retained locally')}. "
-            "Matched release CLI/daemon/Linux bundle reused after hash checks; no product changes."
+            + config.get(
+                "artifact_preparation",
+                "Matched release CLI/daemon/Linux bundle reused after hash checks; no product changes.",
+            )
         ),
         "",
         "All LayerFS work uses the public CLI: Sandbox create, Workspace mount, Exec, LayerFS Commit, "
