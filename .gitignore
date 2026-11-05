@@ -12,3 +12,7 @@ __pycache__/
 .env
 .env.local
 .env.*.local
+
+# backup-verify: the pinned CLI binary and local receipts
+backup-verify/bin/
+backup-verify/receipts/
