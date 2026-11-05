@@ -113,15 +113,23 @@ process exit 2 denotes invalid arguments and 125 denotes refusal; retain the
 structured error and exact custody rather than guessing whether an effect ran.
 List results are objects with an `items` array, not bare arrays.
 
-Group result tables by **C01 through C12**, with all eight machine/database
-configurations together in each cell. Present Docker baseline rows first, then
-native, Lima and Apple Container; keep SQLite then PostgreSQL within each machine.
-This display order does not change the required execution order. Report **Exec**, **LayerFS Commit**,
-**Sandbox creation**, **case cleanup** and **End-to-end case time** in separate columns. End-to-end case time includes
-Sandbox creation, mount, Exec, Commit, unmount and normal case cleanup. It excludes
-preparation and initial Python startup/configuration validation; full process wall
-time, when collected, is a separate metric. Do not present an unlabeled triplet
-or call the full case metric filesystem operation time.
+## Report format
+
+Follow the root's single-report publication rule. Use **C01 through C12** as
+section headings, with one table of eight configurations under each heading.
+Display machines as **Docker, native, Lima, Apple Container**, with **SQLite then
+PostgreSQL** for each machine. Docker is the baseline. Display order is separate
+from execution order, which still starts with native.
+
+Use separate columns: **Machine**, **Database**, **Create ms**, **Exec ms**,
+**Commit ms**, **Cleanup ms**, **End-to-end ms**, **Exec / Docker**,
+**Commit / Docker**, **End-to-end / Docker**. Define Create as Sandbox creation
+and Commit as LayerFS Commit. Do not combine metrics into an unlabeled triplet.
+
+End-to-end case time includes Sandbox creation, mount, Exec, Commit, unmount and
+normal case cleanup. It excludes preparation and initial Python startup/configuration
+validation; full process wall time, when collected, is separate. Keep execution,
+verification, performance eligibility and cleanup outcomes explicit in the summary.
 
 CLI call times include launch/routing and applicable Store open/close work.
 Command-only time is unavailable unless independently instrumented and validated.
@@ -181,10 +189,9 @@ cache releases through the selected worktree's cleanup tools. Record protected
 exceptions and observed absence/space recovery; do not claim allocation estimates
 as physical recovered bytes.
 
-Publish one clear `report.md` using the repository's
-[result directory convention](../result/README.md): completion date, benchmark
-and full LayerFS source SHA. Keep logs, receipts, manifests, CSV/JSON and source
-copies local and ignored. Keep product and harness commits separate in the report.
+Use the completion date and full LayerFS product SHA in the report path. Identify
+the harness commit separately inside the report. Follow the
+[result directory convention](../result/README.md); keep raw working data local.
 
 Execution, content verification, performance eligibility, case cleanup and final
 infrastructure cleanup are distinct outcomes. Cleanup FAIL/INCOMPLETE prevents

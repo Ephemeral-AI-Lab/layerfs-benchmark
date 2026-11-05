@@ -56,3 +56,11 @@ or replay a failed/uncertain operation.
 Record setup reuse, cache method/evidence and control overhead separately from
 operation timings. Never purge a shared host or reset another owner's server to
 obtain a cache state.
+
+## Reports
+
+Publish one clear `result/YYYY-MM-DD/<benchmark>/<full-layerfs-sha>/report.md`.
+Include the outcome, configuration, results, main observations, limits and cleanup.
+Group tables by cell, put the baseline first, and name each metric and its units.
+Keep logs, receipts, manifests, CSV/JSON exports and source copies local and
+ignored. Do not publish evidence bundles or duplicate summaries.
