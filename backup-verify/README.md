@@ -1,57 +1,76 @@
-# backup-verify — LayerFS backups on MinIO and Cloudflare R2
+# backup-verify — backup and restore on MinIO and R2 under failures
+> group: transfer · measures: correctness, recovery
 
-Fault and recovery scenarios for `layerfs backup` against real buckets
-(layerfs-project #1–#6). Every step runs the public CLI inside a Linux
-container; nothing links LayerFS code.
+## Basic info
 
-- `run.py` — host driver: one case per invocation, own Docker volume per
-  run, private key files removed at the end, verdicts and receipts under
-  `receipts/<run-id>/<provider>/` (ignored).
-- `cases.py` — runs inside the container (Python stdlib): fixtures, CLI
-  calls with timestamped progress, peak RSS and scratch use, snapshots and
-  comparisons of projects/branches/commits/trees, churn and race helpers.
+| | |
+| --- | --- |
+| Tool | in-house: `run.py` (host driver) and `cases.py` (in-container steps, Python stdlib) |
+| Drives | the public `layerfs backup` CLI (Connect), built `--features tls`, in Linux containers; nothing links LayerFS code |
+| Runs on | a MinIO server and a Cloudflare R2 bucket; SQLite Disposable Stores |
+| Status | active; first run 2026-11-06 (layerfs-project #1–#6) |
+| Rules | the root [AGENTS.md](../AGENTS.md); one case per invocation, each within 110 s |
 
-## Run
+## Overview
+
+Checks that a Store backed up to a bucket can always be restored intact,
+and that failures never lose the last good backup or report false success.
+A PASS means every check in the case held on that provider at that build;
+it does not cover objects above the sizes run, LayerFS pieces, or R2 token
+scoping. Times and sizes in reports are diagnostic.
+
+| Case | Checks | Expected |
+| --- | --- | --- |
+| `roundtrip` | connect, list, create, restore, disconnect and every read command on a Store with history; progress | projects, branches, commits and tree roots identical |
+| `isolated` | restore the roundtrip's backup into a fresh home from bucket, key and file name only; commit again | equals the source, writable |
+| `refusals` | wrong secret, missing bucket, part sizes, missing backup, another home's copy, a changed Store | each refused with a clear code; nothing changed |
+| `size` | one Store of `--mib`: times, peak RSS, scratch | sha256 round trip, no incomplete upload |
+| `corrupt` | truncation, one byte, altered sha256, valid-sha256 non-Store, forged manifest, missing piece, removed object | refused; destination intact; no staging left |
+| `kill` | SIGKILL mid-upload of a replacement and mid-download | previous copy restorable; leftovers swept by the next call |
+| `cut` | connection lost mid-upload or mid-download (MinIO killed; R2 network detached) | refusal with a partial count; previous copy intact |
+| `race` | a Store of the restore's name appears during the download | refused `Exists` after the download |
+| `consistency` | commits land while the backup snapshots | restored branch is one frontier |
+| `concurrent` | two creates of one Store; a restore racing a replacement | one create, the other `Busy`; one whole copy restored |
+| `cleanup` | objects, pieces, incomplete uploads, local staging | inventoried; MinIO incomplete uploads aborted |
+| `perms` | MinIO scoped users per policy; a revoked key | the calls each policy allows; revoked key refused, secret never shown; R2 NOT_RUN |
+| `usage` | bucket and run-prefix bytes, incomplete uploads | report only |
+
+## Setup
+
+1. Build the LayerFS CLI for Linux with `--features tls` and copy it to
+   `bin/layerfs` (ignored).
+2. For MinIO, run a MinIO container on a Docker network and create the
+   bucket. For R2, create the bucket and an Object Read & Write token.
+3. Write a private env file (mode 600, never committed):
+   - MinIO: `LAYERFS_REMOTE_ENDPOINT`, `LAYERFS_REMOTE_BUCKET`,
+     `LAYERFS_REMOTE_ACCESS_KEY`, `LAYERFS_REMOTE_SECRET_KEY`,
+     `MINIO_CONTAINER`, `MINIO_NETWORK`.
+   - R2: `LAYERFS_R2_ACCESS_KEY`, `LAYERFS_R2_SECRET_KEY`, `R2_ACCOUNT`,
+     `R2_BUCKET`.
+4. Run one case per invocation:
 
 ```bash
-# pinned Linux CLI built with --features tls, copied to bin/layerfs
 python3 run.py --provider minio|r2 --case NAME --run-id ID --env-file PRIVATE.env \
   [--prefix P] [--mib N] [--phase upload|download] [--part-size 16M] [--timeout 110]
 ```
 
-`PRIVATE.env` (mode 600, never committed):
+Objects go under `bv-<run-id>/<prefix>/`; `isolated` defaults to the
+`roundtrip` prefix. Each run gets its own Docker volume, and private key
+files are removed when a case ends. Receipts and verdicts go to
+`receipts/<run-id>/<provider>/` (ignored).
 
-- MinIO: `LAYERFS_REMOTE_ENDPOINT`, `LAYERFS_REMOTE_BUCKET`,
-  `LAYERFS_REMOTE_ACCESS_KEY`, `LAYERFS_REMOTE_SECRET_KEY`,
-  `MINIO_CONTAINER`, `MINIO_NETWORK`.
-- R2: `LAYERFS_R2_ACCESS_KEY`, `LAYERFS_R2_SECRET_KEY`, `R2_ACCOUNT`,
-  `R2_BUCKET`.
+- **R2 budget:** before every R2 case the driver sums the bucket with
+  `mc du` and refuses the case when usage plus twice its largest Store plus
+  64 MiB would pass 5 GB, keeping the owner's account in the free tier.
+- **Deletion:** the harness never deletes bucket objects, except MinIO
+  incomplete uploads in `cleanup`.
+- **Tools:** `mc` comes from the pinned MinIO image and runs as root so it
+  can write the scratch volume; `find` runs in the build image.
 
-Each case finishes within the 110 s container timeout. Objects go under
-`bv-<run-id>/<prefix>/`; the harness never deletes bucket objects except
-MinIO incomplete uploads in `cleanup`.
+## Past runs
 
-**R2 budget:** before every R2 case the driver sums the bucket with
-`mc du` and refuses the case when usage plus twice its largest Store plus
-64 MiB would pass 5 GB, keeping the owner's account inside the free tier.
-
-## Cases
-
-| Case | Checks |
-| --- | --- |
-| `roundtrip` | fixture with history, connect/list/create/restore/disconnect, every read command, progress, identity of projects, branches, commits and tree roots |
-| `isolated` | restore the roundtrip's backup into a fresh home from bucket, key and file name only; compare; commit again |
-| `refusals` | wrong secret, missing bucket, part sizes, missing backup, another home's copy, a changed Store |
-| `size` | one Store of `--mib`: times, peak RSS, scratch, sha256 round trip, no incomplete uploads |
-| `corrupt` | truncation, one byte, altered sha256, valid-sha256 non-Store, forged manifest, missing piece, removed object: refused, destination intact, no staging |
-| `kill` | SIGKILL mid-upload of a replacement and mid-download: previous copy restorable, leftovers inventoried and swept |
-| `cut` | connection lost mid-upload or mid-download (MinIO killed; R2 network detached) |
-| `race` | a Store of the restore's name appears during the download |
-| `consistency` | commits land while the backup snapshots; the restored branch is one frontier |
-| `concurrent` | two creates of one Store; a restore racing a replacement |
-| `cleanup` | inventory of objects, pieces, incomplete uploads and local staging |
-| `perms` | MinIO scoped users: which calls each policy allows; a revoked key; R2 NOT_RUN |
-| `usage` | bucket and run-prefix bytes, incomplete uploads |
-
-The `mc` client comes from the pinned MinIO image and runs as root so it
-can write the scratch volume; `find` runs in the build image.
+<!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-06 | `c51d04b942` | Outcome: PASS on both providers after three product fixes | [report](../result/2026-11-06/backup-verify/c51d04b9428c4d56df690223ced1e3fe20f73dc2/report.md) |
+<!-- runs:end -->
