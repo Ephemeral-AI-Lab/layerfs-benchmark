@@ -113,8 +113,9 @@ process exit 2 denotes invalid arguments and 125 denotes refusal; retain the
 structured error and exact custody rather than guessing whether an effect ran.
 List results are objects with an `items` array, not bare arrays.
 
-Report **Exec**, **LayerFS Commit**, **Sandbox creation**, **case cleanup** and
-**End-to-end case time** in separate columns. End-to-end case time includes
+Group result tables by **C01 through C12**, with all eight machine/database
+configurations together in each cell. Report **Exec**, **LayerFS Commit**,
+**Sandbox creation**, **case cleanup** and **End-to-end case time** in separate columns. End-to-end case time includes
 Sandbox creation, mount, Exec, Commit, unmount and normal case cleanup. It excludes
 preparation and initial Python startup/configuration validation; full process wall
 time, when collected, is a separate metric. Do not present an unlabeled triplet

@@ -10,6 +10,7 @@ result/YYYY-MM-DD/benchmark/full-layerfs-commit/report.md
 
 Use the completion date and full LayerFS product SHA. Include the outcome,
 configuration, results, main observations, limitations and cleanup status.
+Group tables cell by cell, with all machine/database configurations together.
 Keep timing columns clearly named and diagnostic results labeled INELIGIBLE.
 
 Keep logs, receipts, manifests, CSV/JSON exports and source copies local under
