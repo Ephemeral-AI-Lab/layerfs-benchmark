@@ -60,6 +60,9 @@ obtain a cache state.
 ## Reports
 
 Publish one clear `result/YYYY-MM-DD/<benchmark>/<full-layerfs-sha>/report.md`.
+Start it with a bold outcome sentence, then run `python3 shared/src/readme_index.py`
+to update the root index and the benchmark's past runs. A new benchmark's README
+starts `# <folder> — <what it checks>` and `> group: … · measures: …`.
 Include the outcome, configuration, results, main observations, limits and cleanup.
 Group tables by cell, put the baseline first, and name each metric and its units.
 Keep logs, receipts, manifests, CSV/JSON exports and source copies local and

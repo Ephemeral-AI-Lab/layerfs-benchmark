@@ -1,61 +1,53 @@
-# fio
+# fio — buffered sequential and random file I/O
+> group: filesystem · measures: speed
 
-Four small, finite buffered-I/O cases across four LayerFS machines and two Store
-backends. See [AGENTS.md](AGENTS.md) for the frozen workload and cache limits.
-This suite shares preparation, CLI execution, deadlines and cleanup with
-[shared/src/runner.py](../shared/src/runner.py); it contains no separate lifecycle.
+## Basic info
 
-## Tools
+| Item | Value |
+| --- | --- |
+| Tool | Unchanged upstream fio 3.40, commit `ff930c4653ae3952d6b09ab3ec89671aeabf2cbe`; build and binary hashes in [TOOL.md](TOOL.md) |
+| Runs on | Four LayerFS machines (native, Docker, Lima, Apple Container) and two Store backends (SQLite, PostgreSQL): 4 cases, 32 rows |
+| Status | Implemented diagnostic workload; no cold-cache qualification; timings are INELIGIBLE diagnostics |
+| Frozen rules | [AGENTS.md](AGENTS.md): workload and cache limits; exact flags in [src/cases.py](src/cases.py) |
+| Lifecycle | [shared/src/runner.py](../shared/src/runner.py): preparation, CLI execution, deadlines and cleanup; this suite has no separate lifecycle |
 
-Use unchanged upstream [fio 3.40](https://github.com/axboe/fio/tree/ff930c4653ae3952d6b09ab3ec89671aeabf2cbe),
-commit `ff930c4653ae3952d6b09ab3ec89671aeabf2cbe`, annotated tag object
-`3e0048fdd9e9832e0052de78ebdd39ab7393f911`. Native macOS arm64 and Linux aarch64
-builds were checked outside LayerFS using all four exact command bodies and
-read-setup jobs. Their successful tool checks do not establish product results.
+## Overview
 
-| Build | Cached executable | SHA-256 |
+Four small, finite buffered-I/O cases run fio in a LayerFS Workspace through
+the public CLI. Each case is one fixed byte-count pass: one job, the `sync`
+engine, depth 1, seed 1. A PASS means the CLI lifecycle succeeded and fio's
+result was accepted. It is not independent committed-content proof or cold
+performance qualification.
+
+| Case | Workload | Expected result |
 | --- | --- | --- |
-| macOS arm64 | `~/.cache/fs-six-tools/fio/native/bin/fio` | `78bffe4c98240a5e3d9fcde34d9662b4bbed03867d5ab5ed3648e8faefdc154c` |
-| Linux aarch64, static | `~/.cache/fs-six-tools/fio/linux/bin/fio` | `7a4ba395670e0795b32dd102916ec2cb71b32a3f9d91d76bed0734c22e0d8bbd` |
-
-The native executable uses only macOS system `libSystem` and `libz`; no Homebrew
-runtime library is required. Linux's executable is static and needs no copied
-shared libraries. Place each matching binary in a ready machine's tool directory
-once, outside any LayerFS Store. Set `machines.<machine>.tool_environment.BENCH_TOOL_ROOT`
-to that directory; the exact workload references `$BENCH_TOOL_ROOT/fio` and does
-not embed machine-specific paths in its provenance.
-
-Build with existing Clang/GNU make on macOS, or GCC/GNU make and static libc
-headers on Linux. The selected optional engines need no added dependencies:
-
-```bash
-./configure --disable-native --disable-http --disable-rdma --disable-rados \
-  --disable-rbd --disable-gfapi --disable-pmem --disable-numa --disable-libnfs \
-  --disable-xnvme --disable-isal --disable-libblkio --disable-libzbc \
-  --disable-tcmalloc --disable-dfs --disable-lex
-make -j4 fio
-```
-
-For Linux add `--build-static`. The recorded Linux build used existing arm64
-image `rust@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4`
-with the same flags; no upstream source edits or package installation were needed.
-Exact local commands, logs, compiler configuration, binary identities and bounded
-tool-only validation outputs are retained under `~/.cache/fs-six-tools/fio/`.
-Do not publish that cache as an evidence bundle. The two owned build/validation
-containers were removed after use.
+| F01 | Sequential write, 64 MiB in 1 MiB blocks, empty starting view | One job, tool error 0, exactly 67,108,864 bytes in 64 writes, no short/drop I/O, no read bytes |
+| F02 | Sequential read, 64 MiB in 1 MiB blocks, of committed fio data | One job, tool error 0, exactly 67,108,864 bytes in 64 reads, no short/drop I/O, no write bytes |
+| F03 | Random write, 8 MiB in 4 KiB blocks, empty starting view | One job, tool error 0, exactly 8,388,608 bytes in 2,048 writes, no short/drop I/O, no read bytes |
+| F04 | Random read, 8 MiB in 4 KiB blocks, of committed fio data | One job, tool error 0, exactly 8,388,608 bytes in 2,048 reads, no short/drop I/O, no write bytes |
 
 `create_fsync=0` is deliberate: upstream normally syncs a newly created data file.
 `fallocate=none`, `create_on_open=1`, `end_fsync=0` and `fsync_on_close=0` avoid
 unrequested preparation/sync work. Buffered I/O and `invalidate=0` make no cold
 claim. The repeated `0x5a` data are nonzero and highly compressible.
 
-## Run
+## Setup
 
-Resolve the current product source and build matched release artifacts first.
-Use [environments.example.json](environments.example.json) as a schema, replacing
-placeholders and recording exact owned infrastructure. PostgreSQL databases are
-independent, pre-provisioned inputs; the shared runner initializes their LayerFS
-schema using public CLI calls.
+Prerequisites:
+
+- The pinned fio binary for each machine ([TOOL.md](TOOL.md)). Place each
+  matching binary in a ready machine's tool directory once, outside any LayerFS
+  Store. Set `machines.<machine>.tool_environment.BENCH_TOOL_ROOT` to that
+  directory; the exact workload references `$BENCH_TOOL_ROOT/fio` and does not
+  embed machine-specific paths in its provenance.
+- Resolve the current product source and build matched release artifacts first.
+- PostgreSQL databases are independent, pre-provisioned inputs; the shared
+  runner initializes their LayerFS schema using public CLI calls.
+
+Config: use [environments.example.json](environments.example.json) as a schema,
+replacing placeholders and recording exact owned infrastructure.
+
+Prepare and run one row:
 
 ```bash
 python3 fio/src/run.py prepare --environment /private/fio.json \
@@ -78,8 +70,20 @@ python3 shared/src/report.py --suite fio --input /private/fio-prepared \
   --output result/YYYY-MM-DD/fio/FULL_LAYERFS_SHA/report.md
 ```
 
+Time limits: 15 seconds per performance case and 25 seconds for setup
+([AGENTS.md](AGENTS.md)). With `--verify`, the proof targets at most one second,
+with a separate total budget below ten seconds.
+
 Run focused harness checks with an explicit wall bound:
 
 ```bash
 python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "discover", "-s", "fio/tests", "-v"], check=True, timeout=30)'
 ```
+
+## Past runs
+
+<!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS | [report](../result/2026-11-06/fio/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+<!-- runs:end -->

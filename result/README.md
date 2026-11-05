@@ -17,21 +17,22 @@ Keep timing columns clearly named and diagnostic results labeled INELIGIBLE.
 Keep logs, receipts, manifests, CSV/JSON exports and source copies local under
 the benchmark's ignored working-results directory. Do not commit them here.
 
-[fs-bench-quick, 2026-11-06](2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md)
+## Where runs are listed
+
+The [root README](../README.md) shows each benchmark's latest run, and each
+benchmark's README lists all its runs under **Past runs**. Both tables are
+generated from the report folders here: after publishing a report, run
+`python3 shared/src/readme_index.py`. A report's first bold sentence is its
+outcome in those tables; a report that is superseded says so there.
+
+## The 2026-11-06 six-suite campaign
 
 The six-suite campaign completed its active **17 cases / 136 execution PASS
 rows** on 2026-11-06. Case cleanup and final runtime infrastructure cleanup are
 COMPLETE. Timings and Docker ratios remain **INELIGIBLE diagnostics**, and
-optional independent benchmark verification remains SKIPPED.
-
-| Active report | Cases | PASS rows | LayerFS product identity |
-| --- | ---: | ---: | --- |
-| [fio](2026-11-06/fio/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 4 | 32 | `b919f50e…` |
-| [fsx portable v2](2026-11-06/fsx/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 1 | 8 | `b919f50e…` |
-| [fsstress v2, corrected product](2026-11-06/fsstress/b9ad9edd7ea3a9314625dee53466aa59a7ea69c7/report.md) | 1 | 8 | `b9ad9edd…` |
-| [mdtest launcher v2](2026-11-06/mdtest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 2 | 16 | `b919f50e…` |
-| [pjdfstest unprivileged subset v2](2026-11-06/pjdfstest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 4 | 32 | `b919f50e…` |
-| [smallfile](2026-11-06/smallfile/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 5 | 40 | `b919f50e…` |
+optional independent benchmark verification remains SKIPPED. Its plan and
+checkpoints are in [SPEC.md](../SPEC.md); retired selections without a report
+are noted in each benchmark's Past runs.
 
 This is 128 passing rows at
 `b919f50eaf9cce79671f8501a580279d23cc5f3c` plus eight at clean derived product
@@ -41,14 +42,6 @@ the product now permits Workspace hardlinks to symlink inodes. No ratio mixes
 these product treatments. The correction also passed 135 focused product checks
 and separate ASCII-target public CLI proof on all eight configurations; that
 does not establish arbitrary-byte support through every host-client route.
-
-| Retired selection | PASS | FAIL | NOT_RUN |
-| --- | ---: | ---: | ---: |
-| fsx v1 | 6 | 0 | 2 |
-| fsstress v1 | 6 | 0 | 2 |
-| [fsstress v2, original product](2026-11-06/fsstress/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) | 2 | 1 | 5 withdrawn |
-| pjdfstest v1 | 0 | 0 | 32 |
-| mdtest v1 | 4 | 1 | 11 |
 
 Historical failures and prerequisite outcomes remain retained. The
 [immutable earlier report index](https://github.com/Ephemeral-AI-Lab/layerfs-benchmark/blob/11b252ab4bf530fdfd7dd02822ee6f571b496e14/result/README.md)

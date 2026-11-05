@@ -8,3 +8,5 @@ No SDK routes, automatic retries, cold-cache self-certification or duplicated
 lifecycle implementation. Keep measured execution serial. Runtime tool paths and
 capabilities live in machine configuration; canonical workload hashes do not
 embed private host paths. Shared infrastructure has one campaign owner.
+`src/readme_index.py` builds the root index and each benchmark's past runs
+from `result/`; it changes only the marked blocks in those READMEs.
