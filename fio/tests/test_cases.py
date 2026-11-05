@@ -3,10 +3,10 @@
 import copy
 import importlib.util
 import json
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location(
@@ -123,14 +123,14 @@ class FioCasesTests(unittest.TestCase):
             command = ["/bin/bash", "-o", "pipefail", "-c", verifier]
             self.assertEqual(
                 subprocess.run(
-                    command, cwd=temporary, capture_output=True, timeout=2
+                    command, cwd=temporary, capture_output=True, timeout=2, check=False
                 ).returncode,
                 0,
             )
             path.write_bytes(b"Z" * 15 + b"Y")
             self.assertNotEqual(
                 subprocess.run(
-                    command, cwd=temporary, capture_output=True, timeout=2
+                    command, cwd=temporary, capture_output=True, timeout=2, check=False
                 ).returncode,
                 0,
             )
@@ -138,7 +138,7 @@ class FioCasesTests(unittest.TestCase):
             (Path(temporary) / ".extra").touch()
             self.assertNotEqual(
                 subprocess.run(
-                    command, cwd=temporary, capture_output=True, timeout=2
+                    command, cwd=temporary, capture_output=True, timeout=2, check=False
                 ).returncode,
                 0,
             )

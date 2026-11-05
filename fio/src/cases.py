@@ -175,7 +175,7 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
     other = "write" if direction == "read" else "read"
     io = job.get(direction)
     if not isinstance(io, dict):
-        raise ValueError("fio direction metrics missing")
+        raise ValueError("fio direction metrics missing")  # noqa: TRY004 - malformed external data uses the parser ValueError contract
     if io.get("io_bytes") != size or io.get("total_ios") != size // block:
         raise ValueError("fio completed byte/I/O count differs from the frozen pass")
     if io.get("short_ios") != 0 or io.get("drop_ios") != 0:
@@ -200,7 +200,7 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
         raise ValueError("fio effective job options differ from the frozen profile")
     latency = io.get("clat_ns")
     if not isinstance(latency, dict):
-        raise ValueError("fio completion latency metrics missing")
+        raise ValueError("fio completion latency metrics missing")  # noqa: TRY004 - malformed external data uses the parser ValueError contract
     return {
         "tool": "fio",
         "version": TOOL_VERSION,

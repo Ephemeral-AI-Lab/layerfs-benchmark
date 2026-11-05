@@ -1,6 +1,6 @@
 import importlib.util
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
     "smallfile_cases", Path(__file__).parents[1] / "src/cases.py"

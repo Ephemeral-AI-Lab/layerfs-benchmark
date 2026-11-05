@@ -66,7 +66,9 @@ def get_case(case_id, verify=False):
     }
     if verify:
         # mdtest removes its own test root. Empty Workspace is the surviving result.
-        script = 'test -z "$(find . -mindepth 1 -print -quit)" && printf "VERIFY PASS\\n"'
+        script = (
+            'test -z "$(find . -mindepth 1 -print -quit)" && printf "VERIFY PASS\\n"'
+        )
         result["verifier"] = script
         result["provenance"]["verification"] = {
             "version": "empty-after-remove-v1",
@@ -80,7 +82,9 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
         raise ValueError(f"Unknown mdtest case {case_id}")
     if exit_code != 0:
         raise ValueError(f"mdtest exited {exit_code}")
-    if re.search(r"\b(?:ERROR|WARNING|unable to|failed to)\b", stdout + stderr, re.IGNORECASE):
+    if re.search(
+        r"\b(?:ERROR|WARNING|unable to|failed to)\b", stdout + stderr, re.IGNORECASE
+    ):
         raise ValueError("mdtest reported an error/warning; retain original output")
     noun = "files" if case_id == "M01" else "directories"
     if not re.search(rf"\b1 tasks, 512 {noun}\b", stdout):
@@ -103,7 +107,11 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
             values = [float(value) for value in match.group(1).split()]
         except ValueError as error:
             raise ValueError("malformed mdtest phase rate") from error
-        if len(values) != 4 or any(not math.isfinite(value) or value < 0 for value in values) or values[2] <= 0:
+        if (
+            len(values) != 4
+            or any(not math.isfinite(value) or value < 0 for value in values)
+            or values[2] <= 0
+        ):
             raise ValueError("invalid mdtest phase rates")
         phases[name] = dict(zip(["max", "min", "mean", "stddev"], values))
     return {

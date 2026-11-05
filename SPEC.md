@@ -1,6 +1,7 @@
 # Six filesystem benchmark suites
 
-> Status: Current planning checklist; no release candidate exists.
+> Status: Implemented; current diagnostic execution is complete with explicit
+> prerequisite exclusions. No release candidate or full-matrix PASS exists.
 
 Implement [#55](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/55)
 fio, [#56](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/56) fsx,
@@ -234,3 +235,18 @@ phases and payload sizes stay frozen. Register a separate 16-row successor
 campaign; do not mix v1 timings into v2 ratios. The current matrix remains 136
 rows, with 16 additional retired v1 selections reported separately (152 total
 registered selections across versions). See `mdtest/CHANGES.md`.
+
+## Delivery checkpoint (2026-11-06)
+
+The current 17-cell matrix accounts for all 136 rows: 100 execution PASS and 36
+NOT_RUN (two native fsx, two native fsstress, all 32 pjdfstest). Case and final
+infrastructure cleanup are COMPLETE. Maximum complete case wall was 5.311 s;
+maximum row preparation was 5.594 s. Verification remained SKIPPED and performance
+INELIGIBLE. The retired mdtest v1 matrix remains separately reported as four PASS,
+one FAIL and eleven NOT_RUN. See the six compact reports in `result/README.md`.
+
+The full matrix has not reached terminal PASS: native xfstests portability and
+the public CLI's intentional nonroot contract remain prerequisites. Do not close
+those gaps by relabeling NOT_RUN, patching third-party source or bypassing the
+product's privilege restrictions. Passing supported routes are complete; preserve
+that evidence rather than rerunning unchanged configurations.

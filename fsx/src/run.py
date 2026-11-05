@@ -6,7 +6,7 @@ from pathlib import Path
 
 _shared = Path(__file__).resolve().parents[2] / "shared" / "src"
 sys.path.insert(0, str(_shared))
-exec(
+exec(  # noqa: S102 - load the tracked shared implementation with suite globals
     compile((_shared / "runner.py").read_bytes(), str(_shared / "runner.py"), "exec"),
     globals(),
-)  # noqa: S102 - execute the pinned shared entrypoint
+)

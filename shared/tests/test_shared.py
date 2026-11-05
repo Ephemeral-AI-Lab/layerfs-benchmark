@@ -2,11 +2,11 @@
 
 import importlib.util
 import json
-from pathlib import Path
 import sys
 import tempfile
 import types
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -113,15 +113,15 @@ class SharedTests(unittest.TestCase):
                 }
                 for x in results
             ]
-            with patch.object(
-                run.measure, "run_command", side_effect=replies
-            ) as command:
-                with self.assertRaisesRegex(
-                    run.Failure, "setup tool result: worker error"
-                ):
-                    campaign.prepare_base(
-                        row, {"setup_argv": ["true"]}, run.measure.Deadline.after(1)
-                    )
+            with (
+                patch.object(
+                    run.measure, "run_command", side_effect=replies
+                ) as command,
+                self.assertRaisesRegex(run.Failure, "setup tool result: worker error"),
+            ):
+                campaign.prepare_base(
+                    row, {"setup_argv": ["true"]}, run.measure.Deadline.after(1)
+                )
             self.assertEqual(command.call_count, 3)
             self.assertEqual(row["workspace"], "unit:setup")
 
@@ -146,7 +146,7 @@ class SharedTests(unittest.TestCase):
         )
         self.assertIn("Diagnostic terminal: INCOMPLETE", text)
         self.assertIn("'FAIL': 1", text)
-        self.assertIn("teardown: UNAVAILABLE", text)
+        self.assertIn("teardown wall: UNAVAILABLE", text)
 
     def test_deadline_is_shared_and_expired_before_send(self):
         with self.assertRaises(measure.BudgetExceeded):

@@ -2,8 +2,8 @@
 """Publish one small Markdown report from a suite's retained campaign state."""
 
 import argparse
-from collections import Counter
 import json
+from collections import Counter
 from pathlib import Path
 
 DISPLAY = ("docker", "native", "lima", "apple-container")
@@ -86,7 +86,12 @@ def metric_cells(suite, metrics):
             ],
         ]
     if suite == "smallfile":
-        return ["Files", "Files/s", "Worker 00 records", "Worker 01 records"], [
+        return [
+            "Files",
+            "Σ worker files/s",
+            "Worker 00 records",
+            "Worker 01 records",
+        ], [
             str(metrics.get("files")),
             number(metrics.get("files_per_second")),
             *[
@@ -100,31 +105,28 @@ def metric_cells(suite, metrics):
 
 
 def workload_summary(workload):
-    keys = (
-        "workload_version",
-        "profile",
-        "entry_kind",
-        "ranks",
-        "entries",
-        "iterations",
-        "operation",
-        "workers",
-        "files_per_worker",
-        "bytes_per_file",
-        "script",
-        "assertion_count",
-        "selection",
-        "bounds",
-        "operation_weights",
-    )
-    fields = {key: workload[key] for key in keys if key in workload}
-    return (
-        "; ".join(
-            f"{key}: {json.dumps(value) if isinstance(value, dict) else value}"
-            for key, value in fields.items()
-        )
-        or "Frozen workload and prerequisite in the linked suite definition."
-    )
+    version = workload.get("workload_version", "frozen workload")
+    profile = workload.get("profile")
+    if profile:
+        label = {
+            "write": "Sequential write",
+            "read": "Sequential read",
+            "randwrite": "Random write",
+            "randread": "Random read",
+        }.get(profile.get("rw"), profile.get("rw"))
+        return f"{label}: {profile['size_bytes'] / 1048576:g} MiB, {profile['block_bytes'] / 1024:g} KiB blocks; buffered synchronous engine, one job/depth 1, seed 1, nonzero 0x5a pattern. {version}."
+    if workload.get("entry_kind"):
+        noun = "empty files" if workload["entry_kind"] == "file" else "directories"
+        return f"512 {noun}; one MPI rank; one create/stat/remove iteration. {version}."
+    if workload.get("operation"):
+        return f"{workload['operation'].capitalize()} 512 files: two workers × 256 files, 4 KiB/file, 64 files/directory. {version}."
+    if workload.get("scripts"):
+        return f"{', '.join(workload['scripts'])}: {workload.get('expected_assertions_darwin_linux')} planned TAP assertions; upstream root prerequisite. {version}."
+    if workload.get("bounds"):
+        return f"Two processes × 512 requested operation slots, seed 1; frozen operation weights and per-operation allocation bounds. Effective work, skipped slots and expected errno are separate below. {version}."
+    if workload.get("selection"):
+        return f"1,000 operation slots, seed 1, file ≤8 MiB, operation ≤64 KiB; read/write/truncate and upstream consistency checks. Skipped slots remain explicit. {version}."
+    return version
 
 
 def render(suite, state, cleanup, config):
@@ -148,12 +150,16 @@ def render(suite, state, cleanup, config):
         "",
         "> Status: Diagnostic observations; timings are performance-ineligible.",
         "",
-        f"**Diagnostic terminal: {terminal}.** {len(expected)} registered rows; execution {dict(counts)}. "
-        f"Final infrastructure cleanup: **{cleanup.get('cleanup', 'NOT_RUN')}**.",
+        (
+            f"**Diagnostic terminal: {terminal}.** {len(expected)} registered rows; execution {dict(counts)}. "
+            f"Final infrastructure cleanup: **{cleanup.get('cleanup', 'NOT_RUN')}**."
+        ),
         "",
-        f"LayerFS `{state['source_sha']}` (remote `layerfs_v2_0_0`, resolved at campaign start). "
-        f"Harness: {config.get('harness_commit', 'working source hashes retained locally')}. "
-        "Matched release CLI/daemon/Linux bundle reused after hash checks; no product changes.",
+        (
+            f"LayerFS `{state['source_sha']}` (remote `layerfs_v2_0_0`, resolved at campaign start). "
+            f"Harness: {config.get('harness_commit', 'working source hashes retained locally')}. "
+            "Matched release CLI/daemon/Linux bundle reused after hash checks; no product changes."
+        ),
         "",
         "All LayerFS work uses the public CLI: Sandbox create, Workspace mount, Exec, LayerFS Commit, "
         "unmount, Sandbox close, and Store remove/disconnect. SQLite Disposable/WAL/OFF; "
@@ -164,20 +170,38 @@ def render(suite, state, cleanup, config):
         )
         + ".",
         "",
-        "Warm builds, tools, ready machines and closed setup are reused. No public CLI protocol demonstrates "
-        "cold live-Workspace state before Commit. Every timing and Docker ratio below is an **INELIGIBLE diagnostic**.",
+        (
+            "Warm builds, tools, ready machines and closed setup are reused. No public CLI protocol demonstrates "
+            "cold live-Workspace state before Commit. Every timing and Docker ratio below is an **INELIGIBLE diagnostic**."
+        ),
         "",
-        "Times are milliseconds of CLI calls including launch/routing. Create means Sandbox creation. "
-        "Cleanup includes Sandbox close and Store remove/disconnect; End-to-end also includes mount/unmount "
-        "and intervening harness work, excludes preparation, Python startup and optional proof. "
-        "Ratios divide the machine's time by Docker's time for the same cell/backend; Docker = 1.00, "
-        "below 1 means less elapsed time. One sample per row, no median or repeatability claim.",
+        (
+            "Times are milliseconds of CLI calls including launch/routing. Create means Sandbox creation. "
+            "Cleanup includes Sandbox close and Store remove/disconnect; End-to-end also includes mount/unmount "
+            "and intervening harness work, excludes preparation, Python startup and optional proof. "
+            "Ratios divide the machine's time by Docker's time for the same cell/backend; Docker = 1.00, "
+            "below 1 means less elapsed time. One sample per row, no median or repeatability claim."
+        ),
         "",
-        f"Environment: {config.get('environment_description', 'native macOS; Docker; Lima; Apple Container; dedicated PostgreSQL17 server')}. "
-        "Command-only timing, phase-scoped remote CPU/memory, Store/WAL/overlay/temp growth and server storage "
-        "are UNAVAILABLE; no storage-efficiency claim.",
+        (
+            f"Environment: {config.get('environment_description', 'native macOS; Docker; Lima; Apple Container; dedicated PostgreSQL17 server')}. "
+            "Command-only timing, phase-scoped remote CPU/memory, Store/WAL/overlay/temp growth and server storage "
+            "are UNAVAILABLE; no storage-efficiency claim."
+        ),
         "",
     ]
+    artifacts = config.get("artifacts", {})
+    if artifacts:
+        lines += ["| Build input | SHA-256 / identity |", "| --- | --- |"]
+        for label, key in (
+            ("CLI", "cli_sha256"),
+            ("Native daemon", "daemon_sha256"),
+            ("Linux bundle seal", "linux_bundle_sha256"),
+            ("Docker tool image", "sandbox_image"),
+            ("Namespace archive config", "sandbox_archive_config"),
+        ):
+            lines.append(f"| {label} | `{artifacts.get(key, 'UNAVAILABLE')}` |")
+        lines.append("")
     for cell in dict.fromkeys(item["cell"] for item in expected):
         selected = [r for r in rows.values() if r["cell"] == cell]
         workload = next(
@@ -236,21 +260,65 @@ def render(suite, state, cleanup, config):
             if r.get("reason")
         ]
         if reasons:
-            lines += ["", *[f"- {name}: {safe(reason)}" for name, reason in reasons]]
+            grouped = {}
+            for name, reason in reasons:
+                grouped.setdefault(reason, []).append(name)
+            lines += [""]
+            for reason, names in grouped.items():
+                scope = (
+                    "All eight configurations" if len(names) == 8 else ", ".join(names)
+                )
+                lines.append(f"- {scope}: {safe(reason)}")
         lines.append("")
-    setup_ns = sum(r.get("prepare_elapsed_ns", 0) for r in rows.values())
+    preparations = [
+        r["prepare_elapsed_ns"]
+        for r in rows.values()
+        if isinstance(r.get("prepare_elapsed_ns"), int)
+    ]
+    setup = (
+        f"Attempted row preparation: {sum(preparations) / 1e9:.3f} s total; maximum {max(preparations) / 1e9:.3f} s (25 s bound)."
+        if preparations
+        else (
+            "No case inputs were allocated: prerequisites failed before preparation."
+            if all(
+                r.get("preparation") == "NOT_RUN" and r.get("execution") == "NOT_RUN"
+                for r in rows.values()
+            )
+            else "Row preparation wall: UNAVAILABLE."
+        )
+    )
     lines += [
         "## Preparation, limits and cleanup",
         "",
-        f"Row preparation total: {setup_ns / 1e9:.3f} s (separate from timings). "
-        f"Final shared infrastructure teardown: {str(round(cleanup['elapsed_ns'] / 1e9, 3)) + ' s' if isinstance(cleanup.get('elapsed_ns'), int) else 'UNAVAILABLE'}. "
-        "Tools and image prepared once; one owned PostgreSQL server and three ready guest machines reused across suites. "
-        "Each row has independent Store/history and is consumed once. PostgreSQL databases are released with the owned server data volume.",
+        setup
+        + " Preparation is outside the case timers; database creation and initial shared infrastructure commands are separate. Tools/image were built once and machines/server reused; each input was independent and consumed once.",
+        "",
+        f"Final infrastructure cleanup: **{cleanup.get('cleanup', 'NOT_RUN')}**. Overall uninterrupted teardown wall: {str(round(cleanup['elapsed_ns'] / 1e9, 3)) + ' s' if isinstance(cleanup.get('elapsed_ns'), int) else 'UNAVAILABLE'}. "
+        + (
+            f"Serial resource-release commands total {cleanup['release_commands_ns'] / 1e9:.3f} s, including the refused deletion; diagnosis gaps and local-file cleanup are excluded from that sum."
+            if isinstance(cleanup.get("release_commands_ns"), int)
+            else ""
+        ),
         "",
         safe(cleanup.get("summary", "Final disposition recorded by campaign owner.")),
         "",
-        "Execution PASS is a checked CLI lifecycle and accepted tool result, not independent committed-content proof or cold performance qualification. "
-        "All failed and unsupported rows remain visible. Measured rows ran serially; implementation/tool builds completed before measurement.",
+        safe(cleanup.get("cleanup_observation", "")),
+        "",
+        "Execution PASS is a checked CLI lifecycle and accepted tool result, not independent committed-content proof or cold performance qualification. All failed and unsupported rows remain visible. Measured rows ran serially; tools/builds and infrastructure preparation did not overlap them.",
+        "",
+    ]
+    if suite == "smallfile":
+        lines += [
+            "Smallfile upstream rate = 256/T00 + 256/T01 files/s. Each worker timer starts after directory, seed/buffer preparation and gate waiting; it uses upstream time.time(). It excludes launcher/startup work, so it is not 512 divided by CLI Exec time. Its control-file fsyncs are intrinsic upstream behavior; payload fsync is disabled. The declared 4KiB payload pattern is nonzero and compressible.",
+            "",
+        ]
+    if suite == "fio":
+        lines += [
+            "fio writes the declared compressible nonzero 0x5a pattern. Bandwidth and completion latency come from fio's own single job interval; CLI Exec and End-to-end above include additional lifecycle/routing costs.",
+            "",
+        ]
+    lines += [
+        "External host isolation was not established; report/audit/Git activity overlapped some samples and other owners' processes/resources were preserved. No campaign build, provisioning, server restart or cache reset overlapped a measured row.",
         "",
     ]
     pins = config.get("tool_identity")
