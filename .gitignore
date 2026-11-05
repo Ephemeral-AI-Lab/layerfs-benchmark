@@ -1,0 +1,17 @@
+# Local archive
+/.archive/
+
+# OS files
+.DS_Store
+
+# Python environment and caches
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# Local environment and credentials
+.env
+.env.local
+.env.*.local
