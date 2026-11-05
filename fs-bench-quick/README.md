@@ -11,16 +11,15 @@ with SQLite then PostgreSQL on each machine. All twelve cells are implemented;
 the complete matrix has 96 rows. See [the specification](SPEC.md) for measurement
 and cleanup requirements.
 
-The [completed diagnostic campaign](records/quick-20261105T185054Z.md) reached
+The [completed diagnostic report](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) reached
 96 execution PASS outcomes and final runtime cleanup COMPLETE. All timings are
 INELIGIBLE diagnostics and independent verification was SKIPPED, as requested.
 This terminal outcome establishes execution and cleanup coverage; content
 correctness and performance qualification remain unproven.
 
-The [published dataset](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/quick-20261105T185054Z/README.md)
-contains all96 original receipts, the CLI ledger, reports and CSV/JSON. Follow the
-[result directory convention](../result/README.md) for future publications;
-working output under this suite's `results/` remains ignored.
+Publish only the report using the [result directory convention](../result/README.md).
+Raw receipts, logs and machine-readable working output stay local under this
+suite's ignored `results/` directory.
 
 ## Preparation
 
@@ -90,8 +89,8 @@ ledger, campaign manifest and raw receipts before removing temporary caches.
 
 New attempts retain the exact runtime harness source bytes and hashes with their
 receipts. The completed campaign predates source-byte retention and preserves
-its per-row harness hashes, exact CLI commands and workload provenance; its
-record describes that limitation. Reports suppress comparisons for ineligible
+its per-row harness hashes, exact CLI commands and workload provenance; the
+report describes that limitation. Reports suppress comparisons for ineligible
 or mismatched pairs.
 
 Reports name the full run metric **End-to-end case time**, including Sandbox
