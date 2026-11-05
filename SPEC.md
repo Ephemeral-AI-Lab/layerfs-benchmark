@@ -291,3 +291,36 @@ mdtest v1 history. New source/profile identity authorizes affected new attempts;
 no unchanged treatment resampling or historical relabeling. A blocker is only
 impossible under stated constraints when source and execution evidence prove
 that claim; difficulty alone does not establish impossibility.
+
+## Symlink hard-link capability correction (owner approved 2026-11-06)
+
+The portable v2 fsstress profile passed native SQLite and PostgreSQL, then
+Docker/SQLite failed with six EPERM results for symlink hard-link sources. The
+selected product explicitly refuses those links in Workspace and canonical
+reference validation. Retain the v2 checkpoint as **2 PASS / 1 FAIL / 5 NOT_RUN**;
+the five remaining configurations were withdrawn before attempt. All case
+cleanup completed. Do not reclassify EPERM or remove link operations.
+
+The owner approved implementing and qualifying the missing product capability.
+Use a clean derived worktree from the selected b919f50eaf9cce79671f8501a580279d23cc5f3c
+reference. Permit shared symlink inodes while preserving singular directory
+parentage, root invariants, exact reachable binding counts and opaque target
+bytes. Prove fresh and inherited aliases through construction, qualification,
+Workspace mutation, Commit, unmount and a fresh mount. Reject child bindings
+under a dropped unreachable fresh directory; do not count them as live aliases.
+
+No database schema or object encoding change is planned. The accepted meaning of
+symlink reference counts expands, so older binaries may reject new multiply
+bound symlink trees. Pin the derived full source SHA and matching native CLI,
+daemon and Linux worker/daemon/helper bundle. Never mix old/new artifacts.
+Project Init and recursive copy alias preservation remain a separately stated
+regular-file-only scope; this correction covers Workspace links and Commit.
+
+After scoped product proof, execute a separate eight-row fsstress checkpoint
+with the **unchanged v2 workload, flags, bounds and error policy** against the
+corrected product. Keep its product identity distinct in reports and Docker
+ratios. Reuse the 128 unaffected passing receipts (88 original plus fsx v2's
+eight and pjdfstest v2's 32) at their original product/harness identities. The
+logical current target is still 136 PASS rows, with explicit source identity per
+suite and historical failures retained. This is a scoped diagnostic qualification,
+not a release candidate, full upstream test-suite claim or cold-cache claim.

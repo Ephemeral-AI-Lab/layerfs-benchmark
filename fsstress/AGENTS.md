@@ -64,3 +64,18 @@ independent proof is unavailable and rejected; default verification is SKIPPED.
 Unknown caches remain INELIGIBLE diagnostics. No warm-up, retry or unchanged
 resampling. Release known-safe state through recorded owners, preserve uncertain
 state and containing resources, and publish only the compact final report.
+
+## Corrected product checkpoint
+
+At reference `b919f50eaf9cce79671f8501a580279d23cc5f3c`, v2 retained two
+native PASS rows, one Docker/SQLite FAIL and five selections withdrawn before
+attempt. Six symlink hard-link operations returned EPERM because that product
+explicitly refused them. Never reclassify those failures or add an EPERM allowance.
+
+The owner-approved capability fix is clean derived commit
+`b9ad9edd7ea3a9314625dee53466aa59a7ea69c7`. Use matched CLI/daemon/Linux bundle
+from that source for a separate complete eight-row checkpoint, after scoped
+product proof. Keep the v2 workload/error policy unchanged and record the new
+product identity explicitly. Preserve older profiles separately; Docker ratios
+use only rows from the same product checkpoint. Default extra benchmark proof
+remains SKIPPED and every timing remains INELIGIBLE.
