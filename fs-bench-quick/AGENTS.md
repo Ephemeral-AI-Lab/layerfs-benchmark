@@ -4,12 +4,12 @@
 
 These instructions apply to `fs-bench-quick/` and extend the repository-root
 [CLI and cache rules](../AGENTS.md). This file is the suite's current contract;
-[cases.py](cases.py) pins the exact workload bodies, setup and provenance.
+[cases.py](src/cases.py) pins the exact workload bodies, setup and provenance.
 Reading these instructions does not start a campaign or authorize repeating
 completed samples.
 
 Use the existing runner with the exact bodies, environment and provenance in
-[cases.py](cases.py). Preserve Bash/pipefail semantics. C12's Git commit belongs
+[cases.py](src/cases.py). Preserve Bash/pipefail semantics. C12's Git commit belongs
 to the workload; the explicit LayerFS Commit remains a separate operation.
 
 ## Workloads and implementation
@@ -35,9 +35,9 @@ with public CLI calls and optional independent verification.
 | C11 | Overwrite it with the defined zero-over-zero body | Committed base |
 | C12 | Git init, create 100 files, add and commit | Empty |
 
-Use the Python standard library and one shared lifecycle in `run.py`, workload
-and proof definitions in `cases.py`, timing/eligibility in `measure.py`, and
-report generation in `report.py`. Configuration supplies machine and backend
+Use the Python standard library and one shared lifecycle in `src/run.py`, workload
+and proof definitions in `src/cases.py`, timing/eligibility in `src/measure.py`, and
+report generation in `src/report.py`. Configuration supplies machine and backend
 variations. Add modules only for a demonstrated independent responsibility.
 Pin original body, setup and verifier provenance/hashes before measurement;
 deliberate changes require a new workload version. Accept valid UpToDate Commits.
@@ -114,7 +114,7 @@ interface. Separate databases do not prove cold shared buffers or server cache.
 
 ## Use the existing runner and exact matrix order
 
-Use [run.py](run.py) rather than adding another lifecycle runner.
+Use [run.py](src/run.py) rather than adding another lifecycle runner.
 Start from [the environment example](environments.example.json),
 replace artifact placeholders and register exact infrastructure release commands.
 An example `ready: false` or unowned disposal resource is not runnable setup.
@@ -128,11 +128,11 @@ serial; builds, provisioning and cache resets must not overlap an attempt.
 From the repository root, one selection uses:
 
 ```bash
-python3 fs-bench-quick/run.py prepare \
+python3 fs-bench-quick/src/run.py prepare \
   --environment /private/environment.json --cache /private/prepared \
   --case C01 --machine native --backend sqlite
 
-python3 fs-bench-quick/run.py run \
+python3 fs-bench-quick/src/run.py run \
   --environment /private/environment.json --cache /private/prepared \
   --case C01 --machine native --backend sqlite \
   --output /retained/results/C01/native/sqlite
@@ -229,7 +229,7 @@ execution stopped. Record intent before allocation and exact identity afterwards
 Separate single-row invocations require explicit finalization:
 
 ```bash
-python3 fs-bench-quick/run.py finish \
+python3 fs-bench-quick/src/run.py finish \
   --environment /private/environment.json --cache /private/prepared
 ```
 

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SPEC = importlib.util.spec_from_file_location("quick_cases", Path(__file__).resolve().parents[1] / "cases.py")
+SPEC = importlib.util.spec_from_file_location("quick_cases", Path(__file__).resolve().parents[1] / "src" / "cases.py")
 cases = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(cases)
 

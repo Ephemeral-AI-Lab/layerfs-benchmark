@@ -9,7 +9,7 @@ A small CLI-only filesystem diagnostic suite for LayerFS 2.0. Implementation
 advances one cell at a time through native, Docker, Lima and Apple Container,
 with SQLite then PostgreSQL on each machine. All twelve cells are implemented;
 the complete matrix has 96 rows. The [suite instructions](AGENTS.md) define the
-workloads, measurement and cleanup contract; [cases.py](cases.py) pins exact bodies
+workloads, measurement and cleanup contract; [cases.py](src/cases.py) pins exact bodies
 and provenance.
 
 The [completed diagnostic report](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) reached
@@ -21,6 +21,9 @@ correctness and performance qualification remain unproven.
 Publish only the report using the [result directory convention](../result/README.md).
 Raw receipts, logs and machine-readable working output stay local under this
 suite's ignored `results/` directory.
+
+The suite root holds documentation and the configuration example. Python
+implementation lives in `src/`, and focused checks live in `tests/`.
 
 ## Preparation
 
@@ -46,16 +49,16 @@ the actual data-disposal resource; disconnecting does not delete database data.
 These commands operate a single prepared input and a fresh output directory:
 
 ```bash
-python3 fs-bench-quick/run.py prepare \
+python3 fs-bench-quick/src/run.py prepare \
   --environment /private/environment.json --cache /private/prepared \
   --case C01 --machine native --backend sqlite
 
-python3 fs-bench-quick/run.py run \
+python3 fs-bench-quick/src/run.py run \
   --environment /private/environment.json --cache /private/prepared \
   --case C01 --machine native --backend sqlite \
   --output /retained/results/C01/native/sqlite
 
-python3 fs-bench-quick/report.py --input /retained/results
+python3 fs-bench-quick/src/report.py --input /retained/results
 ```
 
 Verification is off by default. Select `run --verify` prospectively to add one
@@ -79,7 +82,7 @@ Close case resources promptly while retaining reusable campaign infrastructure.
 After separate single-case invocations, finish explicitly:
 
 ```bash
-python3 fs-bench-quick/run.py finish \
+python3 fs-bench-quick/src/run.py finish \
   --environment /private/environment.json --cache /private/prepared
 ```
 

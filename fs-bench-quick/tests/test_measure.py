@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import measure
 from measure import BudgetExceeded, Deadline, assess_cache, run_command
 
