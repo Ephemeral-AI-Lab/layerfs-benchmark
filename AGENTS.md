@@ -5,7 +5,8 @@
 These rules apply to every benchmark. Read the selected benchmark's own
 `AGENTS.md` for its workloads, setup, execution order, budgets and cleanup.
 For `fs-bench-quick`, see [its guide](fs-bench-quick/AGENTS.md).
-Preserve unrelated work; leave `.archive` unread and `fs-bench-pro` frozen.
+Preserve unrelated work. Archived benchmarks and their tests are versioned under
+`.archive/`; leave their contents unread and frozen unless explicitly assigned.
 
 ## LayerFS CLI
 
