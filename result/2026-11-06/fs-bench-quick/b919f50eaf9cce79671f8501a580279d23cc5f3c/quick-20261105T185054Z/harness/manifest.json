@@ -1,0 +1,15 @@
+{
+  "scope": "Final tested implementation; historical per-row source bytes unavailable, see campaign record",
+  "product_source_sha": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+  "files": {
+    "run.py": "af9768bd04690847002a4583736636705576daa71470028da0f9c1cd585836a0",
+    "cases.py": "3036a7cd28e4b4838f58a366bb51c24893b6ecef9048865b87029d7dc3614cea",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "report.py": "53a035f005f0f2a7359d2ed65c27992ace99067d692fc0d3f1313fd406549916",
+    "environments.example.json": "a93599c6785355280144876e7468f9a5a0601fa92c82bd8157840b365adaa1cd",
+    "tests/test_cases.py": "492b87020c268fe22b30c3bb2d3255924f9233dfd9dae4e70b8d62d52afe2cc2",
+    "tests/test_measure.py": "c8d7c8bb200151bec9e36b1b0b519a0ed1629811dbe5246ee21af4abd8633d16",
+    "tests/test_report.py": "572b23c28b0b599cfde60aa9dbf5145c90f635d77f0bc9f09108ebaa1f50de35",
+    "tests/test_run.py": "87cfe9f948e6f523a1de75abe6313aaa067f3c6999db46613c05bd570f1e109d"
+  }
+}

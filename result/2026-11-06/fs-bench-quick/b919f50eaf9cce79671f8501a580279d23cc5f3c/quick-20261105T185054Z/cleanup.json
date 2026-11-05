@@ -1,0 +1,122 @@
+{
+  "available_bytes_delta": 6653116416,
+  "cleanup": "COMPLETE",
+  "resources": [
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "apple-machine",
+      "owned": true,
+      "release_argv": [
+        "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts/macos/layerfs",
+        "machine",
+        "remove",
+        "quick-apple"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "lima-machine",
+      "owned": true,
+      "release_argv": [
+        "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts/macos/layerfs",
+        "machine",
+        "remove",
+        "quick-lima"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "docker-worker-stop",
+      "owned": true,
+      "release_argv": [
+        "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts/macos/layerfs",
+        "machine",
+        "stop",
+        "docker"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "docker-worker-container",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "rm",
+        "43e9a5d06716db202a3feeba5c0a997e730e3b57ccd59a2af3fdb6713c5e19ea"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "docker-worker-data",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "volume",
+        "rm",
+        "lfs-69d5797d-docker-data"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "postgres-stop",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "stop",
+        "-t",
+        "5",
+        "35d9fca7b3042d087fdded0b3d7c9f987082ffddb330ec7fee3f0a87fe6d5350"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "postgres-container",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "rm",
+        "35d9fca7b3042d087fdded0b3d7c9f987082ffddb330ec7fee3f0a87fe6d5350"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "postgres-data",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "volume",
+        "rm",
+        "lfs-quick-20261105t185054z-pg-data"
+      ],
+      "released": true
+    },
+    {
+      "attempted": true,
+      "disposition": "RELEASED",
+      "id": "apple-service-restore",
+      "owned": true,
+      "release_argv": [
+        "container",
+        "system",
+        "stop"
+      ],
+      "released": true
+    }
+  ],
+  "retained_rows": []
+}

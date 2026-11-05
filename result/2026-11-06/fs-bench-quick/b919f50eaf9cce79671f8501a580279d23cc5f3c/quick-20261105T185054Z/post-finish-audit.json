@@ -1,0 +1,91 @@
+{
+  "ordered_rows": 96,
+  "all_execution": "PASS",
+  "all_case_cleanup": "COMPLETE",
+  "final_cleanup": "COMPLETE",
+  "uncertain_rows": 0,
+  "owned_resource_absence_checks": [
+    {
+      "argv": [
+        "docker",
+        "inspect",
+        "43e9a5d06716db202a3feeba5c0a997e730e3b57ccd59a2af3fdb6713c5e19ea"
+      ],
+      "exit": 1,
+      "stdout": "[]\n",
+      "stderr": "error: no such object: 43e9a5d06716db202a3feeba5c0a997e730e3b57ccd59a2af3fdb6713c5e19ea\n",
+      "expected": "absent"
+    },
+    {
+      "argv": [
+        "docker",
+        "volume",
+        "inspect",
+        "lfs-69d5797d-docker-data"
+      ],
+      "exit": 1,
+      "stdout": "[]\n",
+      "stderr": "Error response from daemon: get lfs-69d5797d-docker-data: no such volume\n",
+      "expected": "absent"
+    },
+    {
+      "argv": [
+        "docker",
+        "inspect",
+        "35d9fca7b3042d087fdded0b3d7c9f987082ffddb330ec7fee3f0a87fe6d5350"
+      ],
+      "exit": 1,
+      "stdout": "[]\n",
+      "stderr": "error: no such object: 35d9fca7b3042d087fdded0b3d7c9f987082ffddb330ec7fee3f0a87fe6d5350\n",
+      "expected": "absent"
+    },
+    {
+      "argv": [
+        "docker",
+        "volume",
+        "inspect",
+        "lfs-quick-20261105t185054z-pg-data"
+      ],
+      "exit": 1,
+      "stdout": "[]\n",
+      "stderr": "Error response from daemon: get lfs-quick-20261105t185054z-pg-data: no such volume\n",
+      "expected": "absent"
+    },
+    {
+      "argv": [
+        "limactl",
+        "list",
+        "lfs-69d5797d-quick-lima",
+        "--json"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "time=\"2026-11-06T03:21:58+08:00\" level=warning msg=\"No instance matching lfs-69d5797d-quick-lima found.\"\ntime=\"2026-11-06T03:21:58+08:00\" level=fatal msg=\"unmatched instances\"\n",
+      "expected": "absent"
+    },
+    {
+      "argv": [
+        "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts/macos/layerfs",
+        "store",
+        "list"
+      ],
+      "exit": 0,
+      "stdout": "{\"items\":[]}\n",
+      "stderr": "",
+      "expected": "empty items"
+    },
+    {
+      "argv": [
+        "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts/macos/layerfs",
+        "sandbox",
+        "list"
+      ],
+      "exit": 0,
+      "stdout": "{\"items\":[],\"next_page_pos\":null}\n",
+      "stderr": "",
+      "expected": "empty items"
+    }
+  ],
+  "apple_service": "restored stopped by successful recorded container system stop; not restarted for inspection",
+  "external_activity": "Other sessions created Docker resources during campaign; preserved. Timings are ineligible diagnostics."
+}

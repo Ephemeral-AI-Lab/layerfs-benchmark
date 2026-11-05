@@ -1,0 +1,357 @@
+{
+  "artifacts": {
+    "cli_sha256": "1bc5e8d2b19e76c40d39de979f5624f54b932c1dba7c5d8165cc6eb56f702415",
+    "daemon_sha256": "0d04f652b96cbffb3ba40775a41718ef0abf3612141347f1378cf2df40c9f375",
+    "linux_bundle_sha256": "653cf3780ff8379c5ece5a832e9bec1fe112135afdc420e898fc5dba814b13df",
+    "postgres_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+    "profile": "release",
+    "sandbox_image": "sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e"
+  },
+  "backend": "sqlite",
+  "cache": {
+    "commit": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "apple-container",
+      "phase": "commit",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "exec": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "apple-container",
+      "phase": "exec",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "mount": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "apple-container",
+      "phase": "mount",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    }
+  },
+  "campaign_id": "quick-20261105t185054z",
+  "cell": "C03",
+  "cleanup": "COMPLETE",
+  "cleanup_elapsed_ns": 79361125,
+  "command_wall_ns": null,
+  "command_wall_unavailable_reason": "no validated in-Sandbox monotonic timer registered",
+  "commands": [
+    {
+      "child_cpu_ns": 6949000,
+      "child_maxrss_bytes": 10944512,
+      "elapsed_ns": 8585417,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"kind\":\"sqlite\",\"machine\":\"native\",\"profile\":\"disposable\",\"created\":1793905371236,\"sqlite\":\"3.53.2\",\"projects\":[]}\n",
+      "stdout_bytes": 177,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8906000,
+      "child_maxrss_bytes": 13942784,
+      "elapsed_ns": 10572875,
+      "error": null,
+      "output_truncated": false,
+      "phase": "project_init",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"project\":\"q-quick-20261105t185054z-c03-apple-container-sqlite/p\",\"store\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"name\":\"p\",\"kind\":\"sqlite\",\"machine\":\"native\",\"created\":1793905371262,\"layer\":\"32de8c5757e43cafd88b43f1c69f783d0d3c4c5aeaf6186865ce2cdf5ec0dc92d1\",\"root\":\"bcb4f24ac229101ca3bd68f2db08d69304aa4254401c4cca7067f8f2a7e2872b\"}\n",
+      "stdout_bytes": 351,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7965000,
+      "child_maxrss_bytes": 13139968,
+      "elapsed_ns": 9719875,
+      "error": null,
+      "output_truncated": false,
+      "phase": "branch_fork",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Forked\",\"branch\":\"lane\",\"base\":\"32de8c5757e43cafd88b43f1c69f783d0d3c4c5aeaf6186865ce2cdf5ec0dc92d1\",\"head\":null}\n",
+      "stdout_bytes": 122,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 9376000,
+      "child_maxrss_bytes": 11173888,
+      "elapsed_ns": 33241833,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_push",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"store\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"from\":\"native\",\"to\":\"quick-apple\",\"bytes\":212992,\"heads\":\"805f0cc300fe57365cba2035c34f5cc42e14fa464ae797247e9d567fb8202479\"}\n",
+      "stdout_bytes": 189,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 6900000,
+      "child_maxrss_bytes": 8192000,
+      "elapsed_ns": 59990333,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"project\":\"q-quick-20261105t185054z-c03-apple-container-sqlite/p\",\"machine\":\"quick-apple\",\"created\":1793905371418,\"id\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"platform\":\"linux\",\"runtime\":\"namespaces\",\"image\":\"sha256:feeb1435c2df435a104615228756f28f45dff0b3484eeb628a67979e25806433\",\"backend\":\"namespaces\",\"route\":\"fuse\",\"state\":\"running\"}\n",
+      "stdout_bytes": 416,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 4739000,
+      "child_maxrss_bytes": 7602176,
+      "elapsed_ns": 17207125,
+      "error": null,
+      "output_truncated": false,
+      "phase": "measured_mount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Mounted\",\"path\":\"/layerfs/data/machine/native/run/lfs-69d5797d-q-quick-20261105t185054z-c03-apple-container-sqlite/workspaces/1\",\"workspace\":\"8d8f7ba594aafab791c825d07e260e48c44680fad1e917d1577234f5ef86bd6d\",\"namespace\":1,\"branch\":\"lane\",\"base\":null,\"base_layer\":\"32de8c5757e43cafd88b43f1c69f783d0d3c4c5aeaf6186865ce2cdf5ec0dc92d1\",\"root\":\"bcb4f24ac229101ca3bd68f2db08d69304aa4254401c4cca7067f8f2a7e2872b\",\"sandbox\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"container\":\"lfs-69d5797d-q-quick-20261105t185054z-c03-apple-container-sqlite\",\"image\":\"sha256:feeb1435c2df435a104615228756f28f45dff0b3484eeb628a67979e25806433\",\"platform\":\"linux\",\"runtime\":\"namespaces\",\"name\":\"measured\",\"ws\":\"q-quick-20261105t185054z-c03-apple-container-sqlite:measured\"}\n",
+      "stdout_bytes": 769,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 4842000,
+      "child_maxrss_bytes": 7700480,
+      "elapsed_ns": 409485334,
+      "error": null,
+      "output_truncated": false,
+      "phase": "exec",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"exit:0\",\"exit_code\":0,\"stdout\":\"\",\"stderr\":\"\",\"message\":null,\"truncated\":false}\n",
+      "stdout_bytes": 89,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 5892000,
+      "child_maxrss_bytes": 7585792,
+      "elapsed_ns": 11686459,
+      "error": null,
+      "output_truncated": false,
+      "phase": "commit",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"UpToDate\",\"head\":null,\"root\":\"bcb4f24ac229101ca3bd68f2db08d69304aa4254401c4cca7067f8f2a7e2872b\",\"merged\":null,\"lww\":[],\"lww_truncated\":false}\n",
+      "stdout_bytes": 151,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 5185000,
+      "child_maxrss_bytes": 7569408,
+      "elapsed_ns": 8956917,
+      "error": null,
+      "output_truncated": false,
+      "phase": "unmount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Unmounted\"}\n",
+      "stdout_bytes": 21,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7074000,
+      "child_maxrss_bytes": 8110080,
+      "elapsed_ns": 32129208,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_close",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Closed\",\"sandbox\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\",\"unknown\":[],\"closed\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\"}\n",
+      "stdout_bytes": 158,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 6900000,
+      "child_maxrss_bytes": 8011776,
+      "elapsed_ns": 9992000,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_remove",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"removed\":\"q-quick-20261105t185054z-c03-apple-container-sqlite\"}\n",
+      "stdout_bytes": 66,
+      "timed_out": false,
+      "uncertainty": false
+    }
+  ],
+  "commit": {
+    "head": null,
+    "kind": "UpToDate",
+    "lww": [],
+    "lww_truncated": false,
+    "merged": null,
+    "root": "bcb4f24ac229101ca3bd68f2db08d69304aa4254401c4cca7067f8f2a7e2872b"
+  },
+  "config_sha256": "1fea5b71db3e572703ba0422ca57188a111aabe2db4c92762c0d9a33e56e0b38",
+  "correctness": "UNVERIFIED",
+  "execution": "PASS",
+  "harness_elapsed_ns": 695977917,
+  "harness_sha256": {
+    "cases.py": "cbd9b0c2624380382c5e407c5f741391f94662b0fc5082804f030d9c10ffbd63",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "3d6f9c4c856a2438394b239310a7fd5e51636a446b78282077485b6d22ef084b"
+  },
+  "id": "C03/apple-container/sqlite",
+  "machine": "apple-container",
+  "matrix_index": 22,
+  "output": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-benchmark/fs-bench-quick/results/quick-20261105T185054Z/C03/apple-container/sqlite",
+  "pending": null,
+  "performance": "INELIGIBLE",
+  "performance_invocation_elapsed_ns": 695977917,
+  "performance_operations_elapsed_ns": 610822250,
+  "preparation": "CONSUMED",
+  "prepare_elapsed_ns": 111813833,
+  "prepare_harness_sha256": {
+    "cases.py": "cbd9b0c2624380382c5e407c5f741391f94662b0fc5082804f030d9c10ffbd63",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "3d6f9c4c856a2438394b239310a7fd5e51636a446b78282077485b6d22ef084b"
+  },
+  "sandbox": "q-quick-20261105t185054z-c03-apple-container-sqlite",
+  "sandbox_live": false,
+  "source_sha": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+  "store": "q-quick-20261105t185054z-c03-apple-container-sqlite",
+  "store_live": false,
+  "timings_ns": {
+    "branch_fork": 9719875,
+    "commit": 11686459,
+    "exec": 409485334,
+    "measured_mount": 17207125,
+    "project_init": 10572875,
+    "sandbox_close": 32129208,
+    "sandbox_create": 59990333,
+    "store_create": 8585417,
+    "store_push": 33241833,
+    "store_remove": 9992000,
+    "unmount": 8956917
+  },
+  "uncertain": false,
+  "verification": "SKIPPED",
+  "workload": {
+    "body_sha256": "520773ceacd8c44d633ffd1a40727ceb5d990d63a23259f28af8dd4b96fa204d",
+    "command_sha256": "f5b32c4a764970421c6d7a7363759df0b5dcce3bfdb63a92ebbb1e1f0872f6e2",
+    "repository": "https://github.com/Ephemeral-AI-Lab/layerfs",
+    "setup_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_blob": "f3a65cc9aec02af2d772edd929daa8b2b446638d",
+    "source_commit": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+    "source_definition": "CF.C03 (MK1000), command(C03), VERIFIER.C03",
+    "source_path": "api/node/test/verify/cells/workloads.mjs",
+    "source_verifier_sha256": "f6140622c8ba65c8bd0f7f447457b06ea71b3109c8e6383138172e73628f22a4",
+    "workload_version": "R7-byte-exact-v1"
+  },
+  "workspace": null
+}

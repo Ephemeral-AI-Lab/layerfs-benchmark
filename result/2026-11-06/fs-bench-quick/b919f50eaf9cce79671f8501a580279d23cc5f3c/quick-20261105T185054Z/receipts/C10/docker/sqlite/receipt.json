@@ -1,0 +1,535 @@
+{
+  "artifacts": {
+    "cli_sha256": "1bc5e8d2b19e76c40d39de979f5624f54b932c1dba7c5d8165cc6eb56f702415",
+    "daemon_sha256": "0d04f652b96cbffb3ba40775a41718ef0abf3612141347f1378cf2df40c9f375",
+    "linux_bundle_sha256": "653cf3780ff8379c5ece5a832e9bec1fe112135afdc420e898fc5dba814b13df",
+    "postgres_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+    "profile": "release",
+    "sandbox_image": "sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e"
+  },
+  "backend": "sqlite",
+  "base_fixture": {
+    "commit": {
+      "commit": {
+        "base": "321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e",
+        "branch": null,
+        "displaced": null,
+        "id": "128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376",
+        "logical": 67108864,
+        "lww": [],
+        "lww_truncated": false,
+        "merged_from": null,
+        "message": "Commit Workspace changes",
+        "new_canonical": 39263,
+        "new_metadata": 672,
+        "new_stored": 748,
+        "parent": null,
+        "root": "fc1727b3a2db7ab5e0c34c764d5075321b318176358b3ebb027b8819b5113e08",
+        "second_parent": null,
+        "time": 1793906063606,
+        "via": "exec"
+      },
+      "displaced_head": null,
+      "head": "128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376",
+      "kind": "Committed",
+      "lww": [],
+      "lww_truncated": false,
+      "merged": null
+    },
+    "elapsed_ns": 1267320458,
+    "machine": "docker",
+    "status": "READY"
+  },
+  "cache": {
+    "commit": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "docker",
+      "phase": "commit",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "exec": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "docker",
+      "phase": "exec",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "mount": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "docker",
+      "phase": "mount",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    }
+  },
+  "campaign_id": "quick-20261105t185054z",
+  "cell": "C10",
+  "cleanup": "COMPLETE",
+  "cleanup_elapsed_ns": 386145209,
+  "command_wall_ns": null,
+  "command_wall_unavailable_reason": "no validated in-Sandbox monotonic timer registered",
+  "commands": [
+    {
+      "child_cpu_ns": 7378000,
+      "child_maxrss_bytes": 11091968,
+      "elapsed_ns": 8870167,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"kind\":\"sqlite\",\"machine\":\"native\",\"profile\":\"disposable\",\"created\":1793906062558,\"sqlite\":\"3.53.2\",\"projects\":[]}\n",
+      "stdout_bytes": 168,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8534000,
+      "child_maxrss_bytes": 14024704,
+      "elapsed_ns": 10401834,
+      "error": null,
+      "output_truncated": false,
+      "phase": "project_init",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"project\":\"q-quick-20261105t185054z-c10-docker-sqlite/p\",\"store\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"name\":\"p\",\"kind\":\"sqlite\",\"machine\":\"native\",\"created\":1793906062620,\"layer\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"root\":\"42de2dc51b61c4445f044e324cac6fd169d2a650595aba1d8125835e6827d0d8\"}\n",
+      "stdout_bytes": 333,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8053000,
+      "child_maxrss_bytes": 13058048,
+      "elapsed_ns": 9769500,
+      "error": null,
+      "output_truncated": false,
+      "phase": "branch_fork",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Forked\",\"branch\":\"lane\",\"base\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"head\":null}\n",
+      "stdout_bytes": 122,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 9469000,
+      "child_maxrss_bytes": 11124736,
+      "elapsed_ns": 28752042,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_push",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"store\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"from\":\"native\",\"to\":\"docker\",\"bytes\":212992,\"heads\":\"287d99edcb0264273cc3ad5f9daee0ad90d685dec8e5f6808abcab7b178f9d4e\"}\n",
+      "stdout_bytes": 175,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8138000,
+      "child_maxrss_bytes": 8224768,
+      "elapsed_ns": 298393000,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_sandbox_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"project\":\"q-quick-20261105t185054z-c10-docker-sqlite/p\",\"machine\":\"docker\",\"created\":1793906062791,\"id\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"platform\":\"docker\",\"runtime\":\"docker\",\"image\":\"sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e\",\"backend\":\"docker\",\"route\":\"fuse\",\"state\":\"running\"}\n",
+      "stdout_bytes": 377,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7976000,
+      "child_maxrss_bytes": 8437760,
+      "elapsed_ns": 18232209,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_mount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Mounted\",\"path\":\"/workspaces/1\",\"workspace\":\"13319c2ea02002a874659a6ce34ddc43469e2b15ba99fd54c4422a4fc6af5b0e\",\"namespace\":1,\"branch\":\"lane\",\"base\":null,\"base_layer\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"root\":\"42de2dc51b61c4445f044e324cac6fd169d2a650595aba1d8125835e6827d0d8\",\"sandbox\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"container\":\"lfs-69d5797d-q-quick-20261105t185054z-c10-docker-sqlite\",\"image\":\"sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e\",\"platform\":\"docker\",\"runtime\":\"docker\",\"name\":\"setup\",\"ws\":\"q-quick-20261105t185054z-c10-docker-sqlite:setup\"}\n",
+      "stdout_bytes": 636,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 5073000,
+      "child_maxrss_bytes": 7815168,
+      "elapsed_ns": 173607625,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_exec",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"exit:0\",\"exit_code\":0,\"stdout\":\"\",\"stderr\":\"\",\"message\":null,\"truncated\":false}\n",
+      "stdout_bytes": 89,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7340000,
+      "child_maxrss_bytes": 8339456,
+      "elapsed_ns": 222534500,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_commit",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Committed\",\"head\":\"128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376\",\"commit\":{\"id\":\"128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376\",\"branch\":null,\"parent\":null,\"second_parent\":null,\"base\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"root\":\"fc1727b3a2db7ab5e0c34c764d5075321b318176358b3ebb027b8819b5113e08\",\"via\":\"exec\",\"message\":\"Commit Workspace changes\",\"merged_from\":null,\"time\":1793906063606,\"logical\":67108864,\"new_canonical\":39263,\"new_stored\":748,\"new_metadata\":672,\"displaced\":null,\"lww\":[],\"lww_truncated\":false},\"displaced_head\":null,\"merged\":null,\"lww\":[],\"lww_truncated\":false}\n",
+      "stdout_bytes": 663,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7865000,
+      "child_maxrss_bytes": 8323072,
+      "elapsed_ns": 18830917,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_unmount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Unmounted\"}\n",
+      "stdout_bytes": 21,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7122000,
+      "child_maxrss_bytes": 8470528,
+      "elapsed_ns": 214139292,
+      "error": null,
+      "output_truncated": false,
+      "phase": "setup_sandbox_close",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Closed\",\"sandbox\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"unknown\":[],\"closed\":\"q-quick-20261105t185054z-c10-docker-sqlite\"}\n",
+      "stdout_bytes": 140,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8317000,
+      "child_maxrss_bytes": 8175616,
+      "elapsed_ns": 267530708,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"project\":\"q-quick-20261105t185054z-c10-docker-sqlite/p\",\"machine\":\"docker\",\"created\":1793906064182,\"id\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"platform\":\"docker\",\"runtime\":\"docker\",\"image\":\"sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e\",\"backend\":\"docker\",\"route\":\"fuse\",\"state\":\"running\"}\n",
+      "stdout_bytes": 377,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7937000,
+      "child_maxrss_bytes": 8470528,
+      "elapsed_ns": 17677250,
+      "error": null,
+      "output_truncated": false,
+      "phase": "measured_mount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Mounted\",\"path\":\"/workspaces/1\",\"workspace\":\"92c2e552db0e0dfdfc7347f484a74f0d85197f53bb3263dc14be473cc1d63e6f\",\"namespace\":1,\"branch\":\"lane\",\"base\":\"128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376\",\"base_layer\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"root\":\"fc1727b3a2db7ab5e0c34c764d5075321b318176358b3ebb027b8819b5113e08\",\"sandbox\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"container\":\"lfs-69d5797d-q-quick-20261105t185054z-c10-docker-sqlite\",\"image\":\"sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e\",\"platform\":\"docker\",\"runtime\":\"docker\",\"name\":\"measured\",\"ws\":\"q-quick-20261105t185054z-c10-docker-sqlite:measured\"}\n",
+      "stdout_bytes": 706,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 4706000,
+      "child_maxrss_bytes": 7766016,
+      "elapsed_ns": 184331125,
+      "error": null,
+      "output_truncated": false,
+      "phase": "exec",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"exit:0\",\"exit_code\":0,\"stdout\":\"\",\"stderr\":\"\",\"message\":null,\"truncated\":false}\n",
+      "stdout_bytes": 89,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 6374000,
+      "child_maxrss_bytes": 8339456,
+      "elapsed_ns": 52835042,
+      "error": null,
+      "output_truncated": false,
+      "phase": "commit",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Committed\",\"head\":\"122b82dbb9c6fcd83a8d039145c28e45414a3e89dcf96e656b5c3c7928c041e541\",\"commit\":{\"id\":\"122b82dbb9c6fcd83a8d039145c28e45414a3e89dcf96e656b5c3c7928c041e541\",\"branch\":null,\"parent\":\"128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376\",\"second_parent\":null,\"base\":\"321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e\",\"root\":\"48133256ce8b21f5d5e03774205a2e2c98e31fa17b219776c69abbf62bb12e8a\",\"via\":\"exec\",\"message\":\"Commit Workspace changes\",\"merged_from\":null,\"time\":1793906064882,\"logical\":134217728,\"new_canonical\":487,\"new_stored\":300,\"new_metadata\":300,\"displaced\":null,\"lww\":[],\"lww_truncated\":false},\"displaced_head\":null,\"merged\":null,\"lww\":[],\"lww_truncated\":false}\n",
+      "stdout_bytes": 726,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 6556000,
+      "child_maxrss_bytes": 8306688,
+      "elapsed_ns": 16579208,
+      "error": null,
+      "output_truncated": false,
+      "phase": "unmount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Unmounted\"}\n",
+      "stdout_bytes": 21,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7379000,
+      "child_maxrss_bytes": 8470528,
+      "elapsed_ns": 224020917,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_close",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Closed\",\"sandbox\":\"q-quick-20261105t185054z-c10-docker-sqlite\",\"unknown\":[],\"closed\":\"q-quick-20261105t185054z-c10-docker-sqlite\"}\n",
+      "stdout_bytes": 140,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8883000,
+      "child_maxrss_bytes": 8060928,
+      "elapsed_ns": 40222500,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_remove",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"removed\":\"q-quick-20261105t185054z-c10-docker-sqlite\"}\n",
+      "stdout_bytes": 57,
+      "timed_out": false,
+      "uncertainty": false
+    }
+  ],
+  "commit": {
+    "commit": {
+      "base": "321c31c220415e03a212e0bc5c19e7c006b1446fc5ec86c0ec68855ab532186a1e",
+      "branch": null,
+      "displaced": null,
+      "id": "122b82dbb9c6fcd83a8d039145c28e45414a3e89dcf96e656b5c3c7928c041e541",
+      "logical": 134217728,
+      "lww": [],
+      "lww_truncated": false,
+      "merged_from": null,
+      "message": "Commit Workspace changes",
+      "new_canonical": 487,
+      "new_metadata": 300,
+      "new_stored": 300,
+      "parent": "128af9c6afe8b468043209a781c2acf5ca56696e0add1219aedc380c702c77d376",
+      "root": "48133256ce8b21f5d5e03774205a2e2c98e31fa17b219776c69abbf62bb12e8a",
+      "second_parent": null,
+      "time": 1793906064882,
+      "via": "exec"
+    },
+    "displaced_head": null,
+    "head": "122b82dbb9c6fcd83a8d039145c28e45414a3e89dcf96e656b5c3c7928c041e541",
+    "kind": "Committed",
+    "lww": [],
+    "lww_truncated": false,
+    "merged": null
+  },
+  "config_sha256": "1fea5b71db3e572703ba0422ca57188a111aabe2db4c92762c0d9a33e56e0b38",
+  "correctness": "UNVERIFIED",
+  "execution": "PASS",
+  "harness_elapsed_ns": 1251752417,
+  "harness_sha256": {
+    "cases.py": "9483c2532c8cdce108fe53752b907a6121a55a2e4d84f40093889d5b25571136",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "e053f3f7fbd8bc5010822d6fe0879adf35db00a1bf4f264990b6727fa71e1cc1"
+  },
+  "id": "C10/docker/sqlite",
+  "machine": "docker",
+  "matrix_index": 74,
+  "output": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-benchmark/fs-bench-quick/results/quick-20261105T185054Z/C10/docker/sqlite",
+  "pending": null,
+  "performance": "INELIGIBLE",
+  "performance_invocation_elapsed_ns": 1251752417,
+  "performance_operations_elapsed_ns": 846245917,
+  "preparation": "CONSUMED",
+  "prepare_elapsed_ns": 1502742459,
+  "prepare_harness_sha256": {
+    "cases.py": "9483c2532c8cdce108fe53752b907a6121a55a2e4d84f40093889d5b25571136",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "e053f3f7fbd8bc5010822d6fe0879adf35db00a1bf4f264990b6727fa71e1cc1"
+  },
+  "sandbox": "q-quick-20261105t185054z-c10-docker-sqlite",
+  "sandbox_live": false,
+  "source_sha": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+  "store": "q-quick-20261105t185054z-c10-docker-sqlite",
+  "store_live": false,
+  "timings_ns": {
+    "branch_fork": 9769500,
+    "commit": 52835042,
+    "exec": 184331125,
+    "measured_mount": 17677250,
+    "project_init": 10401834,
+    "sandbox_close": 224020917,
+    "sandbox_create": 267530708,
+    "setup_commit": 222534500,
+    "setup_exec": 173607625,
+    "setup_mount": 18232209,
+    "setup_sandbox_close": 214139292,
+    "setup_sandbox_create": 298393000,
+    "setup_unmount": 18830917,
+    "store_create": 8870167,
+    "store_push": 28752042,
+    "store_remove": 40222500,
+    "unmount": 16579208
+  },
+  "uncertain": false,
+  "verification": "SKIPPED",
+  "workload": {
+    "body_sha256": "60f896e83f6fa71e1713ddd4ffd7e8c14d1ecf17bddb5f191f0ea4f2bdebabed",
+    "command_sha256": "a4c2ff11f48eb28acd3cb6c1881a5376261e34f1e74c73887008a8885d5ed84f",
+    "repository": "https://github.com/Ephemeral-AI-Lab/layerfs",
+    "setup_command_sha256": "d6b326be0d11aa8b375a561c8bbad779165d5b0e0b1e9df26d6b782c3459bc73",
+    "setup_sha256": "68c36eedeb7daf07516db93ca0ac0263bf3859d42549f7d490b1f074475ffc9d",
+    "source_blob": "f3a65cc9aec02af2d772edd929daa8b2b446638d",
+    "source_commit": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+    "source_definition": "CF.C10 (copy + DD setup), command(C10), VERIFIER.C10",
+    "source_path": "api/node/test/verify/cells/workloads.mjs",
+    "source_verifier_sha256": "3e0bd7b2461821ce354727e940cc7f32e881a1a9cfb31e25a4ee764ab2264305",
+    "workload_version": "R7-byte-exact-v1"
+  },
+  "workspace": null
+}

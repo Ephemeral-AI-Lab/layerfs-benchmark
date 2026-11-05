@@ -1,0 +1,46 @@
+[
+  {
+    "argv": [
+      "uvx",
+      "--from",
+      "ruff==0.17.2",
+      "ruff",
+      "format",
+      "--config",
+      "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/ruff.toml",
+      "fs-bench-quick/cases.py",
+      "fs-bench-quick/measure.py",
+      "fs-bench-quick/report.py",
+      "fs-bench-quick/run.py",
+      "fs-bench-quick/tests/test_cases.py",
+      "fs-bench-quick/tests/test_measure.py",
+      "fs-bench-quick/tests/test_report.py",
+      "fs-bench-quick/tests/test_run.py"
+    ],
+    "exit": 0,
+    "stdout": "1 file reformatted, 7 files left unchanged\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "uvx",
+      "--from",
+      "ruff==0.17.2",
+      "ruff",
+      "check",
+      "--config",
+      "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/ruff.toml",
+      "fs-bench-quick/cases.py",
+      "fs-bench-quick/measure.py",
+      "fs-bench-quick/report.py",
+      "fs-bench-quick/run.py",
+      "fs-bench-quick/tests/test_cases.py",
+      "fs-bench-quick/tests/test_measure.py",
+      "fs-bench-quick/tests/test_report.py",
+      "fs-bench-quick/tests/test_run.py"
+    ],
+    "exit": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  }
+]

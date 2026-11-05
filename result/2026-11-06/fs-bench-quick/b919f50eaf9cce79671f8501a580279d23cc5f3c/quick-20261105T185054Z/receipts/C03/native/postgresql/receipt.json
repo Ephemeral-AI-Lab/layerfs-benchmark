@@ -1,0 +1,341 @@
+{
+  "artifacts": {
+    "cli_sha256": "1bc5e8d2b19e76c40d39de979f5624f54b932c1dba7c5d8165cc6eb56f702415",
+    "daemon_sha256": "0d04f652b96cbffb3ba40775a41718ef0abf3612141347f1378cf2df40c9f375",
+    "linux_bundle_sha256": "653cf3780ff8379c5ece5a832e9bec1fe112135afdc420e898fc5dba814b13df",
+    "postgres_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+    "profile": "release",
+    "sandbox_image": "sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e"
+  },
+  "backend": "postgresql",
+  "cache": {
+    "commit": {
+      "backend": "postgresql",
+      "configured_evidence": {},
+      "machine": "native",
+      "phase": "commit",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "postgresql-shared-buffers",
+        "postgresql-server-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "exec": {
+      "backend": "postgresql",
+      "configured_evidence": {},
+      "machine": "native",
+      "phase": "exec",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "postgresql-shared-buffers",
+        "postgresql-server-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "mount": {
+      "backend": "postgresql",
+      "configured_evidence": {},
+      "machine": "native",
+      "phase": "mount",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "postgresql-shared-buffers",
+        "postgresql-server-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    }
+  },
+  "campaign_id": "quick-20261105t185054z",
+  "cell": "C03",
+  "cleanup": "COMPLETE",
+  "cleanup_elapsed_ns": 103305834,
+  "command_wall_ns": null,
+  "command_wall_unavailable_reason": "no validated in-Sandbox monotonic timer registered",
+  "commands": [
+    {
+      "child_cpu_ns": 9948000,
+      "child_maxrss_bytes": 12959744,
+      "elapsed_ns": 71963291,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_connect",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"kind\":\"postgresql\",\"schema\":\"layerfs\",\"synchronous_commit\":\"off\",\"projects\":[]}\n",
+      "stdout_bytes": 138,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 13066000,
+      "child_maxrss_bytes": 12304384,
+      "elapsed_ns": 54729709,
+      "error": null,
+      "output_truncated": false,
+      "phase": "project_init",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"project\":\"q-quick-20261105t185054z-c03-native-postgresql/p\",\"store\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"name\":\"p\",\"kind\":\"postgresql\",\"machine\":\"native\",\"created\":1793905362629,\"layer\":\"321b14f1415132a759f2e0c10a1d9ac32a3f1ef2b57faf67fca87ef6025ebc6f79\",\"root\":\"8589ba017eae8bdb8b5f6b85c3dcc93235547cd0c7785eef82476e517ed14c9c\"}\n",
+      "stdout_bytes": 345,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 11099000,
+      "child_maxrss_bytes": 13090816,
+      "elapsed_ns": 61283334,
+      "error": null,
+      "output_truncated": false,
+      "phase": "branch_fork",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Forked\",\"branch\":\"lane\",\"base\":\"321b14f1415132a759f2e0c10a1d9ac32a3f1ef2b57faf67fca87ef6025ebc6f79\",\"head\":null}\n",
+      "stdout_bytes": 122,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 14890000,
+      "child_maxrss_bytes": 13615104,
+      "elapsed_ns": 76025667,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"project\":\"q-quick-20261105t185054z-c03-native-postgresql/p\",\"machine\":\"native\",\"created\":1793905362789,\"backend\":\"native\",\"route\":\"nfs\",\"id\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"platform\":\"mac\",\"runtime\":\"native\",\"image\":\"local\",\"state\":\"running\"}\n",
+      "stdout_bytes": 319,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 12594000,
+      "child_maxrss_bytes": 13680640,
+      "elapsed_ns": 71679000,
+      "error": null,
+      "output_truncated": false,
+      "phase": "measured_mount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Mounted\",\"path\":\"/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/home/machine/native/run/lfs-69d5797d-q-quick-20261105t185054z-c03-native-postgresql/workspaces/1\",\"workspace\":\"42a7d06ed84f4b247ca280449e905ee5d623fe2e2911ec5d49c784071c09bc29\",\"namespace\":1,\"branch\":\"lane\",\"base\":null,\"base_layer\":\"321b14f1415132a759f2e0c10a1d9ac32a3f1ef2b57faf67fca87ef6025ebc6f79\",\"root\":\"8589ba017eae8bdb8b5f6b85c3dcc93235547cd0c7785eef82476e517ed14c9c\",\"sandbox\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"container\":\"lfs-69d5797d-q-quick-20261105t185054z-c03-native-postgresql\",\"image\":\"local\",\"platform\":\"mac\",\"runtime\":\"native\",\"name\":\"measured\",\"ws\":\"q-quick-20261105t185054z-c03-native-postgresql:measured\"}\n",
+      "stdout_bytes": 728,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 323791000,
+      "child_maxrss_bytes": 13500416,
+      "elapsed_ns": 962564458,
+      "error": null,
+      "output_truncated": false,
+      "phase": "exec",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"exit:0\",\"exit_code\":0,\"stdout\":\"\",\"stderr\":\"\",\"message\":null,\"truncated\":false}\n",
+      "stdout_bytes": 89,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 11089000,
+      "child_maxrss_bytes": 13549568,
+      "elapsed_ns": 111451000,
+      "error": null,
+      "output_truncated": false,
+      "phase": "commit",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"UpToDate\",\"head\":null,\"root\":\"8589ba017eae8bdb8b5f6b85c3dcc93235547cd0c7785eef82476e517ed14c9c\",\"merged\":null,\"lww\":[],\"lww_truncated\":false}\n",
+      "stdout_bytes": 151,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 12506000,
+      "child_maxrss_bytes": 13582336,
+      "elapsed_ns": 44717916,
+      "error": null,
+      "output_truncated": false,
+      "phase": "unmount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Unmounted\"}\n",
+      "stdout_bytes": 21,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 24125000,
+      "child_maxrss_bytes": 13680640,
+      "elapsed_ns": 69569334,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_close",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Closed\",\"sandbox\":\"q-quick-20261105t185054z-c03-native-postgresql\",\"unknown\":[],\"closed\":\"q-quick-20261105t185054z-c03-native-postgresql\"}\n",
+      "stdout_bytes": 148,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 4230000,
+      "child_maxrss_bytes": 7290880,
+      "elapsed_ns": 5687584,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_disconnect",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"disconnected\":\"q-quick-20261105t185054z-c03-native-postgresql\"}\n",
+      "stdout_bytes": 66,
+      "timed_out": false,
+      "uncertainty": false
+    }
+  ],
+  "commit": {
+    "head": null,
+    "kind": "UpToDate",
+    "lww": [],
+    "lww_truncated": false,
+    "merged": null,
+    "root": "8589ba017eae8bdb8b5f6b85c3dcc93235547cd0c7785eef82476e517ed14c9c"
+  },
+  "config_sha256": "1fea5b71db3e572703ba0422ca57188a111aabe2db4c92762c0d9a33e56e0b38",
+  "correctness": "UNVERIFIED",
+  "database_allocation": "postgresql://bench@127.0.0.1:54688/q185054_c03_native",
+  "execution": "PASS",
+  "harness_elapsed_ns": 1447034917,
+  "harness_sha256": {
+    "cases.py": "cbd9b0c2624380382c5e407c5f741391f94662b0fc5082804f030d9c10ffbd63",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "3d6f9c4c856a2438394b239310a7fd5e51636a446b78282077485b6d22ef084b"
+  },
+  "id": "C03/native/postgresql",
+  "machine": "native",
+  "matrix_index": 17,
+  "output": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-benchmark/fs-bench-quick/results/quick-20261105T185054Z/C03/native/postgresql",
+  "pending": null,
+  "performance": "INELIGIBLE",
+  "performance_invocation_elapsed_ns": 1447034917,
+  "performance_operations_elapsed_ns": 1339322500,
+  "postgresql_data": "RELEASED",
+  "preparation": "CONSUMED",
+  "prepare_elapsed_ns": 221676291,
+  "prepare_harness_sha256": {
+    "cases.py": "cbd9b0c2624380382c5e407c5f741391f94662b0fc5082804f030d9c10ffbd63",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "3d6f9c4c856a2438394b239310a7fd5e51636a446b78282077485b6d22ef084b"
+  },
+  "sandbox": "q-quick-20261105t185054z-c03-native-postgresql",
+  "sandbox_live": false,
+  "source_sha": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+  "store": "q-quick-20261105t185054z-c03-native-postgresql",
+  "store_live": false,
+  "timings_ns": {
+    "branch_fork": 61283334,
+    "commit": 111451000,
+    "exec": 962564458,
+    "measured_mount": 71679000,
+    "project_init": 54729709,
+    "sandbox_close": 69569334,
+    "sandbox_create": 76025667,
+    "store_connect": 71963291,
+    "store_disconnect": 5687584,
+    "unmount": 44717916
+  },
+  "uncertain": false,
+  "verification": "SKIPPED",
+  "workload": {
+    "body_sha256": "520773ceacd8c44d633ffd1a40727ceb5d990d63a23259f28af8dd4b96fa204d",
+    "command_sha256": "f5b32c4a764970421c6d7a7363759df0b5dcce3bfdb63a92ebbb1e1f0872f6e2",
+    "repository": "https://github.com/Ephemeral-AI-Lab/layerfs",
+    "setup_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_blob": "f3a65cc9aec02af2d772edd929daa8b2b446638d",
+    "source_commit": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+    "source_definition": "CF.C03 (MK1000), command(C03), VERIFIER.C03",
+    "source_path": "api/node/test/verify/cells/workloads.mjs",
+    "source_verifier_sha256": "f6140622c8ba65c8bd0f7f447457b06ea71b3109c8e6383138172e73628f22a4",
+    "workload_version": "R7-byte-exact-v1"
+  },
+  "workspace": null
+}

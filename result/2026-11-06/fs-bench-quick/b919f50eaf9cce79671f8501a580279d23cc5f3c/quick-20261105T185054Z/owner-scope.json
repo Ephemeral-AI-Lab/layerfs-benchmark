@@ -1,0 +1,11 @@
+{
+  "confirmed_at_local_date": "2026-11-06",
+  "terminal_requires": {
+    "execution_pass_rows": 96,
+    "final_cleanup": "COMPLETE"
+  },
+  "verification_default": "SKIPPED",
+  "performance_eligibility": "INELIGIBLE",
+  "product_cache_control_required": false,
+  "owner_text": "Finish the CLI execution/cleanup suite; report timings as ineligible diagnostics"
+}

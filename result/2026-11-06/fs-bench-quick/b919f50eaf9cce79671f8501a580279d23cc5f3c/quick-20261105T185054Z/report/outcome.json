@@ -1,0 +1,13 @@
+{
+  "diagnostic_terminal": "PASS",
+  "execution_and_case_cleanup_pass_rows": 96,
+  "registered_rows": 96,
+  "final_cleanup": "COMPLETE",
+  "scope": "CLI execution and cleanup only; timings are ineligible diagnostics",
+  "verification": {
+    "SKIPPED": 96
+  },
+  "performance": {
+    "INELIGIBLE": 96
+  }
+}

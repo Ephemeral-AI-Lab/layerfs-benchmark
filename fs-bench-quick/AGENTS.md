@@ -178,6 +178,11 @@ cache releases through the selected worktree's cleanup tools. Record protected
 exceptions and observed absence/space recovery; do not claim allocation estimates
 as physical recovered bytes.
 
+Publish explicitly selected reviewed results using the repository's
+[result directory convention](../result/README.md): completion date, benchmark,
+full LayerFS source SHA and unique campaign ID. Keep product and harness commits
+separate. Do not publish private configuration, credential files or runtime data.
+
 Execution, content verification, performance eligibility, case cleanup and final
 infrastructure cleanup are distinct outcomes. Cleanup FAIL/INCOMPLETE prevents
 overall success. The completed owner-selected diagnostic campaign required 96

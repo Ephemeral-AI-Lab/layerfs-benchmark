@@ -1,0 +1,95 @@
+{
+  "finished_utc": "2026-11-05T19:24:43.162410+00:00",
+  "before": {
+    "at_utc": "2026-11-05T19:24:42.760805+00:00",
+    "filesystem_path": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs",
+    "free_bytes": 333922459648,
+    "free_GB": 333.922459648,
+    "free_GiB": 310.9895248413086
+  },
+  "after": {
+    "at_utc": "2026-11-05T19:24:43.162375+00:00",
+    "filesystem_path": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs",
+    "free_bytes": 333922439168,
+    "free_GB": 333.922439168,
+    "free_GiB": 310.98950576782227
+  },
+  "outcome": "attempted",
+  "net_free_bytes_change": -20480,
+  "results": [
+    {
+      "state": "removed",
+      "action": {
+        "owner": "fs-bench-quick",
+        "reason": "fs-bench-quick diagnostic campaign complete; all owned execution resources released; retain pinned binaries and evidence",
+        "released": true,
+        "kind": "docker-volume",
+        "name": "lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-target",
+        "identity": {
+          "CreatedAt": "2026-11-05T18:49:43Z",
+          "Driver": "local",
+          "Labels": {
+            "layerfs.dev.role": "linux_target_volume",
+            "layerfs.dev.worktree": "layerfs-fs-bench-quick-bfd5bb7481f3"
+          },
+          "Mountpoint": "/var/lib/docker/volumes/lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-target/_data",
+          "Name": "lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-target",
+          "Options": null,
+          "Scope": "local"
+        }
+      },
+      "recovery": {},
+      "at_utc": "2026-11-05T19:24:42.931757+00:00"
+    },
+    {
+      "state": "removed",
+      "action": {
+        "owner": "fs-bench-quick",
+        "reason": "fs-bench-quick diagnostic campaign complete; all owned execution resources released; retain pinned binaries and evidence",
+        "released": true,
+        "kind": "docker-volume",
+        "name": "lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-cargo",
+        "identity": {
+          "CreatedAt": "2026-11-05T18:49:43Z",
+          "Driver": "local",
+          "Labels": {
+            "layerfs.dev.role": "linux_cargo_volume",
+            "layerfs.dev.worktree": "layerfs-fs-bench-quick-bfd5bb7481f3"
+          },
+          "Mountpoint": "/var/lib/docker/volumes/lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-cargo/_data",
+          "Name": "lfs-dev-layerfs-fs-bench-quick-bfd5bb7481f3-cargo",
+          "Options": null,
+          "Scope": "local"
+        }
+      },
+      "recovery": {},
+      "at_utc": "2026-11-05T19:24:43.161719+00:00"
+    }
+  ],
+  "protected_presence": {
+    "/Users/yifanxu/.cache/layerfs-worktrees/layerfs-fs-bench-quick-bfd5bb7481f3": true,
+    "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/artifacts": true,
+    "/Users/yifanxu/.cache/fs-bench-quick/quick-20261105T185054Z/xdg": true,
+    "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-benchmark/fs-bench-quick/results/quick-20261105T185054Z": true
+  },
+  "lost_pins": [],
+  "not_attempted": [],
+  "uncertain_actions": [],
+  "interrupted": false,
+  "blocked_at_plan": [
+    {
+      "selection": {
+        "owner": "fs-bench-quick",
+        "reason": "fs-bench-quick diagnostic campaign complete; all owned execution resources released; retain pinned binaries and evidence",
+        "released": true,
+        "kind": "cargo-cache",
+        "path": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/target/release",
+        "target_root": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/target"
+      },
+      "reason": "PID 38884 owns an open file or cwd in /Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/target/release/deps: /Users/yifanxu/Ephemeral-AI-Lab/layerfs-fs-bench-quick/target/release/deps"
+    }
+  ],
+  "note": "Net change includes concurrent I/O; allocation estimates are not physical recovery. Keep recovery refs/objects and manifests. No product build, test, Store call, global prune or measurement scheduling is performed. Only explicitly selected retired daemons may be stopped; container actions retain their mounted data.",
+  "reclaim_target_bytes": 0,
+  "reclaim_target_met": true
+}

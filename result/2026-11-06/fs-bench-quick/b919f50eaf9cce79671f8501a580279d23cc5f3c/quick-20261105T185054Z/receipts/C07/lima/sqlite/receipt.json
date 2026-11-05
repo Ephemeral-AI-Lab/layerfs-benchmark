@@ -1,0 +1,376 @@
+{
+  "artifacts": {
+    "cli_sha256": "1bc5e8d2b19e76c40d39de979f5624f54b932c1dba7c5d8165cc6eb56f702415",
+    "daemon_sha256": "0d04f652b96cbffb3ba40775a41718ef0abf3612141347f1378cf2df40c9f375",
+    "linux_bundle_sha256": "653cf3780ff8379c5ece5a832e9bec1fe112135afdc420e898fc5dba814b13df",
+    "postgres_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652",
+    "profile": "release",
+    "sandbox_image": "sha256:66aeb6bbf7fc825686a0e6d8c8486d90c99d03ce81f854008f179a23bdf4097e"
+  },
+  "backend": "sqlite",
+  "cache": {
+    "commit": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "lima",
+      "phase": "commit",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "exec": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "lima",
+      "phase": "exec",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    },
+    "mount": {
+      "backend": "sqlite",
+      "configured_evidence": {},
+      "machine": "lima",
+      "phase": "mount",
+      "reasons": [
+        "No implemented, demonstrated owned cold-cache enforcement and residency protocol for this route/phase.",
+        "Fresh CLI process/mount, distinct database and copied fixture do not prove coldness."
+      ],
+      "required_domains": [
+        "layerfs-daemon-worker",
+        "filesystem-metadata",
+        "host-page-cache",
+        "guest-page-cache"
+      ],
+      "status": "INELIGIBLE"
+    }
+  },
+  "campaign_id": "quick-20261105t185054z",
+  "cell": "C07",
+  "cleanup": "COMPLETE",
+  "cleanup_elapsed_ns": 213699250,
+  "command_wall_ns": null,
+  "command_wall_unavailable_reason": "no validated in-Sandbox monotonic timer registered",
+  "commands": [
+    {
+      "child_cpu_ns": 8341000,
+      "child_maxrss_bytes": 10944512,
+      "elapsed_ns": 10714625,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"kind\":\"sqlite\",\"machine\":\"native\",\"profile\":\"disposable\",\"created\":1793905738528,\"sqlite\":\"3.53.2\",\"projects\":[]}\n",
+      "stdout_bytes": 166,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 11902000,
+      "child_maxrss_bytes": 14139392,
+      "elapsed_ns": 14282709,
+      "error": null,
+      "output_truncated": false,
+      "phase": "project_init",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"project\":\"q-quick-20261105t185054z-c07-lima-sqlite/p\",\"store\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"name\":\"p\",\"kind\":\"sqlite\",\"machine\":\"native\",\"created\":1793905738584,\"layer\":\"32b9b1504779823b5946923a204eb079d6a3f7b166c47a795491b2914cbe394e2b\",\"root\":\"c80cb4ddbf71793427e279916c4e2712be734950fac7071e88b8b012292ea657\"}\n",
+      "stdout_bytes": 329,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 9978000,
+      "child_maxrss_bytes": 13189120,
+      "elapsed_ns": 12284334,
+      "error": null,
+      "output_truncated": false,
+      "phase": "branch_fork",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Forked\",\"branch\":\"lane\",\"base\":\"32b9b1504779823b5946923a204eb079d6a3f7b166c47a795491b2914cbe394e2b\",\"head\":null}\n",
+      "stdout_bytes": 122,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 12185000,
+      "child_maxrss_bytes": 11583488,
+      "elapsed_ns": 20804125,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_push",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"store\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"from\":\"native\",\"to\":\"quick-lima\",\"bytes\":212992,\"heads\":\"08d9abdc2fa0787fa32cddab806219ecb3e25da10a57a4a4a6d6773b1439d7cc\"}\n",
+      "stdout_bytes": 177,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 43698000,
+      "child_maxrss_bytes": 55787520,
+      "elapsed_ns": 717245291,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_create",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"name\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"project\":\"q-quick-20261105t185054z-c07-lima-sqlite/p\",\"machine\":\"quick-lima\",\"created\":1793905738810,\"id\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"platform\":\"linux\",\"runtime\":\"namespaces\",\"image\":\"sha256:feeb1435c2df435a104615228756f28f45dff0b3484eeb628a67979e25806433\",\"backend\":\"namespaces\",\"route\":\"fuse\",\"state\":\"running\"}\n",
+      "stdout_bytes": 382,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8281000,
+      "child_maxrss_bytes": 8470528,
+      "elapsed_ns": 16365667,
+      "error": null,
+      "output_truncated": false,
+      "phase": "measured_mount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Mounted\",\"path\":\"/layerfs/data/machine/native/run/lfs-69d5797d-q-quick-20261105t185054z-c07-lima-sqlite/workspaces/1\",\"workspace\":\"1b07dddd610bf176b53f6d127af638c7c1687c0ac670244311c2f74795274378\",\"namespace\":1,\"branch\":\"lane\",\"base\":null,\"base_layer\":\"32b9b1504779823b5946923a204eb079d6a3f7b166c47a795491b2914cbe394e2b\",\"root\":\"c80cb4ddbf71793427e279916c4e2712be734950fac7071e88b8b012292ea657\",\"sandbox\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"container\":\"lfs-69d5797d-q-quick-20261105t185054z-c07-lima-sqlite\",\"image\":\"sha256:feeb1435c2df435a104615228756f28f45dff0b3484eeb628a67979e25806433\",\"platform\":\"linux\",\"runtime\":\"namespaces\",\"name\":\"measured\",\"ws\":\"q-quick-20261105t185054z-c07-lima-sqlite:measured\"}\n",
+      "stdout_bytes": 725,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 5186000,
+      "child_maxrss_bytes": 7716864,
+      "elapsed_ns": 294932333,
+      "error": null,
+      "output_truncated": false,
+      "phase": "exec",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"exit:0\",\"exit_code\":0,\"stdout\":\"\",\"stderr\":\"\",\"message\":null,\"truncated\":false}\n",
+      "stdout_bytes": 89,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7362000,
+      "child_maxrss_bytes": 8388608,
+      "elapsed_ns": 457375583,
+      "error": null,
+      "output_truncated": false,
+      "phase": "commit",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Committed\",\"head\":\"12af5a05e3149f7d09548e09fe1abf40080505758b5fa20af909e70a8ecd93c943\",\"commit\":{\"id\":\"12af5a05e3149f7d09548e09fe1abf40080505758b5fa20af909e70a8ecd93c943\",\"branch\":null,\"parent\":null,\"second_parent\":null,\"base\":\"32b9b1504779823b5946923a204eb079d6a3f7b166c47a795491b2914cbe394e2b\",\"root\":\"9ef9ceb7efc94d7c5485d8c1a4490977de401a9df9246d246e30d0af169741b2\",\"via\":\"exec\",\"message\":\"Commit Workspace changes\",\"merged_from\":null,\"time\":1793905740452,\"logical\":134217728,\"new_canonical\":39358,\"new_stored\":832,\"new_metadata\":756,\"displaced\":null,\"lww\":[],\"lww_truncated\":false},\"displaced_head\":null,\"merged\":null,\"lww\":[],\"lww_truncated\":false}\n",
+      "stdout_bytes": 664,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 7879000,
+      "child_maxrss_bytes": 8355840,
+      "elapsed_ns": 22960042,
+      "error": null,
+      "output_truncated": false,
+      "phase": "unmount",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Unmounted\"}\n",
+      "stdout_bytes": 21,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 10578000,
+      "child_maxrss_bytes": 8634368,
+      "elapsed_ns": 115302458,
+      "error": null,
+      "output_truncated": false,
+      "phase": "sandbox_close",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"kind\":\"Closed\",\"sandbox\":\"q-quick-20261105t185054z-c07-lima-sqlite\",\"unknown\":[],\"closed\":\"q-quick-20261105t185054z-c07-lima-sqlite\"}\n",
+      "stdout_bytes": 136,
+      "timed_out": false,
+      "uncertainty": false
+    },
+    {
+      "child_cpu_ns": 8041000,
+      "child_maxrss_bytes": 8077312,
+      "elapsed_ns": 12668875,
+      "error": null,
+      "output_truncated": false,
+      "phase": "store_remove",
+      "process_exit": 0,
+      "remote_resources": {
+        "reason": "no phase-scoped remote observer registered",
+        "status": "UNAVAILABLE"
+      },
+      "resource_scope": "local CLI process lifetime, including reaped descendants; excludes remote workers/daemon/database",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout": "{\"removed\":\"q-quick-20261105t185054z-c07-lima-sqlite\"}\n",
+      "stdout_bytes": 55,
+      "timed_out": false,
+      "uncertainty": false
+    }
+  ],
+  "commit": {
+    "commit": {
+      "base": "32b9b1504779823b5946923a204eb079d6a3f7b166c47a795491b2914cbe394e2b",
+      "branch": null,
+      "displaced": null,
+      "id": "12af5a05e3149f7d09548e09fe1abf40080505758b5fa20af909e70a8ecd93c943",
+      "logical": 134217728,
+      "lww": [],
+      "lww_truncated": false,
+      "merged_from": null,
+      "message": "Commit Workspace changes",
+      "new_canonical": 39358,
+      "new_metadata": 756,
+      "new_stored": 832,
+      "parent": null,
+      "root": "9ef9ceb7efc94d7c5485d8c1a4490977de401a9df9246d246e30d0af169741b2",
+      "second_parent": null,
+      "time": 1793905740452,
+      "via": "exec"
+    },
+    "displaced_head": null,
+    "head": "12af5a05e3149f7d09548e09fe1abf40080505758b5fa20af909e70a8ecd93c943",
+    "kind": "Committed",
+    "lww": [],
+    "lww_truncated": false,
+    "merged": null
+  },
+  "config_sha256": "1fea5b71db3e572703ba0422ca57188a111aabe2db4c92762c0d9a33e56e0b38",
+  "correctness": "UNVERIFIED",
+  "execution": "PASS",
+  "harness_elapsed_ns": 1945355042,
+  "harness_sha256": {
+    "cases.py": "aa197b924dd6d01a4113a2cd095e8a32b680a96ce95dfdec255723a22ba3ad9f",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "5a11fe6c990ad4b0db66e32c6f67e135febe6b4930a4d3b795595c69cf5bdf10"
+  },
+  "id": "C07/lima/sqlite",
+  "machine": "lima",
+  "matrix_index": 52,
+  "output": "/Users/yifanxu/Ephemeral-AI-Lab/layerfs-benchmark/fs-bench-quick/results/quick-20261105T185054Z/C07/lima/sqlite",
+  "pending": null,
+  "performance": "INELIGIBLE",
+  "performance_invocation_elapsed_ns": 1945355042,
+  "performance_operations_elapsed_ns": 1718720584,
+  "preparation": "CONSUMED",
+  "prepare_elapsed_ns": 178907167,
+  "prepare_harness_sha256": {
+    "cases.py": "aa197b924dd6d01a4113a2cd095e8a32b680a96ce95dfdec255723a22ba3ad9f",
+    "measure.py": "e345cb5073bd9fbe66d7e729c47c99983f71e743a72a0acb77ae90d0d6d08c13",
+    "run.py": "5a11fe6c990ad4b0db66e32c6f67e135febe6b4930a4d3b795595c69cf5bdf10"
+  },
+  "sandbox": "q-quick-20261105t185054z-c07-lima-sqlite",
+  "sandbox_live": false,
+  "source_sha": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+  "store": "q-quick-20261105t185054z-c07-lima-sqlite",
+  "store_live": false,
+  "timings_ns": {
+    "branch_fork": 12284334,
+    "commit": 457375583,
+    "exec": 294932333,
+    "measured_mount": 16365667,
+    "project_init": 14282709,
+    "sandbox_close": 115302458,
+    "sandbox_create": 717245291,
+    "store_create": 10714625,
+    "store_push": 20804125,
+    "store_remove": 12668875,
+    "unmount": 22960042
+  },
+  "uncertain": false,
+  "verification": "SKIPPED",
+  "workload": {
+    "body_sha256": "4d50a741653d9e90efba6eece312ea5a57b13be6142c3bfc09b57f643088e723",
+    "command_sha256": "429f5a14d6ed51762e2ee2453ad2081d320b49371e35edd533bfc34840a582a4",
+    "repository": "https://github.com/Ephemeral-AI-Lab/layerfs",
+    "setup_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_blob": "f3a65cc9aec02af2d772edd929daa8b2b446638d",
+    "source_commit": "b919f50eaf9cce79671f8501a580279d23cc5f3c",
+    "source_definition": "CF.C07 (DD), command(C07), VERIFIER.C07",
+    "source_path": "api/node/test/verify/cells/workloads.mjs",
+    "source_verifier_sha256": "3e0bd7b2461821ce354727e940cc7f32e881a1a9cfb31e25a4ee764ab2264305",
+    "workload_version": "R7-byte-exact-v1"
+  },
+  "workspace": null
+}

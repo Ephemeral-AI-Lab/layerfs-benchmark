@@ -1,0 +1,2 @@
+# Keep hashed benchmark evidence byte-identical across Git checkouts.
+result/** -text
