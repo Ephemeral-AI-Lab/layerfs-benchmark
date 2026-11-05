@@ -8,8 +8,9 @@ the [suite instructions](AGENTS.md) before preparing or running selections.
 A small CLI-only filesystem diagnostic suite for LayerFS 2.0. Implementation
 advances one cell at a time through native, Docker, Lima and Apple Container,
 with SQLite then PostgreSQL on each machine. All twelve cells are implemented;
-the complete matrix has 96 rows. See [the specification](SPEC.md) for measurement
-and cleanup requirements.
+the complete matrix has 96 rows. The [suite instructions](AGENTS.md) define the
+workloads, measurement and cleanup contract; [cases.py](cases.py) pins exact bodies
+and provenance.
 
 The [completed diagnostic report](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) reached
 96 execution PASS outcomes and final runtime cleanup COMPLETE. All timings are

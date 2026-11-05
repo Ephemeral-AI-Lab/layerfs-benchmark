@@ -3,13 +3,53 @@
 > Status: Current general guide.
 
 These instructions apply to `fs-bench-quick/` and extend the repository-root
-[CLI and cache rules](../AGENTS.md). Follow [SPEC.md](SPEC.md) and the assigned
-[implementation prompt](IMPLEMENTATION_PROMPT.md). Reading these documents does
-not start a campaign or authorize repeating completed samples.
+[CLI and cache rules](../AGENTS.md). This file is the suite's current contract;
+[cases.py](cases.py) pins the exact workload bodies, setup and provenance.
+Reading these instructions does not start a campaign or authorize repeating
+completed samples.
 
 Use the existing runner with the exact bodies, environment and provenance in
 [cases.py](cases.py). Preserve Bash/pipefail semantics. C12's Git commit belongs
 to the workload; the explicit LayerFS Commit remains a separate operation.
+
+## Workloads and implementation
+
+The macOS suite covers twelve cases on native, Docker, Lima and Apple Container,
+with SQLite and PostgreSQL on each machine: 96 rows. Other platforms are outside
+this campaign. The suite originated from
+[layerfs-project#15](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/15),
+with public CLI calls and optional independent verification.
+
+| Case | Work | Starting view |
+| --- | --- | --- |
+| C01 | Create 1,000 numbered files | Empty |
+| C02 | Create them, then stat each | Empty |
+| C03 | Create them, then remove them | Empty |
+| C04 | Create 110 directories and 1,000 empty files | Empty |
+| C05 | Create that tree, then find/count its files | Empty |
+| C06 | Write 64 MiB | Empty |
+| C07 | Write 64 MiB, then copy it | Empty |
+| C08 | Write 64 MiB, then read it | Empty |
+| C09 | Read the committed 64 MiB file | Committed base |
+| C10 | Copy the committed 64 MiB file | Committed base |
+| C11 | Overwrite it with the defined zero-over-zero body | Committed base |
+| C12 | Git init, create 100 files, add and commit | Empty |
+
+Use the Python standard library and one shared lifecycle in `run.py`, workload
+and proof definitions in `cases.py`, timing/eligibility in `measure.py`, and
+report generation in `report.py`. Configuration supplies machine and backend
+variations. Add modules only for a demonstrated independent responsibility.
+Pin original body, setup and verifier provenance/hashes before measurement;
+deliberate changes require a new workload version. Accept valid UpToDate Commits.
+
+Preparation reuse, enforcement overhead and final infrastructure teardown are
+reported separately from case timing. Ready C09–C11 execution consumes its
+prepared base. No warm-up, duplicate workload, hidden base reconstruction or
+pre-measurement content proof belongs in the case path. Gather machine facts
+once per configuration and keep per-case observations bounded. Missing phase
+CPU/memory, logical/physical Store growth, WAL/overlay/temp or server metrics
+remain unavailable; post-command WAL absence proves no peak, and a process
+lifetime peak is not a phase peak.
 
 ## Select the product before running
 
@@ -135,9 +175,28 @@ CLI call times include launch/routing and applicable Store open/close work.
 Command-only time is unavailable unless independently instrumented and validated.
 Keep unavailable CPU, memory and storage metrics explicitly unavailable.
 
-Follow [CACHE-PROTOCOL.md](CACHE-PROTOCOL.md) for this suite's cache assessment.
-The completed campaign did not demonstrate cold live-Workspace state before
-Commit. Its timings remain INELIGIBLE diagnostics, including requested ratios.
+The current cache assessment fails closed for all eight routes. Mount can warm
+immutable metadata even for an empty starting view; Exec's writes can remain in
+the live overlay SQLite pager and OS cache before Commit. A fresh process or
+mount does not demonstrate coldness. Unmount deletes the overlay, so remounting
+cannot reset caches while preserving a dirty frontier. There is no demonstrated
+public CLI control that releases and observes these caches while preserving the
+same live Workspace and mutations.
+
+Cold qualification requires phase-specific dependency accounting and effective,
+owned controls for canonical/pager caches, host and guest OS caches, virtual-disk
+backing and PostgreSQL shared buffers/server OS cache where applicable. A server
+restart alone does not clear OS pages, and separate databases do not establish
+cold buffers. Never purge a shared host. Retain control method, boundary, cost
+and residency or equivalent validated evidence without warming the inputs during
+validation. Preserve authoritative identity, open/reference state and pending
+mutations; add no private protocol or direct Store SQL escape hatch.
+
+C07/C08 read their own writes within the exact body. Preserve those bodies and
+assess that warmth explicitly; an initially cold state cannot qualify later
+reads automatically. The completed campaign did not demonstrate cold
+live-Workspace state before Commit. Its timings remain INELIGIBLE diagnostics,
+including requested ratios. Do not relabel retained receipts after the fact.
 
 For an explicitly requested Docker baseline, ratio means **machine elapsed time
 divided by Docker elapsed time**, separately per cell, database and metric.
