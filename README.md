@@ -41,7 +41,6 @@ Connect: moving Stores between a home and a bucket.
 | `<benchmark>/` | one benchmark: README, harness, cases |
 | [shared/](shared/) | the runner the filesystem benchmarks share, and the index script |
 | [result/](result/README.md) | published reports, `result/<date>/<benchmark>/<full LayerFS commit>/report.md`, and the rules for them |
-| [SPEC.md](SPEC.md) | the record of the 2026-11-06 six-suite campaign |
 | `.archive/` | retired suites and released data from before 2026-11-06; frozen |
 
 The tables above are generated. After publishing a report, run

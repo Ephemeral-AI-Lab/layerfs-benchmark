@@ -2,7 +2,7 @@
 
 > Status: Implemented diagnostic workload contract; no cold-cache qualification.
 
-Follow root [AGENTS.md](../AGENTS.md) and [SPEC.md](../SPEC.md). This suite owns
+Follow root [AGENTS.md](../AGENTS.md). This suite owns
 four cases and 32 rows. Execute F01–F04; for each case use native, Docker, Lima,
 Apple Container; SQLite then PostgreSQL. Keep timed rows serial. All LayerFS
 operations use the pinned public CLI through [the shared lifecycle](../shared/src/runner.py).

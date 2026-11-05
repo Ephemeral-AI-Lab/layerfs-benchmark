@@ -1,6 +1,6 @@
 # fsstress agent instructions
 
-Follow root [AGENTS.md](../AGENTS.md) and [SPEC.md](../SPEC.md). Use the shared
+Follow root [AGENTS.md](../AGENTS.md). Use the shared
 public-CLI lifecycle and exact [cases.py](src/cases.py), version
 `fsstress-S01-v2`. Prior v1 xfstests/Linux-only results remain historical.
 

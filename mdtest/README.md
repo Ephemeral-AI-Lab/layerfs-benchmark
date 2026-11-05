@@ -8,7 +8,7 @@
 | Tool | Unmodified MPI `mdtest` from IOR, [hpc/ior `8e109900e24d45f1cd1184f108458f5fa9b4692c`](https://github.com/hpc/ior/tree/8e109900e24d45f1cd1184f108458f5fa9b4692c); native qualification used OpenMPI 5.0.11, the guest build uses Debian 12's pinned package receipt |
 | Runs on | native macOS, Docker, Lima and Apple Container; SQLite and PostgreSQL Stores (16 rows) |
 | Status | Current launcher profile v2, `one-rank-512-create-stat-remove-v2`; timings are INELIGIBLE diagnostics |
-| Frozen rules | [AGENTS.md](AGENTS.md) and the root [SPEC.md](../SPEC.md) |
+| Frozen rules | [AGENTS.md](AGENTS.md) and the root [AGENTS.md](../AGENTS.md) |
 | Changes | [CHANGES.md](CHANGES.md) |
 
 ## Overview
@@ -67,7 +67,7 @@ and Cleanup. Upstream includes an intrinsic one-second delay and MPI launch
 overhead. Its phase rates cannot be substituted for full CLI wall. Reused setup
 and unknown cache state produce explicitly ineligible timing diagnostics. Full
 scope and cleanup requirements are in [AGENTS.md](AGENTS.md) and the root
-[SPEC.md](../SPEC.md).
+[AGENTS.md](../AGENTS.md).
 
 ## Past runs
 

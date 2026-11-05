@@ -1,6 +1,6 @@
 # fsx agent instructions
 
-Follow the repository [AGENTS.md](../AGENTS.md) and [SPEC.md](../SPEC.md).
+Follow the repository [AGENTS.md](../AGENTS.md).
 Use the shared public-CLI lifecycle; the workload is pinned in [cases.py](src/cases.py).
 
 Current X01 v2 uses unmodified secfs.test commit `edf5eb4a108bfb41073f765aef0cdd32bb3ee1ed`,

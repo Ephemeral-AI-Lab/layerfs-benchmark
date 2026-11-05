@@ -1,6 +1,6 @@
 # smallfile benchmark
 
-Read root AGENTS.md and SPEC.md. L01–L05 are create/read/stat/rename/delete,
+Read root [AGENTS.md](../AGENTS.md). L01–L05 are create/read/stat/rename/delete,
 40 registered rows. Execute case → native/Docker/Lima/Apple Container →
 SQLite/PostgreSQL using the shared public LayerFS CLI lifecycle.
 

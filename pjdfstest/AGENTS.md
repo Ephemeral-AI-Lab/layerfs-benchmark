@@ -1,6 +1,6 @@
 # pjdfstest benchmark
 
-Read root AGENTS.md and the current SPEC.md. Current profile:
+Read root [AGENTS.md](../AGENTS.md). Current profile:
 `fixed-posix-tap-unprivileged-subset-v2`. Four fixed scripts register 32 rows,
 executed case → native/Docker/Lima/Apple Container → SQLite/PostgreSQL. Use the
 shared public LayerFS CLI lifecycle. The primary owns campaign config and reports.

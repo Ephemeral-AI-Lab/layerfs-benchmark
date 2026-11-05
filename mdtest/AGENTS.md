@@ -1,6 +1,6 @@
 # mdtest benchmark
 
-Read the repository AGENTS.md and SPEC.md first. This suite owns M01–M02:
+Read the repository [AGENTS.md](../AGENTS.md) first. This suite owns M01–M02:
 16 registered rows. Execute case → native/Docker/Lima/Apple Container →
 SQLite/PostgreSQL. Display Docker first in the report. Use the shared public
 LayerFS CLI lifecycle; never use an SDK or revive archived code.

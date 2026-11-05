@@ -30,9 +30,9 @@ outcome in those tables; a report that is superseded says so there.
 The six-suite campaign completed its active **17 cases / 136 execution PASS
 rows** on 2026-11-06. Case cleanup and final runtime infrastructure cleanup are
 COMPLETE. Timings and Docker ratios remain **INELIGIBLE diagnostics**, and
-optional independent benchmark verification remains SKIPPED. Its plan and
-checkpoints are in [SPEC.md](../SPEC.md); retired selections without a report
-are noted in each benchmark's Past runs.
+optional independent benchmark verification remains SKIPPED. Each benchmark's
+report records its results and limitations; retired selections without a report
+are noted in its Past runs.
 
 This is 128 passing rows at
 `b919f50eaf9cce79671f8501a580279d23cc5f3c` plus eight at clean derived product
