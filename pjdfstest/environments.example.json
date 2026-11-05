@@ -9,8 +9,7 @@
       "name": "native",
       "tool_environment": {
         "BENCH_TOOL_ROOT": "/absolute/native/tools"
-      },
-      "unavailable_reason": "Upstream requires root; native command identity must be established as root before selection"
+      }
     },
     "docker": {
       "name": "docker",

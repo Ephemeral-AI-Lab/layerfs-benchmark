@@ -63,20 +63,34 @@ def metric_cells(suite, metrics):
             )
         ]
         if suite == "fsx":
-            headers += ["Read / write / truncate counts"]
+            headers += ["Reads", "Writes", "Truncates"]
             values += [
-                " / ".join(
-                    str(metrics.get("operation_counts", {}).get(key, 0))
-                    for key in ("READ", "WRITE", "TRUNCATE")
-                )
+                str(metrics.get("operation_counts", {}).get(key, 0))
+                for key in ("READ", "WRITE", "TRUNCATE")
             ]
         else:
-            headers += ["Expected errno", "Unexpected errors"]
+            headers += [
+                "Expected errno",
+                "Unexpected errors",
+                "Page bytes",
+                "Requested write bytes",
+            ]
             values += [
                 str(metrics.get("operations_expected_errors")),
                 str(metrics.get("operations_unexpected_errors")),
+                str(metrics.get("page_size_bytes", "UNAVAILABLE")),
+                str(
+                    metrics.get("io_requests", {})
+                    .get("write", {})
+                    .get("requested_bytes", "UNAVAILABLE")
+                ),
             ]
         return headers, values
+    if suite == "pjdfstest":
+        return ["Assertions", "Passed", "Failed", "Skipped", "TODO"], [
+            str(metrics.get(key))
+            for key in ("assertions", "pass", "fail", "skip", "todo")
+        ]
     if suite == "mdtest":
         return ["Entries", "Create ops/s", "Stat ops/s", "Remove ops/s"], [
             str(metrics.get("entries")),
@@ -121,7 +135,12 @@ def workload_summary(workload):
     if workload.get("operation"):
         return f"{workload['operation'].capitalize()} 512 files: two workers × 256 files, 4 KiB/file, 64 files/directory. {version}."
     if workload.get("scripts"):
-        return f"{', '.join(workload['scripts'])}: {workload.get('expected_assertions_darwin_linux')} planned TAP assertions; upstream root prerequisite. {version}."
+        privilege = (
+            "selected scripts run unprivileged"
+            if workload.get("privilege_profile")
+            else "upstream root prerequisite"
+        )
+        return f"{', '.join(workload['scripts'])}: {workload.get('expected_assertions_darwin_linux')} planned TAP assertions; {privilege}. {version}."
     if workload.get("bounds"):
         return f"Two processes × 512 requested operation slots, seed 1; frozen operation weights and per-operation allocation bounds. Effective work, skipped slots and expected errno are separate below. {version}."
     if workload.get("selection"):
@@ -295,7 +314,7 @@ def render(suite, state, cleanup, config):
         "",
         f"Final infrastructure cleanup: **{cleanup.get('cleanup', 'NOT_RUN')}**. Overall uninterrupted teardown wall: {str(round(cleanup['elapsed_ns'] / 1e9, 3)) + ' s' if isinstance(cleanup.get('elapsed_ns'), int) else 'UNAVAILABLE'}. "
         + (
-            f"Serial resource-release commands total {cleanup['release_commands_ns'] / 1e9:.3f} s, including the refused deletion; diagnosis gaps and local-file cleanup are excluded from that sum."
+            f"Serial resource-release commands total {cleanup['release_commands_ns'] / 1e9:.3f} s, local-file cleanup is excluded from that sum."
             if isinstance(cleanup.get("release_commands_ns"), int)
             else ""
         ),

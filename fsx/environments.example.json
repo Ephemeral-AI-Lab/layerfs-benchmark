@@ -4,6 +4,13 @@
   "cli": "/absolute/pinned-release/layerfs",
   "home": "/absolute/owned-campaign/home",
   "empty_source": "/absolute/owned-campaign/empty",
+  "tool_provenance": {
+    "repository": "https://github.com/billziss-gh/secfs.test",
+    "source_commit": "edf5eb4a108bfb41073f765aef0cdd32bb3ee1ed",
+    "workload_version": "fsx-X01-v2-secfs-portable",
+    "native_sha256": "REPLACE_WITH_PINNED_NATIVE_FSX_SHA256",
+    "linux_sha256": "REPLACE_WITH_PINNED_LINUX_FSX_SHA256"
+  },
   "environment": {
     "XDG_CACHE_HOME": "/absolute/owned-campaign/cache"
   },
@@ -19,7 +26,7 @@
       "ready": false,
       "platform": "darwin",
       "tool_environment": {
-        "BENCH_TOOL_ROOT": "/absolute/native/tools"
+        "BENCH_TOOL_ROOT": "/absolute/pinned/darwin-aarch64/tools"
       }
     },
     "docker": {

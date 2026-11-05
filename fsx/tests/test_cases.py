@@ -28,10 +28,13 @@ class FsxResultTests(unittest.TestCase):
             return result.stdout
 
     def complete_output(self, operation="READ"):
-        return "All 1000 operations completed A-OK!\n" + "".join(
-            f"{i}({i % 256:3d} mod 256): {operation} 0x0 thru 0x1\n"
+        records = "".join(
+            "skipping zero size read\n"
+            if operation == "SKIPPED"
+            else f"{i}: {operation} 0x0 thru 0x1\n"
             for i in range(1, 1001)
         )
+        return records + "All operations - 1000 - completed A-OK!\n"
 
     def test_completed_effective_counts_and_compact_output(self):
         output = self.summary(self.complete_output())
@@ -42,7 +45,7 @@ class FsxResultTests(unittest.TestCase):
     def test_success_banner_without_records_is_not_pass(self):
         with self.assertRaises(ValueError):
             cases.parse_result(
-                "X01", self.summary("All 1000 operations completed A-OK!\n")
+                "X01", self.summary("All operations - 1000 - completed A-OK!\n")
             )
 
     def test_zero_effective_work_is_not_pass(self):
@@ -55,9 +58,20 @@ class FsxResultTests(unittest.TestCase):
 
     def test_frozen_flags_and_optional_proof(self):
         case = cases.get_case("X01")
-        self.assertIn("-T -P", case["body"])
+        self.assertIn("-v -P", case["body"])
         self.assertNotIn("-n", cases.TOOL_ARGV)
-        self.assertEqual(case["supported_platforms"], ["linux"])
+        self.assertNotIn("-m", cases.TOOL_ARGV)
+        self.assertEqual(cases.TOOL_ARGV[cases.TOOL_ARGV.index("-F") + 1], "8388608")
+        self.assertEqual(case["supported_platforms"], ["darwin", "linux"])
         self.assertIsNone(case["verifier"])
         with self.assertRaises(NotImplementedError):
             cases.get_case("X01", verify=True)
+
+    def test_actual_zero_size_skips_are_accounted_without_invented_records(self):
+        text = "skipping zero size read\n" + "".join(
+            f"{i}: WRITE 0x0 thru 0x1\n" for i in range(2, 1001)
+        )
+        text += "All operations - 1000 - completed A-OK!\n"
+        result = cases.parse_result("X01", self.summary(text))
+        self.assertEqual(result["operations_effective"], 999)
+        self.assertEqual(result["operations_skipped"], 1)

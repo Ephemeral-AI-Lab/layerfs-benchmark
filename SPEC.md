@@ -1,7 +1,7 @@
 # Six filesystem benchmark suites
 
-> Status: Implemented; current diagnostic execution is complete with explicit
-> prerequisite exclusions. No release candidate or full-matrix PASS exists.
+> Status: Follow-up implementation authorized for the three remaining suites.
+> Prior outcomes remain historical; no full-matrix PASS is claimed before execution.
 
 Implement [#55](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/55)
 fio, [#56](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/56) fsx,
@@ -211,7 +211,7 @@ complete row accounting. Every test invocation has an explicit timeout at most
 120 seconds; keep cheap proof separate. No new test or benchmark run is needed
 merely to create or edit this document.
 
-## Campaign prerequisite findings (2026-11-06)
+## Initial campaign prerequisite findings (2026-11-06; superseded below)
 
 The selected unmodified xfstests fsx/fsstress sources require Linux headers, so
 native macOS has four NOT_RUN rows across X01/S01. Pinned LayerFS executes all
@@ -236,7 +236,7 @@ campaign; do not mix v1 timings into v2 ratios. The current matrix remains 136
 rows, with 16 additional retired v1 selections reported separately (152 total
 registered selections across versions). See `mdtest/CHANGES.md`.
 
-## Delivery checkpoint (2026-11-06)
+## Prior delivery checkpoint (2026-11-06; retained history)
 
 The current 17-cell matrix accounts for all 136 rows: 100 execution PASS and 36
 NOT_RUN (two native fsx, two native fsstress, all 32 pjdfstest). Case and final
@@ -250,3 +250,44 @@ the public CLI's intentional nonroot contract remain prerequisites. Do not close
 those gaps by relabeling NOT_RUN, patching third-party source or bypassing the
 product's privilege restrictions. Passing supported routes are complete; preserve
 that evidence rather than rerunning unchanged configurations.
+
+## Authorized portable and unprivileged follow-up (2026-11-06)
+
+The owner authorized resolving the remaining exclusions and running through
+terminal diagnostic PASS. The earlier blanket pjdfstest root finding was too
+broad: the four selected unchanged scripts do not call `requires_root`, do not
+request identity changes, and passed all 29 assertions as UID 501 in an ordinary
+native-filesystem compatibility check. That check is not LayerFS qualification.
+The full privileged upstream suite remains outside this selection.
+
+Freeze prospective v2 profiles before new product execution:
+
+- fsx X01 and fsstress S01 use unchanged portable upstream
+  `billziss-gh/secfs.test` commit
+  `edf5eb4a108bfb41073f765aef0cdd32bb3ee1ed` on every machine. Inspect and use
+  that version's actual options and operation accounting; retain the same finite
+  seed/process/count/size intent and intrinsic checks. Native and Linux builds
+  must use identical source/profile versions, with separate binary identities.
+  No third-party patches or mixed old/new Docker comparisons. The portable
+  fsstress build derives I/O sizes from OS page size (Darwin and Linux differ);
+  preserve and report that upstream behavior, actual counts and declared bounds.
+  This does not establish identical byte work across platforms.
+- pjdfstest P01–P04 use the same source and scripts already selected, with a new
+  explicitly unprivileged-subset profile. Preserve all script hashes, TAP plans,
+  assertions, error expectations and P04's intrinsic sleep. Correct the harness
+  capability declaration; do not change LayerFS's nonroot contract or bypass it.
+
+Implement these three suites in parallel with explicit ownership. Execute
+fsx, then fsstress, then pjdfstest, with case → machine → database ordering and
+all eight outcomes at each checkpoint. This registers **48 new rows**. Reuse
+the 88 unaffected fio, mdtest v2 and smallfile receipts at their original
+identities. The active target remains **17 cases / 136 execution PASS rows**
+with complete case and final infrastructure cleanup. Optional independent proof
+remains off; all timings and ratios remain INELIGIBLE diagnostics.
+
+Retain the earlier fsx/fsstress/pjdfstest selections and their actual verdicts
+separately in the same compact suite reports, along with the previously retained
+mdtest v1 history. New source/profile identity authorizes affected new attempts;
+no unchanged treatment resampling or historical relabeling. A blocker is only
+impossible under stated constraints when source and execution evidence prove
+that claim; difficulty alone does not establish impossibility.

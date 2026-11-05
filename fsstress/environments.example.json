@@ -27,7 +27,7 @@
       "ready": false,
       "platform": "linux",
       "tool_environment": {
-        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
       }
     },
     "lima": {
@@ -35,7 +35,7 @@
       "ready": false,
       "platform": "linux",
       "tool_environment": {
-        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
       }
     },
     "apple-container": {
@@ -43,7 +43,7 @@
       "ready": false,
       "platform": "linux",
       "tool_environment": {
-        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
       }
     }
   },
@@ -67,5 +67,13 @@
   ],
   "prepare_budget_s": 25,
   "performance_budget_s": 15,
-  "cleanup_budget_s": 10
+  "cleanup_budget_s": 10,
+  "compact_sources": true,
+  "tool_identity": {
+    "workload_version": "fsstress-S01-v2",
+    "upstream_sha": "edf5eb4a108bfb41073f765aef0cdd32bb3ee1ed",
+    "native_sha256": "59a1c48b185d9ea7868e8be7f8806ccfc9714d45d41bdc855bb6a3125abe4618",
+    "linux_sha256": "1e91b7d31af9989fdd81a0b59f76a8f6b940419e958a5883523645bbc6e3aca1",
+    "sandbox_image": "sha256:cc0814884e1b2acb5ffee43792faf40e7dbb3573ca157ab22af4179632c64dd0"
+  }
 }

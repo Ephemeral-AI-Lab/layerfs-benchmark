@@ -6,42 +6,30 @@ import re
 import shlex
 
 CASE_IDS = ("X01",)
-SOURCE_COMMIT = "31f7192f90a89a6f808a37c3a3cd30491bd50eba"
-SOURCE_URL = "https://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git"
+SOURCE_COMMIT = "edf5eb4a108bfb41073f765aef0cdd32bb3ee1ed"
+SOURCE_URL = "https://github.com/billziss-gh/secfs.test"
 TOOL_ARGV = (
     "fsx",
     "-S",
     "1",
     "-N",
     "1000",
-    "-l",
+    "-F",
     "8388608",
     "-o",
     "65536",
     "-R",
     "-W",
-    "-a",
-    "-F",
-    "-H",
-    "-z",
-    "-C",
-    "-I",
-    "-J",
-    "-B",
-    "-E",
-    "-0",
-    "-K",
-    "-u",
-    "-T",
+    "-v",
     "-P",
     "${BENCH_LOG_DIR}",
-    "--record-ops=${BENCH_LOG_DIR}/fsx.ops",
     "fsx.data",
 )
 SUMMARY = r"""import collections,json,re,sys
 text=open(sys.argv[2],encoding="utf-8",errors="strict").read()
-completed=re.findall(r"^All (\d+) operations completed A-OK!$",text,re.M)
-records=re.findall(r"^(\d+)\(\s*\d+ mod 256\): (.*)$",text,re.M)
+completed=re.findall(r"^All operations - (\d+) - completed A-OK!$",text,re.M)
+records=re.findall(r"^(\d+): (.*)$",text,re.M)
+skips=re.findall(r"^skipping (zero size (?:read|write)|seek/read past end of file)$",text,re.M)
 counts=collections.Counter()
 seen=set()
 for number,detail in records:
@@ -50,11 +38,12 @@ for number,detail in records:
         raise SystemExit("duplicate/out-of-range fsx record")
     seen.add(number)
     operation=detail.split()[0]
-    if operation not in {"READ","WRITE","TRUNCATE","SKIPPED"}:
+    if operation not in {"READ","WRITE","TRUNCATE"}:
         raise SystemExit("undeclared fsx operation: "+operation)
     counts[operation]+=1
+counts["SKIPPED"]=len(skips)
 result={"tool_exit_code":int(sys.argv[1]),"completed":int(completed[0]) if len(completed)==1 else None,
-        "records":len(records),"operation_counts":dict(counts),"intrinsic_checks":"fsx-size-and-read-consistency"}
+        "records":len(records)+len(skips),"operation_counts":dict(counts),"intrinsic_checks":"fsx-size-and-read-consistency"}
 print("FSX_RESULT "+json.dumps(result,sort_keys=True,separators=(",",":")))
 """
 
@@ -70,9 +59,9 @@ def get_case(case_id, verify=False):
         raise NotImplementedError(
             "Independent committed-result fsx proof is unavailable; intrinsic checks remain enabled"
         )
-    flags = shlex.join(TOOL_ARGV[1:-4])
+    flags = shlex.join(TOOL_ARGV[1:-3])
     body = f"""logdir=$(mktemp -d /tmp/fsx-X01.XXXXXX) || exit 1
-"${{BENCH_TOOL_ROOT:?set BENCH_TOOL_ROOT}}/bin/fsx" {flags} -P "$logdir" --record-ops="$logdir/fsx.ops" fsx.data >"$logdir/stdout"
+"${{BENCH_TOOL_ROOT:?set BENCH_TOOL_ROOT}}/bin/fsx" {flags} -P "$logdir" fsx.data >"$logdir/stdout"
 tool_rc=$?
 python3 -c {shlex.quote(SUMMARY)} "$tool_rc" "$logdir/stdout"
 summary_rc=$?
@@ -90,21 +79,27 @@ rm -rf -- "$logdir"
         "setup": "",
         "starting_view": "empty",
         "environment": {"LANG": "C", "LC_ALL": "C"},
-        "supported_platforms": ["linux"],
-        "unavailable_reason": "Pinned upstream requires Linux headers; native macOS is unsupported without porting",
+        "supported_platforms": ["darwin", "linux"],
+        "required_tools": ["bin/fsx", "python3"],
         "verifier": None,
         "provenance": {
             "upstream": SOURCE_URL,
             "source_commit": SOURCE_COMMIT,
-            "source_path": "ltp/fsx.c",
-            "source_sha256": "04391d0bb9f86727fcae87d5bbca3e4456704554d577d9b6425410c957401c44",
-            "workload_version": "fsx-X01-v1",
+            "source_path": "fstools/src/fsx/fsx.c",
+            "source_sha256": "94119d806ffe04ae96e5f90fbef78b41ae8303139a4f82212d699bdc2ed27d81",
+            "workload_version": "fsx-X01-v2-secfs-portable",
+            "supersedes": {
+                "workload_version": "fsx-X01-v1",
+                "source_commit": "31f7192f90a89a6f808a37c3a3cd30491bd50eba",
+                "reason": "Owner-authorized unchanged portable upstream; previous Linux-only receipts retained",
+            },
             "tool_argv": list(TOOL_ARGV),
             "body_sha256": _sha(body),
             "command_sha256": _sha(body),
             "setup_sha256": _sha(""),
             "summarizer_sha256": _sha(SUMMARY),
-            "selection": "read/write/truncate; other slots skipped, mapped I/O converted to ordinary I/O",
+            "selection": "ordinary read/write/truncate; mapped I/O disabled, intrinsic size/read checks enabled",
+            "data_element_bytes": 4,
             "logs": "Owned Sandbox /tmp; summary included in Exec, logs excluded from LayerFS Commit",
         },
     }
