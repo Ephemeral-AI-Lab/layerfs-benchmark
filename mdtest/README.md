@@ -23,3 +23,11 @@ Upstream includes an intrinsic one-second delay and MPI launch overhead. Its
 phase rates cannot be substituted for full CLI wall. Reused setup and unknown
 cache state produce explicitly ineligible timing diagnostics. Full scope and
 cleanup requirements are in [AGENTS.md](AGENTS.md) and the root specification.
+
+The current v2 MPI launcher uses `--host localhost:1 --map-by slot --bind-to none`
+and `HWLOC_COMPONENTS=no_os,stop` identically on every machine. These select a
+single local scheduling slot and hwloc's generic processor-count fallback without
+binding. They avoid requiring a sysfs CPU hierarchy that namespace Sandboxes do
+not expose; no synthetic topology, extra rank or product modification is used.
+The suite reports no CPU-topology or binding qualification. Earlier v1 observations
+remain separate; see [CHANGES.md](CHANGES.md).

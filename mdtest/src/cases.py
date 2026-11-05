@@ -22,7 +22,7 @@ def get_case(case_id, verify=False):
         raise ValueError(f"Unknown mdtest case {case_id}")
     kind = "-F" if case_id == "M01" else "-D"
     body = (
-        '"${BENCH_TOOL_ROOT:?}/bin/mpirun" -np 1 "${BENCH_TOOL_ROOT}/bin/mdtest" '
+        '"${BENCH_TOOL_ROOT:?}/bin/mpirun" --host localhost:1 --map-by slot --bind-to none -np 1 "${BENCH_TOOL_ROOT}/bin/mdtest" '
         f'-a POSIX {kind} -n 512 -i 1 -C -T -r -w 0 -e 0 -z 0 -b 1 -d "$PWD/mdtest-data"'
     )
     result = {
@@ -38,6 +38,7 @@ def get_case(case_id, verify=False):
             "LC_ALL": "C",
             "OMPI_ALLOW_RUN_AS_ROOT": "1",
             "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM": "1",
+            "HWLOC_COMPONENTS": "no_os,stop",
         },
         "verifier": None,
         "required_tools": ["bin/mdtest", "bin/mpirun"],
@@ -46,11 +47,17 @@ def get_case(case_id, verify=False):
             "source_commit": SOURCE_SHA,
             "source_file_sha256": dict(SOURCE_FILE_HASHES),
             "source_paths": ["src/mdtest.c", "src/mdtest-main.c"],
-            "workload_version": "one-rank-512-create-stat-remove-v1",
+            "workload_version": "one-rank-512-create-stat-remove-v2",
             "body_sha256": _hash(body),
             "setup_sha256": _hash(""),
             "entry_kind": "file" if case_id == "M01" else "directory",
             "ranks": 1,
+            "launcher": {
+                "host_slots": "localhost:1",
+                "map_by": "slot",
+                "bind_to": "none",
+                "HWLOC_COMPONENTS": "no_os,stop",
+            },
             "entries": 512,
             "iterations": 1,
             "file_bytes": 0,
@@ -59,9 +66,7 @@ def get_case(case_id, verify=False):
     }
     if verify:
         # mdtest removes its own test root. Empty Workspace is the surviving result.
-        script = (
-            'test -z "$(find . -mindepth 1 -print -quit)" && printf "VERIFY PASS\\n"'
-        )
+        script = 'test -z "$(find . -mindepth 1 -print -quit)" && printf "VERIFY PASS\\n"'
         result["verifier"] = script
         result["provenance"]["verification"] = {
             "version": "empty-after-remove-v1",
@@ -75,9 +80,7 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
         raise ValueError(f"Unknown mdtest case {case_id}")
     if exit_code != 0:
         raise ValueError(f"mdtest exited {exit_code}")
-    if re.search(
-        r"\b(?:ERROR|WARNING|unable to|failed to)\b", stdout + stderr, re.IGNORECASE
-    ):
+    if re.search(r"\b(?:ERROR|WARNING|unable to|failed to)\b", stdout + stderr, re.IGNORECASE):
         raise ValueError("mdtest reported an error/warning; retain original output")
     noun = "files" if case_id == "M01" else "directories"
     if not re.search(rf"\b1 tasks, 512 {noun}\b", stdout):
@@ -100,11 +103,7 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
             values = [float(value) for value in match.group(1).split()]
         except ValueError as error:
             raise ValueError("malformed mdtest phase rate") from error
-        if (
-            len(values) != 4
-            or any(not math.isfinite(value) or value < 0 for value in values)
-            or values[2] <= 0
-        ):
+        if len(values) != 4 or any(not math.isfinite(value) or value < 0 for value in values) or values[2] <= 0:
             raise ValueError("invalid mdtest phase rates")
         phases[name] = dict(zip(["max", "min", "mean", "stddev"], values))
     return {

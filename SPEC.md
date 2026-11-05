@@ -219,3 +219,18 @@ guest routes. Upstream pjdfstest requires root; its 32 rows are NOT_RUN. No publ
 CLI root option or safe image workaround exists. Implement and account for those
 rows, retain the exact blockers, and run the other 100 supported rows. This does
 not qualify the unsupported rows or change the product security contract.
+
+## mdtest launcher correction (v2, before its successor measurements)
+
+The v1 launcher produced four M01 execution PASS outcomes, then Lima/SQLite
+failed before mdtest began: hwloc could not find `/sys` CPU topology and MPI
+reported no available slot. Cleanup completed. The remaining 11 registered v1
+selections are NOT_RUN, withdrawn before execution. Preserve this 16-row history.
+
+Use v2 for both mdtest cells on every machine: `HWLOC_COMPONENTS=no_os,stop`,
+`mpirun --host localhost:1 --map-by slot --bind-to none -np 1`. This uses generic
+OS processor-count discovery, no synthetic topology or binding. Entry counts,
+phases and payload sizes stay frozen. Register a separate 16-row successor
+campaign; do not mix v1 timings into v2 ratios. The current matrix remains 136
+rows, with 16 additional retired v1 selections reported separately (152 total
+registered selections across versions). See `mdtest/CHANGES.md`.

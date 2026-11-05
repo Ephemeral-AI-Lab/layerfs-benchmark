@@ -33,6 +33,100 @@ def elapsed(row, phase):
     return row.get("timings_ns", {}).get(phase)
 
 
+def number(value, scale=1):
+    return f"{value / scale:.2f}" if isinstance(value, (int, float)) else "UNAVAILABLE"
+
+
+def metric_cells(suite, metrics):
+    if suite == "fio":
+        return ["I/O MiB", "I/O count", "MiB/s", "IOPS", "Mean completion μs"], [
+            number(metrics.get("io_bytes"), 1048576),
+            str(metrics.get("total_ios")),
+            number(metrics.get("bandwidth_bytes_per_second"), 1048576),
+            number(metrics.get("iops")),
+            number(metrics.get("completion_latency_ns", {}).get("mean"), 1000),
+        ]
+    if suite in ("fsx", "fsstress"):
+        headers = [
+            "Requested slots",
+            "Completed slots",
+            "Effective operations",
+            "Skipped slots",
+        ]
+        values = [
+            str(metrics.get(key))
+            for key in (
+                "operations_requested",
+                "operations_completed",
+                "operations_effective",
+                "operations_skipped",
+            )
+        ]
+        if suite == "fsx":
+            headers += ["Read / write / truncate counts"]
+            values += [
+                " / ".join(
+                    str(metrics.get("operation_counts", {}).get(key, 0))
+                    for key in ("READ", "WRITE", "TRUNCATE")
+                )
+            ]
+        else:
+            headers += ["Expected errno", "Unexpected errors"]
+            values += [
+                str(metrics.get("operations_expected_errors")),
+                str(metrics.get("operations_unexpected_errors")),
+            ]
+        return headers, values
+    if suite == "mdtest":
+        return ["Entries", "Create ops/s", "Stat ops/s", "Remove ops/s"], [
+            str(metrics.get("entries")),
+            *[
+                number(metrics.get("phase_rates", {}).get(phase, {}).get("mean"))
+                for phase in ("create", "stat", "remove")
+            ],
+        ]
+    if suite == "smallfile":
+        return ["Files", "Files/s", "Worker 00 records", "Worker 01 records"], [
+            str(metrics.get("files")),
+            number(metrics.get("files_per_second")),
+            *[
+                str(worker.get("records"))
+                for worker in sorted(
+                    metrics.get("worker_results", []), key=lambda x: x["thread"]
+                )
+            ],
+        ]
+    return ["Metrics"], [safe(json.dumps(metrics, separators=(",", ":")))]
+
+
+def workload_summary(workload):
+    keys = (
+        "workload_version",
+        "profile",
+        "entry_kind",
+        "ranks",
+        "entries",
+        "iterations",
+        "operation",
+        "workers",
+        "files_per_worker",
+        "bytes_per_file",
+        "script",
+        "assertion_count",
+        "selection",
+        "bounds",
+        "operation_weights",
+    )
+    fields = {key: workload[key] for key in keys if key in workload}
+    return (
+        "; ".join(
+            f"{key}: {json.dumps(value) if isinstance(value, dict) else value}"
+            for key, value in fields.items()
+        )
+        or "Frozen workload and prerequisite in the linked suite definition."
+    )
+
+
 def render(suite, state, cleanup, config):
     expected = state["matrix"]
     rows = {
@@ -87,20 +181,13 @@ def render(suite, state, cleanup, config):
     for cell in dict.fromkeys(item["cell"] for item in expected):
         selected = [r for r in rows.values() if r["cell"] == cell]
         workload = next(
-            (r.get("workload", {}) for r in selected if r.get("workload")), {}
+            (r.get("workload", {}) for r in selected if r.get("workload")),
+            config.get("tool_identity", {}).get("workload_profiles", {}).get(cell, {}),
         )
         lines += [
             f"## {cell}",
             "",
-            safe(
-                workload.get(
-                    "description",
-                    workload.get(
-                        "name",
-                        "Exact frozen workload in suite src/cases.py; upstream identity below.",
-                    ),
-                )
-            ),
+            safe(workload_summary(workload)),
             "",
             "| Machine | Database | Execution | Cleanup | Create ms | Exec ms | Commit ms | Cleanup ms | End-to-end ms | Exec / Docker | Commit / Docker | End-to-end / Docker |",
             "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -126,18 +213,22 @@ def render(suite, state, cleanup, config):
                 lines.append("| " + " | ".join(values) + " |")
         metrics = [r for r in selected if r.get("tool_metrics")]
         if metrics:
+            headers, _ = metric_cells(suite, metrics[0]["tool_metrics"])
             lines += [
                 "",
-                "Tool results (upstream units; intrinsic checks only):",
+                "Tool observations (intrinsic checks only; rates retain their upstream denominator):",
                 "",
-                "| Machine / database | Metrics |",
-                "| --- | --- |",
+                "| Machine / database | " + " | ".join(headers) + " |",
+                "| --- | " + " | ".join("---:" for _ in headers) + " |",
             ]
             for machine in DISPLAY:
                 for row in metrics:
                     if row["machine"] == machine:
+                        _, values = metric_cells(suite, row["tool_metrics"])
                         lines.append(
-                            f"| {row['machine']} / {row['backend']} | {safe(json.dumps(row['tool_metrics'], sort_keys=True, separators=(',', ':')))} |"
+                            f"| {row['machine']} / {row['backend']} | "
+                            + " | ".join(values)
+                            + " |"
                         )
         reasons = [
             (r["machine"] + "/" + r["backend"], r.get("reason"))
@@ -164,7 +255,16 @@ def render(suite, state, cleanup, config):
     ]
     pins = config.get("tool_identity")
     if pins:
-        lines += ["Tool identity: " + safe(json.dumps(pins, sort_keys=True)) + ".", ""]
+        lines += [
+            "Upstream source commit: `"
+            + str(pins.get("source_commit"))
+            + "`. Exact flags and setup: [frozen suite definition](https://github.com/Ephemeral-AI-Lab/layerfs-benchmark/blob/"
+            + config.get("harness_commit", "main")
+            + "/"
+            + suite
+            + "/src/cases.py).",
+            "",
+        ]
     return "\n".join(lines)
 
 
