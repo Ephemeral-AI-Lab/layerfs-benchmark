@@ -35,9 +35,11 @@ with public CLI calls and optional independent verification.
 | C11 | Overwrite it with the defined zero-over-zero body | Committed base |
 | C12 | Git init, create 100 files, add and commit | Empty |
 
-Use the Python standard library and one shared lifecycle in `src/run.py`, workload
-and proof definitions in `src/cases.py`, timing/eligibility in `src/measure.py`, and
-report generation in `src/report.py`. Configuration supplies machine and backend
+Use the Python standard library: `src/run.py` loads the shared lifecycle in
+`../shared/src/runner.py`, `src/cases.py` owns workload/proof definitions, and
+`src/measure.py` preserves the import route to shared timing/cache helpers.
+The historical `src/report.py` behavior remains available; new suites use the
+compact Markdown reporter in `../shared/src/report.py`. Configuration supplies machine and backend
 variations. Add modules only for a demonstrated independent responsibility.
 Pin original body, setup and verifier provenance/hashes before measurement;
 deliberate changes require a new workload version. Accept valid UpToDate Commits.

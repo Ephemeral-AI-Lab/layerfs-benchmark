@@ -9,7 +9,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-spec = importlib.util.spec_from_file_location("quick_run", Path(__file__).resolve().parents[1] / "src" / "run.py")
+spec = importlib.util.spec_from_file_location(
+    "quick_run", Path(__file__).resolve().parents[1] / "src" / "run.py"
+)
 run = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(run)
 
@@ -43,7 +45,9 @@ class LifecycleTests(unittest.TestCase):
             "cli": str(self.cli),
             "home": str(self.base / "home"),
             "empty_source": str(self.empty),
-            "machines": {machine: {"ready": True, "name": machine} for machine in run.MACHINES},
+            "machines": {
+                machine: {"ready": True, "name": machine} for machine in run.MACHINES
+            },
             "artifacts": {"cli_sha256": run.digest(self.cli)},
         }
         self.campaign = run.Campaign(self.config, self.base / "cache")
@@ -62,13 +66,21 @@ class LifecycleTests(unittest.TestCase):
         pg = {
             "password_env": "BENCH_UNIT_PG_PASSWORD",
             "disposal_resource": "unit-pg",
-            "databases": {"C09/docker": "postgresql://bench@server/db?sslmode=verify-full"},
+            "databases": {
+                "C09/docker": "postgresql://bench@server/db?sslmode=verify-full"
+            },
         }
         self.config["postgresql"] = pg
-        self.campaign.state["resources"] = [{"id": "unit-pg", "owned": True, "release_argv": ["remove", "unit-pg"]}]
+        self.campaign.state["resources"] = [
+            {"id": "unit-pg", "owned": True, "release_argv": ["remove", "unit-pg"]}
+        ]
         with patch.dict(run.os.environ, {"BENCH_UNIT_PG_PASSWORD": "not-logged"}):
             self.assertIsNone(self.campaign.prerequisite(row))
-            for suffix in ("?password=secret", "?sslpassword=secret", "?%70assword=secret"):
+            for suffix in (
+                "?password=secret",
+                "?sslpassword=secret",
+                "?%70assword=secret",
+            ):
                 pg["databases"]["C09/docker"] = "postgresql://bench@server/db" + suffix
                 self.assertIn("password", self.campaign.prerequisite(row))
             pg["databases"]["C09/docker"] = "postgresql://bench:secret@server/db"
@@ -88,7 +100,9 @@ class LifecycleTests(unittest.TestCase):
             result(),
             result(),
         ]
-        with patch.object(run.measure, "run_command", side_effect=prepared_results) as command:
+        with patch.object(
+            run.measure, "run_command", side_effect=prepared_results
+        ) as command:
             row = self.campaign.prepare(selection)
         prep_argv = [call.args[0] for call in command.call_args_list]
         self.assertEqual(
@@ -125,7 +139,9 @@ class LifecycleTests(unittest.TestCase):
             result(),
             result(),
         ]
-        with patch.object(run.measure, "run_command", side_effect=measured_results) as command:
+        with patch.object(
+            run.measure, "run_command", side_effect=measured_results
+        ) as command:
             self.campaign.execute(selection, self.base / "committed-base")
         measured_argv = [call.args[0] for call in command.call_args_list]
         self.assertEqual(len(measured_argv), 7)
@@ -253,10 +269,22 @@ class LifecycleTests(unittest.TestCase):
             with self.subTest(expected=expected, scenario=index):
                 campaign = run.Campaign(self.config, self.base / f"release-{index}")
                 campaign.state["resources"] = [
-                    {"id": "worker", "owned": True, "release_argv": ["stop", "exact-worker"]},
-                    {"id": "parent-volume", "owned": True, "release_argv": ["remove", "exact-volume"]},
+                    {
+                        "id": "worker",
+                        "owned": True,
+                        "release_argv": ["stop", "exact-worker"],
+                    },
+                    {
+                        "id": "parent-volume",
+                        "owned": True,
+                        "release_argv": ["remove", "exact-volume"],
+                    },
                 ]
-                kwargs = {"side_effect": outcome} if isinstance(outcome, BaseException) else {"return_value": outcome}
+                kwargs = (
+                    {"side_effect": outcome}
+                    if isinstance(outcome, BaseException)
+                    else {"return_value": outcome}
+                )
                 with patch.object(run.measure, "run_command", **kwargs) as command:
                     receipt = campaign.finish()
                     repeated = campaign.finish()
@@ -270,8 +298,15 @@ class LifecycleTests(unittest.TestCase):
                 self.assertNotIn("attempted", parent)
                 self.assertIn("worker", parent["retained_reason"])
                 if isinstance(outcome, run.measure.BudgetExceeded):
-                    events = [json.loads(line) for line in campaign.log.read_text().splitlines()]
-                    release = next(event for event in events if event["event"] == "infrastructure_release_result")
+                    events = [
+                        json.loads(line)
+                        for line in campaign.log.read_text().splitlines()
+                    ]
+                    release = next(
+                        event
+                        for event in events
+                        if event["event"] == "infrastructure_release_result"
+                    )
                     self.assertTrue(release["not_started"])
 
     def test_opt_in_proof_runs_only_after_measured_unmount(self):
@@ -327,7 +362,10 @@ class LifecycleTests(unittest.TestCase):
             result(),
             result(),
         ]
-        with patch.object(run.measure, "run_command", side_effect=answers), patch("builtins.print"):
+        with (
+            patch.object(run.measure, "run_command", side_effect=answers),
+            patch("builtins.print"),
+        ):
             exit_code = run.main(
                 [
                     "run",
@@ -355,7 +393,9 @@ class LifecycleTests(unittest.TestCase):
     def test_known_cleanup_failure_is_fail_and_never_replayed(self):
         row = self.prepare()
         row["sandbox_live"] = True
-        failure = result(process_exit=125, stderr=json.dumps({"code": "InUse", "message": "busy"}))
+        failure = result(
+            process_exit=125, stderr=json.dumps({"code": "InUse", "message": "busy"})
+        )
         with patch.object(run.measure, "run_command", return_value=failure) as command:
             self.campaign.cleanup(row)
             receipt = self.campaign.finish()
@@ -378,12 +418,16 @@ class LifecycleTests(unittest.TestCase):
         with patch.object(run.measure, "run_command", side_effect=answers):
             self.campaign.execute(self.selection, output)
         receipt = json.loads((output / "receipt.json").read_text())
-        self.assertEqual({path.name for path in (output / "harness").iterdir()}, set(run.HARNESS_FILES))
-        source_directory = Path(run.__file__).resolve().parent
+        self.assertEqual(
+            {path.name for path in (output / "harness").iterdir()},
+            set(run.HARNESS_FILES),
+        )
         for name, expected in receipt["harness_sha256"].items():
             captured = output / "harness" / name
             self.assertEqual(run.digest(captured), expected)
-            self.assertEqual(captured.read_bytes(), (source_directory / name).read_bytes())
+            self.assertEqual(
+                captured.read_bytes(), (run.harness_sources()[name]).read_bytes()
+            )
 
     def test_receipt_retains_execution_hashes_when_harness_changes_later(self):
         row = self.prepare()
@@ -396,7 +440,11 @@ class LifecycleTests(unittest.TestCase):
             result(),
             result(),
         ]
-        snapshot = {"run.py": "run-pin", "cases.py": "case-pin", "measure.py": "measure-pin"}
+        snapshot = {
+            "run.py": "run-pin",
+            "cases.py": "case-pin",
+            "measure.py": "measure-pin",
+        }
         with (
             patch.object(run, "snapshot_harness", return_value=snapshot),
             patch.object(run.measure, "run_command", side_effect=answers),
@@ -407,8 +455,10 @@ class LifecycleTests(unittest.TestCase):
         receipt = json.loads((self.base / "hashed" / "receipt.json").read_text())
         self.assertEqual(receipt["harness_sha256"], snapshot)
         self.assertEqual(receipt["matrix_index"], 0)
-        self.assertEqual(self.campaign.state["attempt_sequence"][0]["harness_sha256"], snapshot)
-        self.assertEqual(set(row["prepare_harness_sha256"]), {"run.py", "cases.py", "measure.py"})
+        self.assertEqual(
+            self.campaign.state["attempt_sequence"][0]["harness_sha256"], snapshot
+        )
+        self.assertEqual(set(row["prepare_harness_sha256"]), set(run.HARNESS_FILES))
 
     def test_campaign_cursor_rejects_backward_configuration(self):
         later = run.selections(["C01"], ["docker"], ["sqlite"])[0]
@@ -419,10 +469,20 @@ class LifecycleTests(unittest.TestCase):
     def test_infrastructure_shell_failure_is_known_and_does_not_infer_unknown(self):
         row = self.campaign.row(self.selection)
         with (
-            patch.object(run.measure, "run_command", return_value=result(process_exit=1, stderr="failed")),
+            patch.object(
+                run.measure,
+                "run_command",
+                return_value=result(process_exit=1, stderr="failed"),
+            ),
             self.assertRaises(run.Failure) as failure,
         ):
-            self.campaign.call(row, "cache_control", ["control", "owned-id"], run.measure.Deadline.after(1), cli=False)
+            self.campaign.call(
+                row,
+                "cache_control",
+                ["control", "owned-id"],
+                run.measure.Deadline.after(1),
+                cli=False,
+            )
         self.assertFalse(failure.exception.uncertain)
         self.assertFalse(row["uncertain"])
         self.assertIsNone(row["pending"])

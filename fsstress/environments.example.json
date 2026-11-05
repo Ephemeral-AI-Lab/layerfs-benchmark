@@ -1,0 +1,71 @@
+{
+  "campaign_id": "fsstress-example",
+  "source_sha": "RESOLVE_LATEST_layerfs_v2_0_0_FULL_SHA",
+  "cli": "/absolute/pinned-release/layerfs",
+  "home": "/absolute/owned-campaign/home",
+  "empty_source": "/absolute/owned-campaign/empty",
+  "environment": {
+    "XDG_CACHE_HOME": "/absolute/owned-campaign/cache"
+  },
+  "artifacts": {
+    "cli_sha256": "REPLACE_WITH_ACTUAL_SHA256",
+    "daemon_sha256": "REPLACE_WITH_ACTUAL_SHA256",
+    "linux_bundle_sha256": "REPLACE_WITH_ACTUAL_BUNDLE_HASH",
+    "profile": "release"
+  },
+  "machines": {
+    "native": {
+      "name": "native",
+      "ready": false,
+      "platform": "darwin",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/absolute/native/tools"
+      }
+    },
+    "docker": {
+      "name": "docker",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+      }
+    },
+    "lima": {
+      "name": "quick-lima",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+      }
+    },
+    "apple-container": {
+      "name": "quick-apple",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/bench-tools"
+      }
+    }
+  },
+  "postgresql": {
+    "password_env": "BENCH_PG_PASSWORD",
+    "databases": {
+      "S01/native": "postgresql://bench@db-host:5432/fsstress_s01_native",
+      "S01/docker": "postgresql://bench@db-host:5432/fsstress_s01_docker",
+      "S01/lima": "postgresql://bench@db-host:5432/fsstress_s01_lima",
+      "S01/apple-container": "postgresql://bench@db-host:5432/fsstress_s01_apple"
+    },
+    "disposal_resource": "postgres-data"
+  },
+  "resources": [
+    {
+      "id": "postgres-data",
+      "owned": false,
+      "release_argv": [],
+      "note": "Replace with exact owned infrastructure release records before running PostgreSQL."
+    }
+  ],
+  "prepare_budget_s": 25,
+  "performance_budget_s": 15,
+  "cleanup_budget_s": 10
+}

@@ -1,0 +1,34 @@
+{
+  "campaign_id": "replace-me",
+  "source_sha": "FULL_LAYERFS_COMMIT_SHA",
+  "cli": "/absolute/path/to/layerfs",
+  "home": "/absolute/private/campaign-home",
+  "performance_budget_s": 15,
+  "machines": {
+    "native": {
+      "name": "native",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/absolute/native/tools"
+      },
+      "unavailable_reason": "Upstream requires root; native command identity must be established as root before selection"
+    },
+    "docker": {
+      "name": "docker",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
+      }
+    },
+    "lima": {
+      "name": "lima",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
+      }
+    },
+    "apple-container": {
+      "name": "apple-container",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools"
+      }
+    }
+  }
+}

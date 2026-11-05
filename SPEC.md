@@ -101,7 +101,9 @@ Treat tool semantics explicitly:
 
 ## Preparation and execution
 
-Implement suites in issue order: fio, fsx, fsstress, mdtest, pjdfstest, smallfile.
+Owner execution update: implement suites in parallel with at most three child
+agents and explicit suite ownership. Integrate shared changes centrally. Execute
+measured suites in issue order: fio, fsx, fsstress, mdtest, pjdfstest, smallfile.
 Within a suite use **case → machine → database**: native, Docker, Lima, Apple
 Container; SQLite then PostgreSQL. Complete and account for all eight outcomes
 of a case before advancing. Never run benchmark workloads, builds, provisioning
@@ -207,3 +209,13 @@ Use focused tests for argument/result parsing, deadline/custody failures and
 complete row accounting. Every test invocation has an explicit timeout at most
 120 seconds; keep cheap proof separate. No new test or benchmark run is needed
 merely to create or edit this document.
+
+## Campaign prerequisite findings (2026-11-06)
+
+The selected unmodified xfstests fsx/fsstress sources require Linux headers, so
+native macOS has four NOT_RUN rows across X01/S01. Pinned LayerFS executes all
+four routes as a nonroot identity and refuses root, with no-new-privileges on
+guest routes. Upstream pjdfstest requires root; its 32 rows are NOT_RUN. No public
+CLI root option or safe image workaround exists. Implement and account for those
+rows, retain the exact blockers, and run the other 100 supported rows. This does
+not qualify the unsupported rows or change the product security contract.

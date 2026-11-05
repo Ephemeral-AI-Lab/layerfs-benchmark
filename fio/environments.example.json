@@ -1,0 +1,78 @@
+{
+  "campaign_id": "fio-example",
+  "source_sha": "RESOLVE_LATEST_LAYERFS_2_0_BRANCH_SHA",
+  "cli": "/absolute/pinned-release/layerfs",
+  "home": "/absolute/owned-six-suite-home",
+  "empty_source": "/absolute/owned-empty-source",
+  "artifacts": {
+    "cli_sha256": "REPLACE",
+    "daemon_sha256": "REPLACE",
+    "linux_bundle_sha256": "REPLACE",
+    "tool_source_sha": "ff930c4653ae3952d6b09ab3ec89671aeabf2cbe",
+    "tool_native_sha256": "78bffe4c98240a5e3d9fcde34d9662b4bbed03867d5ab5ed3648e8faefdc154c",
+    "tool_linux_sha256": "7a4ba395670e0795b32dd102916ec2cb71b32a3f9d91d76bed0734c22e0d8bbd"
+  },
+  "machines": {
+    "native": {
+      "name": "native",
+      "ready": false,
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/absolute/native-tools/bin"
+      }
+    },
+    "docker": {
+      "name": "docker",
+      "ready": false,
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools/bin"
+      }
+    },
+    "lima": {
+      "name": "lima",
+      "ready": false,
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools/bin"
+      }
+    },
+    "apple-container": {
+      "name": "apple-container",
+      "ready": false,
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-six-tools/bin"
+      }
+    }
+  },
+  "postgresql": {
+    "password_env": "BENCH_PG_PASSWORD",
+    "databases": {
+      "F01/native": "postgresql://bench@db-host:5432/fio_f01_native",
+      "F01/docker": "postgresql://bench@db-host:5432/fio_f01_docker",
+      "F01/lima": "postgresql://bench@db-host:5432/fio_f01_lima",
+      "F01/apple-container": "postgresql://bench@db-host:5432/fio_f01_apple_container",
+      "F02/native": "postgresql://bench@db-host:5432/fio_f02_native",
+      "F02/docker": "postgresql://bench@db-host:5432/fio_f02_docker",
+      "F02/lima": "postgresql://bench@db-host:5432/fio_f02_lima",
+      "F02/apple-container": "postgresql://bench@db-host:5432/fio_f02_apple_container",
+      "F03/native": "postgresql://bench@db-host:5432/fio_f03_native",
+      "F03/docker": "postgresql://bench@db-host:5432/fio_f03_docker",
+      "F03/lima": "postgresql://bench@db-host:5432/fio_f03_lima",
+      "F03/apple-container": "postgresql://bench@db-host:5432/fio_f03_apple_container",
+      "F04/native": "postgresql://bench@db-host:5432/fio_f04_native",
+      "F04/docker": "postgresql://bench@db-host:5432/fio_f04_docker",
+      "F04/lima": "postgresql://bench@db-host:5432/fio_f04_lima",
+      "F04/apple-container": "postgresql://bench@db-host:5432/fio_f04_apple_container"
+    },
+    "disposal_resource": "shared-six-postgres-data"
+  },
+  "resources": [
+    {
+      "id": "shared-six-postgres-data",
+      "owned": false,
+      "release_argv": [],
+      "note": "Register exact owned shared campaign infrastructure before running; disconnect does not delete data."
+    }
+  ],
+  "prepare_budget_s": 25,
+  "performance_budget_s": 15,
+  "cleanup_budget_s": 10
+}
