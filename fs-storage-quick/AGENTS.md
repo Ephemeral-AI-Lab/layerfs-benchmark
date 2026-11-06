@@ -70,6 +70,11 @@ suites stay the release check.
   widened to the |Δ| of a same-build repeat pinned into the baseline with
   `run.py add-repeat`). A new baseline (new workload version or new base
   build) is pinned with its own repeat campaign.
+- Pinned baselines: `b4fa173e40…` (the #84 starting point) and
+  `02133596ae…` (after the #84 Phase 1 fixes #86–#89; compare #90–#92
+  candidates against it). After #86, SQLite file-only bytes are not
+  comparable with the first baseline (WAL bytes moved into the file); judge
+  SQLite on file+WAL and late (closed) bytes there.
 - [src/report.py](src/report.py) renders one report from an export; publish it
   under `result/` and run `python3 shared/src/readme_index.py`. Ledgers,
   campaign caches and exports other than the pinned baseline stay local.

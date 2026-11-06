@@ -73,7 +73,7 @@ python3 fs-storage-quick/src/run.py createdb --environment $E --cache $C
 python3 fs-storage-quick/src/run.py run --environment $E --cache $C --late-probe-wait-s 75
 python3 fs-storage-quick/src/run.py finish --environment $E --cache $C
 python3 fs-storage-quick/src/run.py export --cache $C --output <campaign dir>/rows.json
-python3 fs-storage-quick/src/run.py compare --baseline fs-storage-quick/baseline/b4fa173e401fc87af6610c151225096288e4ba57.json --candidate $C
+python3 fs-storage-quick/src/run.py compare --baseline fs-storage-quick/baseline/02133596ae95caecd5763b810d0ad3c43087caaa.json --candidate $C
 python3 fs-storage-quick/src/report.py --rows <campaign dir>/rows.json --notes notes.md \
   --output result/YYYY-MM-DD/fs-storage-quick/FULL_LAYERFS_SHA/report.md
 python3 shared/src/readme_index.py

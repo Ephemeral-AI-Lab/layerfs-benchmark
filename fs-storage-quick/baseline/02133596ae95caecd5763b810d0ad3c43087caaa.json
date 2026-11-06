@@ -1,0 +1,6262 @@
+{
+ "suite": "fs-storage-quick",
+ "format": 1,
+ "workload_version": "fs-storage-quick-v1",
+ "gen_sha256": "8ddd0ab6c6d6fc0984890b174c9f7dab085eca10167c1660a96757248e590a8d",
+ "model_sha256": "f44c6b23d3035c1af97da133103b2ddf57cf37d977c09e77f11377a46aa307de",
+ "pins_sha256": "0d40f379bb114eab63ea4b907fe623d5dab4940ba32c12cebf17b7c8e765b66e",
+ "campaign_id": "qint-c2",
+ "source_sha": "02133596ae95caecd5763b810d0ad3c43087caaa",
+ "artifacts": {
+  "cli_sha256": "f016b9c317876280ab63217d219c7a678e36a629a35a5c43149300b0e5cdb43f",
+  "daemon_sha256": "0367989c2aa26e0fa8df0e79f5300612ef74f6a5c7f59351d0c6d8e4455ba1c1",
+  "linux_bundle_sha256": "21067f533e934fdb4c6207ef19761cf915387bc5e3474590b39cfdb18cc77e14",
+  "profile": "release",
+  "base_image": "sha256:afa1ef9c27294f9c7298820c06483e6fb1ddafc43a7cc7d6dec8cd2e67abf38e",
+  "sandbox_image": "sha256:fedbb4077dc7cba7771ff10fd0ee2db8ec063a7cea657559819cdcbb4bfb5db5 (fs-storage-quick:v1)"
+ },
+ "late_probe": {
+  "rows": [
+   "Q1/docker/sqlite",
+   "Q2/docker/sqlite",
+   "Q3/docker/sqlite",
+   "Q4/docker/sqlite",
+   "Q5/docker/sqlite",
+   "Q6/docker/sqlite",
+   "Q1/docker/postgresql",
+   "Q2/docker/postgresql",
+   "Q3/docker/postgresql",
+   "Q4/docker/postgresql",
+   "Q5/docker/postgresql",
+   "Q6/docker/postgresql"
+  ],
+  "slept_s": 74.949,
+  "wait_s": 75.0
+ },
+ "wall_ineligible": {
+  "sqlite": {
+   "matrix_wall_s": 59.0,
+   "sum_row_wall_s": 58.8,
+   "rows": 6
+  },
+  "postgresql": {
+   "matrix_wall_s": 144.6,
+   "sum_row_wall_s": 143.9,
+   "rows": 6
+  }
+ },
+ "rows": {
+  "Q1/sqlite": {
+   "id": "Q1/docker/sqlite",
+   "case": "Q1",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 1,
+   "raw": 4103985,
+   "sum_logical_commits": 4103985,
+   "init_logical": 0,
+   "sum_new_canonical": 4356403,
+   "sum_new_stored": 4132324,
+   "sum_new_metadata": 17211,
+   "sum_new_payload": 4115113,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 5009408,
+    "file_bytes": 5009408,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 5009408,
+    "file_bytes": 5009408,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 4796416,
+   "net_file_bytes": 4796416,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 4796416,
+   "late_net_file_bytes": 4796416,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 273.7,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 4103985,
+     "new_canonical": 4356403,
+     "new_stored": 4132324,
+     "new_metadata": 17211,
+     "wall_ms_ineligible": 372.4,
+     "cli_cpu_ms_ineligible": 11.3
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 4.9,
+    "commit_wall_ms_sum": 372.4,
+    "commit_wall_ms_median": 372.4,
+    "commit_wall_ms_max": 372.4,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     1176.5
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q1s": {
+     "copy_bytes": {
+      "store.sqlite": 5009408
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 1223,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 4165632,
+       "cells": 37,
+       "name": "pack",
+       "overflow_pages": 999,
+       "pages": 1017,
+       "payload": 4133479,
+       "unused": 27657
+      },
+      {
+       "bytes": 176128,
+       "cells": 2063,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 43,
+       "payload": 155694,
+       "unused": 9777
+      },
+      {
+       "bytes": 159744,
+       "cells": 2000,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 39,
+       "payload": 139943,
+       "unused": 13337
+      },
+      {
+       "bytes": 159744,
+       "cells": 2028,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 39,
+       "payload": 141233,
+       "unused": 8074
+      },
+      {
+       "bytes": 106496,
+       "cells": 2066,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 26,
+       "payload": 91940,
+       "unused": 8050
+      },
+      {
+       "bytes": 49152,
+       "cells": 2020,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 12,
+       "payload": 33854,
+       "unused": 9098
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 24,
+       "unused": 4060
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4063
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 17,
+       "unused": 4067
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4064
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 121,
+       "unused": 3964
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 55,
+       "unused": 4030
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 54,
+       "unused": 4031
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 91,
+       "unused": 3994
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 72,
+       "unused": 4013
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 191,
+       "unused": 3893
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 84,
+       "unused": 3998
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 74,
+       "unused": 4008
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 255,
+       "unused": 3826
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 6,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 6,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q1/postgresql": {
+   "id": "Q1/docker/postgresql",
+   "case": "Q1",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 1,
+   "raw": 4103985,
+   "sum_logical_commits": 4103985,
+   "init_logical": 0,
+   "sum_new_canonical": 4356403,
+   "sum_new_stored": 4132330,
+   "sum_new_metadata": 17217,
+   "sum_new_payload": 4115113,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/2EB7960"
+   },
+   "final": {
+    "total_bytes": 6832128,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 6832128,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/359BC68"
+   },
+   "late": {
+    "total_bytes": 6881280,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 6881280,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/9002528"
+   },
+   "inits": {},
+   "net_bytes": 6119424,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 6119424,
+   "late_net_bytes": 6168576,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 214.0,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 4103985,
+     "new_canonical": 4356403,
+     "new_stored": 4132330,
+     "new_metadata": 17217,
+     "wall_ms_ineligible": 1189.7,
+     "cli_cpu_ms_ineligible": 12.3
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 11.5,
+    "commit_wall_ms_sum": 1189.7,
+    "commit_wall_ms_median": 1189.7,
+    "commit_wall_ms_max": 1189.7,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     4260.2
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q1p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 21,
+       "name": "pack",
+       "toast_bytes": 4349952,
+       "total_bytes": 4374528
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 229376,
+       "index_bytes": 196608,
+       "last_autovacuum": "2026-11-06T06:16:10.918794+00:00",
+       "last_vacuum": null,
+       "live_tuples": 2066,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 466944
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 237568,
+       "index_bytes": 172032,
+       "last_autovacuum": "2026-11-06T06:16:10.963195+00:00",
+       "last_vacuum": null,
+       "live_tuples": 2000,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 450560
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 237568,
+       "index_bytes": 65536,
+       "last_autovacuum": "2026-11-06T06:16:10.944693+00:00",
+       "last_vacuum": null,
+       "live_tuples": 2022,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 344064
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 237568,
+       "index_bytes": 65536,
+       "last_autovacuum": "2026-11-06T06:16:10.952669+00:00",
+       "last_vacuum": null,
+       "live_tuples": 1991,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 344064
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 122880,
+       "index_bytes": 122880,
+       "last_autovacuum": "2026-11-06T06:16:10.960467+00:00",
+       "last_vacuum": null,
+       "live_tuples": 2020,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 286720
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 1,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 5,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 8,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 9,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 1,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 1,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q2/sqlite": {
+   "id": "Q2/docker/sqlite",
+   "case": "Q2",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12157920,
+   "sum_new_stored": 442030,
+   "sum_new_metadata": 5479,
+   "sum_new_payload": 436551,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 716800,
+    "file_bytes": 716800,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 716800,
+    "file_bytes": 716800,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 503808,
+   "net_file_bytes": 503808,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 503808,
+   "late_net_file_bytes": 503808,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 269.4,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 64.7,
+     "cli_cpu_ms_ineligible": 14.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 933559,
+     "new_stored": 7081,
+     "new_metadata": 415,
+     "wall_ms_ineligible": 46.3,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 934570,
+     "new_stored": 7292,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 55.2,
+     "cli_cpu_ms_ineligible": 11.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 934632,
+     "new_stored": 7375,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 54.0,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935278,
+     "new_stored": 7385,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 51.6,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935338,
+     "new_stored": 7189,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 66.0,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 935667,
+     "new_stored": 7386,
+     "new_metadata": 413,
+     "wall_ms_ineligible": 57.1,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 935696,
+     "new_stored": 7265,
+     "new_metadata": 413,
+     "wall_ms_ineligible": 71.2,
+     "cli_cpu_ms_ineligible": 11.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 935538,
+     "new_stored": 12534,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 57.2,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 935573,
+     "new_stored": 9022,
+     "new_metadata": 397,
+     "wall_ms_ineligible": 90.7,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 935759,
+     "new_stored": 14446,
+     "new_metadata": 419,
+     "wall_ms_ineligible": 55.2,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 935983,
+     "new_stored": 23831,
+     "new_metadata": 422,
+     "wall_ms_ineligible": 60.9,
+     "cli_cpu_ms_ineligible": 11.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 935840,
+     "new_stored": 9141,
+     "new_metadata": 424,
+     "wall_ms_ineligible": 54.0,
+     "cli_cpu_ms_ineligible": 11.8
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 5.3,
+    "commit_wall_ms_sum": 784.1,
+    "commit_wall_ms_median": 57.1,
+    "commit_wall_ms_max": 90.7,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     152.7
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q2s": {
+     "copy_bytes": {
+      "store.sqlite": 716800
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 175,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 458752,
+       "cells": 40,
+       "name": "pack",
+       "overflow_pages": 98,
+       "pages": 112,
+       "payload": 443444,
+       "unused": 14444
+      },
+      {
+       "bytes": 32768,
+       "cells": 336,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 8,
+       "payload": 25410,
+       "unused": 5721
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 24576,
+       "cells": 358,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16100,
+       "unused": 7334
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 26,
+       "unused": 4058
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 22,
+       "unused": 4062
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 17,
+       "unused": 4067
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4064
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 121,
+       "unused": 3964
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 55,
+       "unused": 4030
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 54,
+       "unused": 4031
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 91,
+       "unused": 3994
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 25,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1764,
+       "unused": 2249
+      },
+      {
+       "bytes": 4096,
+       "cells": 24,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1679,
+       "unused": 2313
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 922,
+       "unused": 3127
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 948,
+       "unused": 3101
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 689,
+       "unused": 3360
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 2867,
+       "unused": 1169
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 84,
+       "unused": 3998
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 74,
+       "unused": 4008
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 255,
+       "unused": 3826
+      },
+      {
+       "bytes": 4096,
+       "cells": 28,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 374,
+       "unused": 3630
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 10,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 10,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q2/postgresql": {
+   "id": "Q2/docker/postgresql",
+   "case": "Q2",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12157920,
+   "sum_new_stored": 442003,
+   "sum_new_metadata": 5452,
+   "sum_new_payload": 436551,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/3652678"
+   },
+   "final": {
+    "total_bytes": 1474560,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1474560,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/372E950"
+   },
+   "late": {
+    "total_bytes": 1474560,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1474560,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/9004000"
+   },
+   "inits": {},
+   "net_bytes": 761856,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 761856,
+   "late_net_bytes": 761856,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 198.3,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322077,
+     "new_metadata": 513,
+     "wall_ms_ineligible": 374.1,
+     "cli_cpu_ms_ineligible": 17.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 933559,
+     "new_stored": 7077,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 135.2,
+     "cli_cpu_ms_ineligible": 15.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 934570,
+     "new_stored": 7289,
+     "new_metadata": 409,
+     "wall_ms_ineligible": 177.6,
+     "cli_cpu_ms_ineligible": 16.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 934632,
+     "new_stored": 7376,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 189.9,
+     "cli_cpu_ms_ineligible": 15.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935278,
+     "new_stored": 7382,
+     "new_metadata": 408,
+     "wall_ms_ineligible": 157.7,
+     "cli_cpu_ms_ineligible": 15.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935338,
+     "new_stored": 7187,
+     "new_metadata": 409,
+     "wall_ms_ineligible": 178.3,
+     "cli_cpu_ms_ineligible": 15.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 935667,
+     "new_stored": 7385,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 157.1,
+     "cli_cpu_ms_ineligible": 14.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 935696,
+     "new_stored": 7265,
+     "new_metadata": 413,
+     "wall_ms_ineligible": 315.9,
+     "cli_cpu_ms_ineligible": 14.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 935538,
+     "new_stored": 12534,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 716.2,
+     "cli_cpu_ms_ineligible": 16.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 935573,
+     "new_stored": 9024,
+     "new_metadata": 399,
+     "wall_ms_ineligible": 545.2,
+     "cli_cpu_ms_ineligible": 16.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 935759,
+     "new_stored": 14445,
+     "new_metadata": 418,
+     "wall_ms_ineligible": 329.4,
+     "cli_cpu_ms_ineligible": 18.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 935983,
+     "new_stored": 23826,
+     "new_metadata": 417,
+     "wall_ms_ineligible": 330.7,
+     "cli_cpu_ms_ineligible": 15.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 935840,
+     "new_stored": 9136,
+     "new_metadata": 419,
+     "wall_ms_ineligible": 183.1,
+     "cli_cpu_ms_ineligible": 15.1
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 16.3,
+    "commit_wall_ms_sum": 3790.4,
+    "commit_wall_ms_median": 189.9,
+    "commit_wall_ms_max": 716.2,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     309.9
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q2p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 16384,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 28,
+       "name": "pack",
+       "toast_bytes": 499712,
+       "total_bytes": 557056
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 40960,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 358,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 114688
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 40960,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 330,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 90112
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 13,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 25,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 28,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 24,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 3,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 32,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 29,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 4,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 4,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q3/sqlite": {
+   "id": "Q3/docker/sqlite",
+   "case": "Q3",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12164904,
+   "sum_new_stored": 443504,
+   "sum_new_metadata": 6953,
+   "sum_new_payload": 436551,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 761856,
+    "file_bytes": 761856,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 761856,
+    "file_bytes": 761856,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 548864,
+   "net_file_bytes": 548864,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 548864,
+   "late_net_file_bytes": 548864,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 263.4,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322082,
+     "new_metadata": 518,
+     "wall_ms_ineligible": 61.3,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934141,
+     "new_stored": 7192,
+     "new_metadata": 526,
+     "wall_ms_ineligible": 54.5,
+     "cli_cpu_ms_ineligible": 13.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935152,
+     "new_stored": 7411,
+     "new_metadata": 531,
+     "wall_ms_ineligible": 78.7,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935214,
+     "new_stored": 7492,
+     "new_metadata": 528,
+     "wall_ms_ineligible": 86.0,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935860,
+     "new_stored": 7507,
+     "new_metadata": 533,
+     "wall_ms_ineligible": 69.9,
+     "cli_cpu_ms_ineligible": 11.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935920,
+     "new_stored": 7312,
+     "new_metadata": 534,
+     "wall_ms_ineligible": 76.3,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936249,
+     "new_stored": 7509,
+     "new_metadata": 536,
+     "wall_ms_ineligible": 55.3,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936278,
+     "new_stored": 7394,
+     "new_metadata": 542,
+     "wall_ms_ineligible": 65.9,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936120,
+     "new_stored": 12661,
+     "new_metadata": 539,
+     "wall_ms_ineligible": 63.9,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936155,
+     "new_stored": 9150,
+     "new_metadata": 525,
+     "wall_ms_ineligible": 56.7,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936341,
+     "new_stored": 14582,
+     "new_metadata": 555,
+     "wall_ms_ineligible": 69.2,
+     "cli_cpu_ms_ineligible": 13.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936565,
+     "new_stored": 23953,
+     "new_metadata": 544,
+     "wall_ms_ineligible": 72.4,
+     "cli_cpu_ms_ineligible": 13.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936422,
+     "new_stored": 9259,
+     "new_metadata": 542,
+     "wall_ms_ineligible": 65.6,
+     "cli_cpu_ms_ineligible": 13.7
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 7.0,
+    "commit_wall_ms_sum": 875.7,
+    "commit_wall_ms_median": 65.9,
+    "commit_wall_ms_max": 86.0,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     147.8
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q3s": {
+     "copy_bytes": {
+      "store.sqlite": 761856
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 186,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 462848,
+       "cells": 41,
+       "name": "pack",
+       "overflow_pages": 98,
+       "pages": 113,
+       "payload": 444918,
+       "unused": 17049
+      },
+      {
+       "bytes": 36864,
+       "cells": 373,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 9,
+       "payload": 28182,
+       "unused": 6849
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 28672,
+       "cells": 394,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 7,
+       "payload": 17744,
+       "unused": 9666
+      },
+      {
+       "bytes": 28672,
+       "cells": 325,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 7,
+       "payload": 22932,
+       "unused": 4685
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 12288,
+       "cells": 328,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 3,
+       "payload": 4776,
+       "unused": 6496
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 26,
+       "unused": 4058
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 22,
+       "unused": 4062
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 17,
+       "unused": 4067
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4064
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 121,
+       "unused": 3964
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 55,
+       "unused": 4030
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 54,
+       "unused": 4031
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 91,
+       "unused": 3994
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 24,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1679,
+       "unused": 2313
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 922,
+       "unused": 3127
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 948,
+       "unused": 3101
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 689,
+       "unused": 3360
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 2867,
+       "unused": 1169
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 84,
+       "unused": 3998
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 74,
+       "unused": 4008
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 255,
+       "unused": 3826
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 8,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 8,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q3/postgresql": {
+   "id": "Q3/docker/postgresql",
+   "case": "Q3",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12164904,
+   "sum_new_stored": 443507,
+   "sum_new_metadata": 6956,
+   "sum_new_payload": 436551,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/37E5300"
+   },
+   "final": {
+    "total_bytes": 1654784,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1654784,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/38D3D38"
+   },
+   "late": {
+    "total_bytes": 1654784,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1654784,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/9008000"
+   },
+   "inits": {},
+   "net_bytes": 942080,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 942080,
+   "late_net_bytes": 942080,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 182.3,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 269.4,
+     "cli_cpu_ms_ineligible": 15.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934141,
+     "new_stored": 7190,
+     "new_metadata": 524,
+     "wall_ms_ineligible": 155.3,
+     "cli_cpu_ms_ineligible": 19.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935152,
+     "new_stored": 7408,
+     "new_metadata": 528,
+     "wall_ms_ineligible": 186.8,
+     "cli_cpu_ms_ineligible": 15.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935214,
+     "new_stored": 7493,
+     "new_metadata": 529,
+     "wall_ms_ineligible": 154.4,
+     "cli_cpu_ms_ineligible": 15.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935860,
+     "new_stored": 7508,
+     "new_metadata": 534,
+     "wall_ms_ineligible": 195.1,
+     "cli_cpu_ms_ineligible": 16.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935920,
+     "new_stored": 7312,
+     "new_metadata": 534,
+     "wall_ms_ineligible": 215.5,
+     "cli_cpu_ms_ineligible": 15.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936249,
+     "new_stored": 7509,
+     "new_metadata": 536,
+     "wall_ms_ineligible": 248.5,
+     "cli_cpu_ms_ineligible": 16.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936278,
+     "new_stored": 7393,
+     "new_metadata": 541,
+     "wall_ms_ineligible": 212.0,
+     "cli_cpu_ms_ineligible": 15.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936120,
+     "new_stored": 12662,
+     "new_metadata": 540,
+     "wall_ms_ineligible": 351.8,
+     "cli_cpu_ms_ineligible": 15.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936155,
+     "new_stored": 9155,
+     "new_metadata": 530,
+     "wall_ms_ineligible": 362.5,
+     "cli_cpu_ms_ineligible": 17.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936341,
+     "new_stored": 14581,
+     "new_metadata": 554,
+     "wall_ms_ineligible": 251.0,
+     "cli_cpu_ms_ineligible": 15.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936565,
+     "new_stored": 23955,
+     "new_metadata": 546,
+     "wall_ms_ineligible": 316.8,
+     "cli_cpu_ms_ineligible": 16.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936422,
+     "new_stored": 9258,
+     "new_metadata": 541,
+     "wall_ms_ineligible": 263.4,
+     "cli_cpu_ms_ineligible": 15.7
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 16.7,
+    "commit_wall_ms_sum": 3182.5,
+    "commit_wall_ms_median": 248.5,
+    "commit_wall_ms_max": 362.5,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     249.7
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q3p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 16384,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 28,
+       "name": "pack",
+       "toast_bytes": 499712,
+       "total_bytes": 557056
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 49152,
+       "index_bytes": 57344,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 394,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 139264
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 40960,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 325,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 122880
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 49152,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 366,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 98304
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 24576,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 328,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 90112
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 13,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 3,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 24,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 32,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 29,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 13,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 13,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q4/sqlite": {
+   "id": "Q4/docker/sqlite",
+   "case": "Q4",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12166204,
+   "sum_new_stored": 815494,
+   "sum_new_metadata": 7065,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 1130496,
+    "file_bytes": 1130496,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 1130496,
+    "file_bytes": 1130496,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 917504,
+   "net_file_bytes": 917504,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 917504,
+   "late_net_file_bytes": 917504,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 257.6,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934587,
+     "new_stored": 322089,
+     "new_metadata": 525,
+     "wall_ms_ineligible": 57.0,
+     "cli_cpu_ms_ineligible": 14.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934241,
+     "new_stored": 20230,
+     "new_metadata": 515,
+     "wall_ms_ineligible": 61.8,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935252,
+     "new_stored": 24410,
+     "new_metadata": 521,
+     "wall_ms_ineligible": 58.0,
+     "cli_cpu_ms_ineligible": 15.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935314,
+     "new_stored": 28400,
+     "new_metadata": 535,
+     "wall_ms_ineligible": 51.6,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935960,
+     "new_stored": 32322,
+     "new_metadata": 544,
+     "wall_ms_ineligible": 52.5,
+     "cli_cpu_ms_ineligible": 13.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 936020,
+     "new_stored": 36085,
+     "new_metadata": 549,
+     "wall_ms_ineligible": 55.4,
+     "cli_cpu_ms_ineligible": 13.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936349,
+     "new_stored": 39953,
+     "new_metadata": 549,
+     "wall_ms_ineligible": 52.8,
+     "cli_cpu_ms_ineligible": 13.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936378,
+     "new_stored": 43449,
+     "new_metadata": 548,
+     "wall_ms_ineligible": 49.7,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936220,
+     "new_stored": 46857,
+     "new_metadata": 548,
+     "wall_ms_ineligible": 75.8,
+     "cli_cpu_ms_ineligible": 12.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936255,
+     "new_stored": 50281,
+     "new_metadata": 537,
+     "wall_ms_ineligible": 60.2,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936441,
+     "new_stored": 53801,
+     "new_metadata": 566,
+     "wall_ms_ineligible": 66.6,
+     "cli_cpu_ms_ineligible": 14.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936665,
+     "new_stored": 57173,
+     "new_metadata": 566,
+     "wall_ms_ineligible": 57.0,
+     "cli_cpu_ms_ineligible": 13.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936522,
+     "new_stored": 60444,
+     "new_metadata": 562,
+     "wall_ms_ineligible": 56.3,
+     "cli_cpu_ms_ineligible": 14.0
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 6.6,
+    "commit_wall_ms_sum": 754.7,
+    "commit_wall_ms_median": 57.0,
+    "commit_wall_ms_max": 75.8,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     137.1
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q4s": {
+     "copy_bytes": {
+      "store.sqlite": 1130496
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 276,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 831488,
+       "cells": 40,
+       "name": "pack",
+       "overflow_pages": 189,
+       "pages": 203,
+       "payload": 816923,
+       "unused": 13326
+      },
+      {
+       "bytes": 36864,
+       "cells": 373,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 9,
+       "payload": 28182,
+       "unused": 6849
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 28672,
+       "cells": 394,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 7,
+       "payload": 17744,
+       "unused": 9666
+      },
+      {
+       "bytes": 28672,
+       "cells": 325,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 7,
+       "payload": 22932,
+       "unused": 4685
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 12288,
+       "cells": 328,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 3,
+       "payload": 6076,
+       "unused": 5196
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 26,
+       "unused": 4058
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 22,
+       "unused": 4062
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 17,
+       "unused": 4067
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4064
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 121,
+       "unused": 3964
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 55,
+       "unused": 4030
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 54,
+       "unused": 4031
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 91,
+       "unused": 3994
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 24,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1679,
+       "unused": 2313
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 922,
+       "unused": 3127
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 948,
+       "unused": 3101
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 689,
+       "unused": 3360
+      },
+      {
+       "bytes": 4096,
+       "cells": 13,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 2875,
+       "unused": 1161
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 84,
+       "unused": 3998
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 74,
+       "unused": 4008
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 255,
+       "unused": 3826
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 5,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 5,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q4/postgresql": {
+   "id": "Q4/docker/postgresql",
+   "case": "Q4",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12166204,
+   "sum_new_stored": 815481,
+   "sum_new_metadata": 7052,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/398A780"
+   },
+   "final": {
+    "total_bytes": 2056192,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2056192,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/3ADD578"
+   },
+   "late": {
+    "total_bytes": 2056192,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2056192,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/900A000"
+   },
+   "inits": {},
+   "net_bytes": 1343488,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 1343488,
+   "late_net_bytes": 1343488,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 166.2,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934587,
+     "new_stored": 322089,
+     "new_metadata": 525,
+     "wall_ms_ineligible": 245.3,
+     "cli_cpu_ms_ineligible": 16.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934241,
+     "new_stored": 20230,
+     "new_metadata": 515,
+     "wall_ms_ineligible": 163.3,
+     "cli_cpu_ms_ineligible": 15.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935252,
+     "new_stored": 24412,
+     "new_metadata": 523,
+     "wall_ms_ineligible": 172.7,
+     "cli_cpu_ms_ineligible": 17.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935314,
+     "new_stored": 28398,
+     "new_metadata": 533,
+     "wall_ms_ineligible": 169.7,
+     "cli_cpu_ms_ineligible": 17.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935960,
+     "new_stored": 32318,
+     "new_metadata": 540,
+     "wall_ms_ineligible": 162.1,
+     "cli_cpu_ms_ineligible": 16.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 936020,
+     "new_stored": 36083,
+     "new_metadata": 547,
+     "wall_ms_ineligible": 236.0,
+     "cli_cpu_ms_ineligible": 14.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936349,
+     "new_stored": 39951,
+     "new_metadata": 547,
+     "wall_ms_ineligible": 216.0,
+     "cli_cpu_ms_ineligible": 18.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936378,
+     "new_stored": 43450,
+     "new_metadata": 549,
+     "wall_ms_ineligible": 194.7,
+     "cli_cpu_ms_ineligible": 16.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936220,
+     "new_stored": 46855,
+     "new_metadata": 546,
+     "wall_ms_ineligible": 190.7,
+     "cli_cpu_ms_ineligible": 15.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936255,
+     "new_stored": 50280,
+     "new_metadata": 536,
+     "wall_ms_ineligible": 351.3,
+     "cli_cpu_ms_ineligible": 17.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936441,
+     "new_stored": 53797,
+     "new_metadata": 562,
+     "wall_ms_ineligible": 273.4,
+     "cli_cpu_ms_ineligible": 17.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936665,
+     "new_stored": 57174,
+     "new_metadata": 567,
+     "wall_ms_ineligible": 619.1,
+     "cli_cpu_ms_ineligible": 16.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936522,
+     "new_stored": 60444,
+     "new_metadata": 562,
+     "wall_ms_ineligible": 293.9,
+     "cli_cpu_ms_ineligible": 15.6
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 16.6,
+    "commit_wall_ms_sum": 3288.2,
+    "commit_wall_ms_median": 216.0,
+    "commit_wall_ms_max": 619.1,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     347.7
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q4p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 16384,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 28,
+       "name": "pack",
+       "toast_bytes": 901120,
+       "total_bytes": 958464
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 49152,
+       "index_bytes": 57344,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 394,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 139264
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 40960,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 325,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 122880
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 49152,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 366,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 98304
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 24576,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 328,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 90112
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 13,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 13,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 3,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 24,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 32,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 29,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 20,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 20,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q5/sqlite": {
+   "id": "Q5/docker/sqlite",
+   "case": "Q5",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 6,
+   "raw": 203423752,
+   "sum_logical_commits": 203423752,
+   "init_logical": 0,
+   "sum_new_canonical": 34942963,
+   "sum_new_stored": 34788498,
+   "sum_new_metadata": 135039,
+   "sum_new_payload": 34653459,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 35311616,
+    "file_bytes": 35311616,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 35311616,
+    "file_bytes": 35311616,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 35098624,
+   "net_file_bytes": 35098624,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 35098624,
+   "late_net_file_bytes": 35098624,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 251.0,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 33554432,
+     "new_canonical": 33662164,
+     "new_stored": 33651782,
+     "new_metadata": 61106,
+     "wall_ms_ineligible": 455.0,
+     "cli_cpu_ms_ineligible": 15.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 33554433,
+     "new_canonical": 6475,
+     "new_stored": 5618,
+     "new_metadata": 5564,
+     "wall_ms_ineligible": 30.6,
+     "cli_cpu_ms_ineligible": 14.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 33554434,
+     "new_canonical": 40017,
+     "new_stored": 16851,
+     "new_metadata": 16668,
+     "wall_ms_ineligible": 50.3,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 33554434,
+     "new_canonical": 92820,
+     "new_stored": 41478,
+     "new_metadata": 30437,
+     "wall_ms_ineligible": 38.9,
+     "cli_cpu_ms_ineligible": 13.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 34603010,
+     "new_canonical": 1122780,
+     "new_stored": 1067038,
+     "new_metadata": 15641,
+     "wall_ms_ineligible": 51.7,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 34603009,
+     "new_canonical": 18707,
+     "new_stored": 5731,
+     "new_metadata": 5623,
+     "wall_ms_ineligible": 30.6,
+     "cli_cpu_ms_ineligible": 13.1
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 7.4,
+    "commit_wall_ms_sum": 657.1,
+    "commit_wall_ms_median": 44.599999999999994,
+    "commit_wall_ms_max": 455.0,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     793.7
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q5s": {
+     "copy_bytes": {
+      "store.sqlite": 35311616
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 8621,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 34963456,
+       "cells": 270,
+       "name": "pack",
+       "overflow_pages": 8421,
+       "pages": 8536,
+       "payload": 34795485,
+       "unused": 130735
+      },
+      {
+       "bytes": 102400,
+       "cells": 1867,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 25,
+       "payload": 83509,
+       "unused": 12994
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 28,
+       "unused": 4056
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4063
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 17,
+       "unused": 4067
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 70,
+       "unused": 4015
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 21,
+       "unused": 4064
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 121,
+       "unused": 3964
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 55,
+       "unused": 4030
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 53,
+       "unused": 4032
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 54,
+       "unused": 4031
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 91,
+       "unused": 3994
+      },
+      {
+       "bytes": 4096,
+       "cells": 8,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 616,
+       "unused": 3440
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 72,
+       "unused": 4013
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 425,
+       "unused": 3645
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 437,
+       "unused": 3633
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 318,
+       "unused": 3752
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1315,
+       "unused": 2749
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 84,
+       "unused": 3998
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 74,
+       "unused": 4008
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 255,
+       "unused": 3826
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 14,
+       "unused": 4071
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 5,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 5,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q5/postgresql": {
+   "id": "Q5/docker/postgresql",
+   "case": "Q5",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 6,
+   "raw": 203423752,
+   "sum_logical_commits": 203423752,
+   "init_logical": 0,
+   "sum_new_canonical": 34942963,
+   "sum_new_stored": 34788498,
+   "sum_new_metadata": 135039,
+   "sum_new_payload": 34653459,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/3B93FA8"
+   },
+   "final": {
+    "total_bytes": 37437440,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 37437440,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/6027AF0"
+   },
+   "late": {
+    "total_bytes": 37437440,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 37437440,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/900C6A8"
+   },
+   "inits": {},
+   "net_bytes": 36724736,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 36724736,
+   "late_net_bytes": 36724736,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 151.3,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 33554432,
+     "new_canonical": 33662164,
+     "new_stored": 33651782,
+     "new_metadata": 61106,
+     "wall_ms_ineligible": 1409.4,
+     "cli_cpu_ms_ineligible": 18.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 33554433,
+     "new_canonical": 6475,
+     "new_stored": 5618,
+     "new_metadata": 5564,
+     "wall_ms_ineligible": 206.2,
+     "cli_cpu_ms_ineligible": 18.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 33554434,
+     "new_canonical": 40017,
+     "new_stored": 16850,
+     "new_metadata": 16667,
+     "wall_ms_ineligible": 165.5,
+     "cli_cpu_ms_ineligible": 17.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 33554434,
+     "new_canonical": 92820,
+     "new_stored": 41478,
+     "new_metadata": 30437,
+     "wall_ms_ineligible": 135.0,
+     "cli_cpu_ms_ineligible": 15.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 34603010,
+     "new_canonical": 1122780,
+     "new_stored": 1067039,
+     "new_metadata": 15642,
+     "wall_ms_ineligible": 236.5,
+     "cli_cpu_ms_ineligible": 15.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 34603009,
+     "new_canonical": 18707,
+     "new_stored": 5731,
+     "new_metadata": 5623,
+     "wall_ms_ineligible": 150.1,
+     "cli_cpu_ms_ineligible": 15.0
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 15.6,
+    "commit_wall_ms_sum": 2302.7,
+    "commit_wall_ms_median": 185.85,
+    "commit_wall_ms_max": 1409.4,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     3816.6
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q5p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 24576,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 159,
+       "name": "pack",
+       "toast_bytes": 36233216,
+       "total_bytes": 36298752
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 204800,
+       "index_bytes": 163840,
+       "last_autovacuum": "2026-11-06T06:17:00.965525+00:00",
+       "last_vacuum": null,
+       "live_tuples": 1874,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 409600
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 6,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 6,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 6,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 3,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 8,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 18,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 19,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 16384,
+    "late_net_bytes": 0,
+    "sum_new_stored": 3,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 3,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q6/sqlite": {
+   "id": "Q6/docker/sqlite",
+   "case": "Q6",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 23,
+   "raw": 1560458138,
+   "sum_logical_commits": 1495437615,
+   "init_logical": 65020523,
+   "sum_new_canonical": 1292935,
+   "sum_new_stored": 62030,
+   "sum_new_metadata": 41912,
+   "sum_new_payload": 20118,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 24612864,
+    "file_bytes": 24612864,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "late": {
+    "total_bytes": 24612864,
+    "file_bytes": 24612864,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {
+    "init_p1": {
+     "total_bytes": 24469504,
+     "file_bytes": 24469504,
+     "wal_bytes": 0,
+     "schema_bytes": null,
+     "allocated_bytes": null,
+     "wal_frames": 0
+    }
+   },
+   "net_bytes": 24399872,
+   "net_file_bytes": 24399872,
+   "net_wal_bytes": 0,
+   "net_schema_bytes": null,
+   "late_net_bytes": 24399872,
+   "late_net_file_bytes": 24399872,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 224.4,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p1@lane",
+     "label": "lane/01",
+     "logical": 65019323,
+     "new_canonical": 77364,
+     "new_stored": 6636,
+     "new_metadata": 6029,
+     "wall_ms_ineligible": 60.5,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/02",
+     "logical": 65019491,
+     "new_canonical": 40721,
+     "new_stored": 1951,
+     "new_metadata": 1137,
+     "wall_ms_ineligible": 46.6,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/03",
+     "logical": 65019648,
+     "new_canonical": 35158,
+     "new_stored": 1553,
+     "new_metadata": 932,
+     "wall_ms_ineligible": 29.7,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/04",
+     "logical": 65019094,
+     "new_canonical": 53870,
+     "new_stored": 1697,
+     "new_metadata": 911,
+     "wall_ms_ineligible": 27.5,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/05",
+     "logical": 65016203,
+     "new_canonical": 58155,
+     "new_stored": 1880,
+     "new_metadata": 1046,
+     "wall_ms_ineligible": 64.7,
+     "cli_cpu_ms_ineligible": 11.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/06",
+     "logical": 65016130,
+     "new_canonical": 53895,
+     "new_stored": 3986,
+     "new_metadata": 3397,
+     "wall_ms_ineligible": 32.1,
+     "cli_cpu_ms_ineligible": 12.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/07",
+     "logical": 65019323,
+     "new_canonical": 64718,
+     "new_stored": 2826,
+     "new_metadata": 1123,
+     "wall_ms_ineligible": 37.0,
+     "cli_cpu_ms_ineligible": 13.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/08",
+     "logical": 65019972,
+     "new_canonical": 36767,
+     "new_stored": 2045,
+     "new_metadata": 1022,
+     "wall_ms_ineligible": 34.3,
+     "cli_cpu_ms_ineligible": 13.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/09",
+     "logical": 65018370,
+     "new_canonical": 78589,
+     "new_stored": 1544,
+     "new_metadata": 951,
+     "wall_ms_ineligible": 38.6,
+     "cli_cpu_ms_ineligible": 14.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/10",
+     "logical": 65019820,
+     "new_canonical": 40461,
+     "new_stored": 4110,
+     "new_metadata": 2762,
+     "wall_ms_ineligible": 40.0,
+     "cli_cpu_ms_ineligible": 14.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/11",
+     "logical": 65022328,
+     "new_canonical": 52716,
+     "new_stored": 4772,
+     "new_metadata": 3480,
+     "wall_ms_ineligible": 37.1,
+     "cli_cpu_ms_ineligible": 15.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/12",
+     "logical": 65024863,
+     "new_canonical": 45856,
+     "new_stored": 2585,
+     "new_metadata": 1124,
+     "wall_ms_ineligible": 35.8,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/13",
+     "logical": 65015007,
+     "new_canonical": 53447,
+     "new_stored": 3303,
+     "new_metadata": 2507,
+     "wall_ms_ineligible": 33.5,
+     "cli_cpu_ms_ineligible": 13.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/14",
+     "logical": 65015337,
+     "new_canonical": 52863,
+     "new_stored": 1683,
+     "new_metadata": 1005,
+     "wall_ms_ineligible": 31.1,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/15",
+     "logical": 65015513,
+     "new_canonical": 61932,
+     "new_stored": 3068,
+     "new_metadata": 2582,
+     "wall_ms_ineligible": 32.7,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/16",
+     "logical": 65015041,
+     "new_canonical": 75784,
+     "new_stored": 1624,
+     "new_metadata": 1042,
+     "wall_ms_ineligible": 31.2,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/17",
+     "logical": 65019161,
+     "new_canonical": 54979,
+     "new_stored": 3079,
+     "new_metadata": 1105,
+     "wall_ms_ineligible": 35.7,
+     "cli_cpu_ms_ineligible": 11.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/18",
+     "logical": 65023551,
+     "new_canonical": 98454,
+     "new_stored": 5238,
+     "new_metadata": 2980,
+     "wall_ms_ineligible": 43.9,
+     "cli_cpu_ms_ineligible": 16.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/19",
+     "logical": 65023533,
+     "new_canonical": 87637,
+     "new_stored": 2835,
+     "new_metadata": 2052,
+     "wall_ms_ineligible": 36.3,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/20",
+     "logical": 65015397,
+     "new_canonical": 73426,
+     "new_stored": 2271,
+     "new_metadata": 1723,
+     "wall_ms_ineligible": 39.0,
+     "cli_cpu_ms_ineligible": 13.9
+    },
+    {
+     "branch": "p1@b01",
+     "label": "b01/01",
+     "logical": 65020170,
+     "new_canonical": 42121,
+     "new_stored": 1423,
+     "new_metadata": 1081,
+     "wall_ms_ineligible": 36.6,
+     "cli_cpu_ms_ineligible": 10.7
+    },
+    {
+     "branch": "p1@b02",
+     "label": "b02/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 961,
+     "new_metadata": 961,
+     "wall_ms_ineligible": 45.3,
+     "cli_cpu_ms_ineligible": 17.2
+    },
+    {
+     "branch": "p1@b03",
+     "label": "b03/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 960,
+     "new_metadata": 960,
+     "wall_ms_ineligible": 54.2,
+     "cli_cpu_ms_ineligible": 13.9
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 27.6,
+    "commit_wall_ms_sum": 903.4,
+    "commit_wall_ms_median": 36.6,
+    "commit_wall_ms_max": 64.7,
+    "init_wall_ms": [
+     10632.1
+    ],
+    "verify_wall_ms": [
+     2095.7,
+     1478.9,
+     1112.6,
+     995.9
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q6s": {
+     "copy_bytes": {
+      "store.sqlite": 24612864
+     },
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "dbstat on a closed copy",
+     "pragma": {
+      "freelist_count": 0,
+      "page_count": 6009,
+      "page_size": 4096
+     },
+     "status": "MEASURED",
+     "tables": [
+      {
+       "bytes": 21983232,
+       "cells": 687,
+       "name": "pack",
+       "overflow_pages": 5095,
+       "pages": 5367,
+       "payload": 21659399,
+       "unused": 294276
+      },
+      {
+       "bytes": 954368,
+       "cells": 11581,
+       "name": "inode_value",
+       "overflow_pages": 0,
+       "pages": 233,
+       "payload": 873950,
+       "unused": 20081
+      },
+      {
+       "bytes": 602112,
+       "cells": 11540,
+       "name": "object_location",
+       "overflow_pages": 0,
+       "pages": 147,
+       "payload": 511041,
+       "unused": 54691
+      },
+      {
+       "bytes": 425984,
+       "cells": 10945,
+       "name": "binding_hint",
+       "overflow_pages": 0,
+       "pages": 104,
+       "payload": 334180,
+       "unused": 57725
+      },
+      {
+       "bytes": 417792,
+       "cells": 5427,
+       "name": "content_signature",
+       "overflow_pages": 0,
+       "pages": 102,
+       "payload": 378089,
+       "unused": 11578
+      },
+      {
+       "bytes": 32768,
+       "cells": 1,
+       "name": "history_meta",
+       "overflow_pages": 7,
+       "pages": 8,
+       "payload": 30554,
+       "unused": 2168
+      },
+      {
+       "bytes": 24576,
+       "cells": 46,
+       "name": "sqlite_schema",
+       "overflow_pages": 0,
+       "pages": 6,
+       "payload": 16276,
+       "unused": 7921
+      },
+      {
+       "bytes": 12288,
+       "cells": 23,
+       "name": "commit",
+       "overflow_pages": 0,
+       "pages": 3,
+       "payload": 5018,
+       "unused": 7146
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_totals",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 28,
+       "unused": 4056
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "store_policy",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 22,
+       "unused": 4062
+      },
+      {
+       "bytes": 4096,
+       "cells": 1,
+       "name": "sqlite_sequence",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 18,
+       "unused": 4066
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "scope_allocator",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 138,
+       "unused": 3944
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "run_merges",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "reach",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_record",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "merge_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_source",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layers_genesis",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 106,
+       "unused": 3976
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "layers_child",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer_stack_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 43,
+       "unused": 4039
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer_stack",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 243,
+       "unused": 3839
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 110,
+       "unused": 3972
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 106,
+       "unused": 3976
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 108,
+       "unused": 3974
+      },
+      {
+       "bytes": 4096,
+       "cells": 2,
+       "name": "layer",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 186,
+       "unused": 3896
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_operation",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_host_file",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry_directory",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "init_entry",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 8,
+       "name": "file_digest",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 560,
+       "unused": 3504
+      },
+      {
+       "bytes": 4096,
+       "cells": 23,
+       "name": "commit_runs",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1629,
+       "unused": 2390
+      },
+      {
+       "bytes": 4096,
+       "cells": 23,
+       "name": "commit_lineage",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1675,
+       "unused": 2344
+      },
+      {
+       "bytes": 4096,
+       "cells": 23,
+       "name": "commit_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 1219,
+       "unused": 2800
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "branch_names",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 249,
+       "unused": 3821
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "branch_identity",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 222,
+       "unused": 3848
+      },
+      {
+       "bytes": 4096,
+       "cells": 6,
+       "name": "branch",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 795,
+       "unused": 3271
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed_heights",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      },
+      {
+       "bytes": 4096,
+       "cells": 0,
+       "name": "absorbed",
+       "overflow_pages": 0,
+       "pages": 1,
+       "payload": 0,
+       "unused": 4088
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 32768,
+    "net_file_bytes": 32768,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 32768,
+    "late_net_file_bytes": 32768,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 76,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 76,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q6/postgresql": {
+   "id": "Q6/docker/postgresql",
+   "case": "Q6",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 23,
+   "raw": 1560458138,
+   "sum_logical_commits": 1495437615,
+   "init_logical": 65020523,
+   "sum_new_canonical": 1292935,
+   "sum_new_stored": 62042,
+   "sum_new_metadata": 41924,
+   "sum_new_payload": 20118,
+   "floor": {
+    "total_bytes": 712704,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 712704,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/60DE628"
+   },
+   "final": {
+    "total_bytes": 29712384,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 29712384,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/90006C8"
+   },
+   "late": {
+    "total_bytes": 29712384,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 29712384,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/900D8C8"
+   },
+   "inits": {
+    "init_p1": {
+     "total_bytes": 29392896,
+     "file_bytes": null,
+     "wal_bytes": null,
+     "schema_bytes": 29392896,
+     "allocated_bytes": null,
+     "wal_frames": null,
+     "server_wal_lsn": "0/8F60990"
+    }
+   },
+   "net_bytes": 28999680,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 28999680,
+   "late_net_bytes": 28999680,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 84.7,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p1@lane",
+     "label": "lane/01",
+     "logical": 65019323,
+     "new_canonical": 77364,
+     "new_stored": 6635,
+     "new_metadata": 6028,
+     "wall_ms_ineligible": 599.6,
+     "cli_cpu_ms_ineligible": 15.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/02",
+     "logical": 65019491,
+     "new_canonical": 40721,
+     "new_stored": 1949,
+     "new_metadata": 1135,
+     "wall_ms_ineligible": 134.7,
+     "cli_cpu_ms_ineligible": 14.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/03",
+     "logical": 65019648,
+     "new_canonical": 35158,
+     "new_stored": 1551,
+     "new_metadata": 930,
+     "wall_ms_ineligible": 114.7,
+     "cli_cpu_ms_ineligible": 13.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/04",
+     "logical": 65019094,
+     "new_canonical": 53870,
+     "new_stored": 1697,
+     "new_metadata": 911,
+     "wall_ms_ineligible": 126.2,
+     "cli_cpu_ms_ineligible": 15.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/05",
+     "logical": 65016203,
+     "new_canonical": 58155,
+     "new_stored": 1878,
+     "new_metadata": 1044,
+     "wall_ms_ineligible": 148.4,
+     "cli_cpu_ms_ineligible": 15.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/06",
+     "logical": 65016130,
+     "new_canonical": 53895,
+     "new_stored": 3987,
+     "new_metadata": 3398,
+     "wall_ms_ineligible": 169.5,
+     "cli_cpu_ms_ineligible": 15.9
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/07",
+     "logical": 65019323,
+     "new_canonical": 64718,
+     "new_stored": 2827,
+     "new_metadata": 1124,
+     "wall_ms_ineligible": 187.4,
+     "cli_cpu_ms_ineligible": 16.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/08",
+     "logical": 65019972,
+     "new_canonical": 36767,
+     "new_stored": 2047,
+     "new_metadata": 1024,
+     "wall_ms_ineligible": 197.6,
+     "cli_cpu_ms_ineligible": 17.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/09",
+     "logical": 65018370,
+     "new_canonical": 78589,
+     "new_stored": 1541,
+     "new_metadata": 948,
+     "wall_ms_ineligible": 134.0,
+     "cli_cpu_ms_ineligible": 15.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/10",
+     "logical": 65019820,
+     "new_canonical": 40461,
+     "new_stored": 4114,
+     "new_metadata": 2766,
+     "wall_ms_ineligible": 202.7,
+     "cli_cpu_ms_ineligible": 14.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/11",
+     "logical": 65022328,
+     "new_canonical": 52716,
+     "new_stored": 4774,
+     "new_metadata": 3482,
+     "wall_ms_ineligible": 203.4,
+     "cli_cpu_ms_ineligible": 14.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/12",
+     "logical": 65024863,
+     "new_canonical": 45856,
+     "new_stored": 2581,
+     "new_metadata": 1120,
+     "wall_ms_ineligible": 203.8,
+     "cli_cpu_ms_ineligible": 15.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/13",
+     "logical": 65015007,
+     "new_canonical": 53447,
+     "new_stored": 3307,
+     "new_metadata": 2511,
+     "wall_ms_ineligible": 243.6,
+     "cli_cpu_ms_ineligible": 15.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/14",
+     "logical": 65015337,
+     "new_canonical": 52863,
+     "new_stored": 1686,
+     "new_metadata": 1008,
+     "wall_ms_ineligible": 214.2,
+     "cli_cpu_ms_ineligible": 16.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/15",
+     "logical": 65015513,
+     "new_canonical": 61932,
+     "new_stored": 3069,
+     "new_metadata": 2583,
+     "wall_ms_ineligible": 200.4,
+     "cli_cpu_ms_ineligible": 15.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/16",
+     "logical": 65015041,
+     "new_canonical": 75784,
+     "new_stored": 1626,
+     "new_metadata": 1044,
+     "wall_ms_ineligible": 163.9,
+     "cli_cpu_ms_ineligible": 14.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/17",
+     "logical": 65019161,
+     "new_canonical": 54979,
+     "new_stored": 3074,
+     "new_metadata": 1100,
+     "wall_ms_ineligible": 187.7,
+     "cli_cpu_ms_ineligible": 14.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/18",
+     "logical": 65023551,
+     "new_canonical": 98454,
+     "new_stored": 5240,
+     "new_metadata": 2982,
+     "wall_ms_ineligible": 248.4,
+     "cli_cpu_ms_ineligible": 14.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/19",
+     "logical": 65023533,
+     "new_canonical": 87637,
+     "new_stored": 2840,
+     "new_metadata": 2057,
+     "wall_ms_ineligible": 199.4,
+     "cli_cpu_ms_ineligible": 14.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/20",
+     "logical": 65015397,
+     "new_canonical": 73426,
+     "new_stored": 2273,
+     "new_metadata": 1725,
+     "wall_ms_ineligible": 172.3,
+     "cli_cpu_ms_ineligible": 16.3
+    },
+    {
+     "branch": "p1@b01",
+     "label": "b01/01",
+     "logical": 65020170,
+     "new_canonical": 42121,
+     "new_stored": 1424,
+     "new_metadata": 1082,
+     "wall_ms_ineligible": 112.7,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p1@b02",
+     "label": "b02/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 961,
+     "new_metadata": 961,
+     "wall_ms_ineligible": 129.0,
+     "cli_cpu_ms_ineligible": 12.3
+    },
+    {
+     "branch": "p1@b03",
+     "label": "b03/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 961,
+     "new_metadata": 961,
+     "wall_ms_ineligible": 115.9,
+     "cli_cpu_ms_ineligible": 12.8
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 67.2,
+    "commit_wall_ms_sum": 4409.5,
+    "commit_wall_ms_median": 187.4,
+    "commit_wall_ms_max": 599.6,
+    "init_wall_ms": [
+     27438.0
+    ],
+    "verify_wall_ms": [
+     10114.5,
+     1622.4,
+     2287.4,
+     1282.6
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "attribution": {
+    "qint-c2-q6p": {
+     "label": "DIAGNOSTIC (owner decision pending, layerfs-project#85 task 1)",
+     "method": "read-only catalog query on the owned database",
+     "status": "MEASURED",
+     "tables": [
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 81920,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 343,
+       "name": "pack",
+       "toast_bytes": 22675456,
+       "total_bytes": 22798336
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 1261568,
+       "index_bytes": 933888,
+       "last_autovacuum": "2026-11-06T06:18:09.832157+00:00",
+       "last_vacuum": null,
+       "live_tuples": 11540,
+       "name": "object_location",
+       "toast_bytes": 8192,
+       "total_bytes": 2236416
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 1335296,
+       "index_bytes": 270336,
+       "last_autovacuum": "2026-11-06T06:18:09.860896+00:00",
+       "last_vacuum": null,
+       "live_tuples": 11350,
+       "name": "inode_value",
+       "toast_bytes": 8192,
+       "total_bytes": 1646592
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 794624,
+       "index_bytes": 704512,
+       "last_autovacuum": "2026-11-06T06:18:09.891087+00:00",
+       "last_vacuum": null,
+       "live_tuples": 10945,
+       "name": "binding_hint",
+       "toast_bytes": 8192,
+       "total_bytes": 1540096
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 630784,
+       "index_bytes": 139264,
+       "last_autovacuum": "2026-11-06T06:18:09.874804+00:00",
+       "last_vacuum": null,
+       "live_tuples": 5331,
+       "name": "content_signature",
+       "toast_bytes": 8192,
+       "total_bytes": 811008
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 65536,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "layer",
+       "toast_bytes": 8192,
+       "total_bytes": 81920
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 23,
+       "heap_bytes": 8192,
+       "index_bytes": 49152,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 6,
+       "name": "branch",
+       "toast_bytes": 8192,
+       "total_bytes": 65536
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": "2026-11-06T06:18:09.587872+00:00",
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_policy",
+       "toast_bytes": 0,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 40960,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 23,
+       "name": "commit_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 57344
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "layer_lineage",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "history_meta",
+       "toast_bytes": 24576,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "layer_stack",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 32768,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 23,
+       "name": "commit",
+       "toast_bytes": 8192,
+       "total_bytes": 49152
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 10,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 2,
+       "name": "scope_allocator",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 8,
+       "name": "file_digest",
+       "toast_bytes": 8192,
+       "total_bytes": 32768
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": "2026-11-06T06:17:09.728663+00:00",
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_host_file",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 32,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_totals",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "absorbed",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 1,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 16384,
+       "last_autovacuum": "2026-11-06T06:17:09.683313+00:00",
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_entry",
+       "toast_bytes": 8192,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 8192,
+       "index_bytes": 16384,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 1,
+       "name": "store_lane",
+       "toast_bytes": 0,
+       "total_bytes": 24576
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "reach",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      },
+      {
+       "autovacuum_count": 0,
+       "dead_tuples": 0,
+       "heap_bytes": 0,
+       "index_bytes": 8192,
+       "last_autovacuum": null,
+       "last_vacuum": null,
+       "live_tuples": 0,
+       "name": "init_operation",
+       "toast_bytes": 8192,
+       "total_bytes": 16384
+      }
+     ]
+    }
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 49152,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 38,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 38,
+    "sum_new_canonical": 0
+   }
+  }
+ },
+ "harness": {
+  "git_head": null,
+  "sources_sha256": "4d3c787dc77fe5659e20d466c28cb1b7434746bf6ae44afcbb0e13e2e5471d9f",
+  "suite_dirty": null
+ },
+ "repeat": {
+  "campaign_id": "qint-c3",
+  "source_sha": "02133596ae95caecd5763b810d0ad3c43087caaa",
+  "harness": {
+   "git_head": null,
+   "sources_sha256": "4d3c787dc77fe5659e20d466c28cb1b7434746bf6ae44afcbb0e13e2e5471d9f",
+   "suite_dirty": null
+  },
+  "wall_ineligible": {
+   "sqlite": {
+    "matrix_wall_s": 60.6,
+    "sum_row_wall_s": 60.4,
+    "rows": 6
+   },
+   "postgresql": {
+    "matrix_wall_s": 120.5,
+    "sum_row_wall_s": 120.0,
+    "rows": 6
+   }
+  }
+ },
+ "note": "built from opt/84-phase1-int d77f468c9a98a14905592f8c7bbf8c26d81dafb9, tree-identical to 02133596ae (tree d974594ae6); campaign qint-c2, same-build repeat qint-c3; harness benchmark 38ddb9e"
+}
