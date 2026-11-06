@@ -139,8 +139,8 @@ class ReportTests(unittest.TestCase):
                 "id": f"{case}/docker/{backend}" + (f"/r{repeat}" if repeat > 1 else ""),
                 "case": case, "backend": backend, "repeat": repeat,
                 "execution": "PASS", "verification": "PASS", "cleanup": "COMPLETE",
-                "probes": {"floor": {"s": {"total_bytes": 1000, "file_bytes": 1000, "wal_bytes": 0}},
-                           "final": {"s": {"total_bytes": 9000, "file_bytes": 9000, "wal_bytes": 0}}},
+                "probes": {"floor": {"s": {"backend": backend, "total_bytes": 1000, "file_bytes": 1000, "wal_bytes": 0}},
+                           "final": {"s": {"backend": backend, "total_bytes": 9000, "file_bytes": 9000, "wal_bytes": 0}}},
                 "histories": [{"project": "s/p", "branch": "lane", "commits": commits}],
             }
         rows = [row(c, b) for c in cases.CASE_IDS for b in ("sqlite", "postgresql")]
@@ -149,7 +149,7 @@ class ReportTests(unittest.TestCase):
         config = {"machines": {"docker": {"name": "docker"}}, "artifacts": {}}
         text = report.render(state, config, cleanup="COMPLETE")
         self.assertTrue(text.splitlines()[2].startswith("**16 of 16 fs-storage-micro rows PASS"))
-        self.assertIn("identical Store bytes", text)
+        self.assertIn("byte-identical", text)
         self.assertIn("| M01 | SQLite | PASS | 1,000 | 9,000 | 8,000 |", text)
         self.assertLess(text.index("### M01"), text.index("### M08"))
 

@@ -79,22 +79,44 @@ def outcome(rows, primary, cleanup):
     failed = [r["id"] for r in primary if r not in passed]
     if failed:
         text += f" ({len(failed)} not passing: {', '.join(failed)})"
-    repeats = [r for r in rows if r.get("repeat", 1) > 1]
-    for repeat in repeats:
-        base = next((r for r in primary if r["case"] == repeat["case"] and r["backend"] == repeat["backend"]), None)
-        same = deterministic(base, repeat)
-        text += f"; determinism repeat {repeat['id']}: {'identical Store bytes' if same else 'DIFFERENT Store bytes'}"
+    for repeat in [r for r in rows if r.get("repeat", 1) > 1]:
+        verdict = compare(base_of(primary, repeat), repeat)
+        text += f"; repeat {repeat['id']}: {verdict['verdict']}"
     text += f"; final cleanup {cleanup}.**"
     return text
 
 
-def deterministic(a, b):
-    if not a or not b or not a.get("summary") or not b.get("summary"):
-        return False
-    keys = ("final_bytes", "net_bytes", "sum_new_stored", "sum_new_metadata")
-    return all(a["summary"].get(k) == b["summary"].get(k) for k in keys) and [
-        (c["new_stored"], c["new_metadata"]) for c in history(a)
-    ] == [(c["new_stored"], c["new_metadata"]) for c in history(b)]
+def base_of(primary, repeat):
+    return next((r for r in primary if r["case"] == repeat["case"] and r["backend"] == repeat["backend"]), {})
+
+
+def page_bytes(row):
+    """SQLite file bytes or PostgreSQL schema bytes at the final probe (page granular)."""
+    probe = next(iter((row.get("probes", {}).get("final") or {}).values()), {})
+    return probe.get("file_bytes") if probe.get("backend") == "sqlite" else probe.get("schema_bytes")
+
+
+def compare(a, b):
+    """Byte determinism of a repeat against its first row."""
+    ha, hb = history(a or {}), history(b or {})
+    if not ha or len(ha) != len(hb):
+        return {"verdict": "NOT COMPARABLE"}
+    delta = lambda key: max(abs(x[key] - y[key]) for x, y in zip(ha, hb))  # noqa: E731
+    out = {
+        "page_equal": page_bytes(a) == page_bytes(b),
+        "total_delta": (b["summary"]["final_bytes"] - a["summary"]["final_bytes"]),
+        "stored_delta": delta("new_stored"),
+        "metadata_delta": delta("new_metadata"),
+        "canonical_equal": delta("new_canonical") == 0 and delta("logical") == 0,
+    }
+    if out["page_equal"] and out["total_delta"] == 0 and out["stored_delta"] == 0 and out["metadata_delta"] == 0:
+        out["verdict"] = "byte-identical"
+    else:
+        out["verdict"] = (
+            ("page-granular Store bytes identical" if out["page_equal"] else "Store pages DIFFER")
+            + f", total {out['total_delta']:+,} B, per-Commit new_stored ±{out['stored_delta']:,} B"
+        )
+    return out
 
 
 def render(state, config, notes="", cleanup="UNKNOWN"):
@@ -152,9 +174,11 @@ def render(state, config, notes="", cleanup="UNKNOWN"):
     lines += [
         "## Per-Commit attribution",
         "",
-        "`logical` is each Commit's whole-tree size, so Σ logical sums the states. Unattributed = net − "
-        "(Σ new_stored + Σ new_metadata): bytes in the Store that no Commit counter names (database pages, "
-        "indexes, free space, WAL).",
+        "`logical` is each Commit's whole-tree size, so Σ logical sums the states. In LayerFS 2.0 "
+        "`new_stored` counts all new pack bytes and `new_metadata` is its metadata-domain subset, so payload = "
+        "stored − metadata and **net − Σ new_stored** is what no Commit's packs account for (database pages, "
+        "indexes, free space, the SQLite WAL). The spec's unattributed = net − (Σ new_stored + Σ new_metadata) "
+        "counts metadata twice; it is shown for comparability only.",
         "",
         sr.attribution_table(primary),
         "",
@@ -192,21 +216,40 @@ def render(state, config, notes="", cleanup="UNKNOWN"):
         lines.append("")
         if any(by_backend.values()):
             lines += [sr.commit_curve_table(by_backend), ""]
+    pg_rows = [r for r in primary if r["backend"] == "postgresql" and storage.server_wal_bytes(r) is not None]
+    if pg_rows:
+        lines += [
+            "## PostgreSQL server WAL",
+            "",
+            "Server-wide `pg_current_wal_lsn()` advance between the floor and final probes (owning-container "
+            "admin command; this server served only these rows, serially). It is not part of Store bytes.",
+            "",
+            sr.table(["Case", "Schema net (B)", "Server WAL floor→final (B)"],
+                     [[r["case"], sr.b((r.get("summary") or {}).get("net_bytes")), sr.b(storage.server_wal_bytes(r))]
+                      for r in sorted(pg_rows, key=lambda r: r["case"])]),
+            "",
+        ]
     repeats = [r for r in rows if r.get("repeat", 1) > 1]
     if repeats:
         lines += ["## Determinism", ""]
         body = []
         for repeat in repeats:
-            base = next((r for r in primary if r["case"] == repeat["case"] and r["backend"] == repeat["backend"]), {})
+            base = base_of(primary, repeat)
             a, b = base.get("summary") or {}, repeat.get("summary") or {}
+            c = compare(base, repeat)
             body.append([
-                repeat["id"], sr.b(a.get("final_bytes")), sr.b(b.get("final_bytes")),
-                sr.b(a.get("net_bytes")), sr.b(b.get("net_bytes")),
-                sr.b(a.get("net_allocated_bytes")), sr.b(b.get("net_allocated_bytes")),
-                "identical" if deterministic(base, repeat) else "DIFFERENT",
+                repeat["id"], sr.b(page_bytes(base)), sr.b(page_bytes(repeat)),
+                sr.b(a.get("final_bytes")), sr.b(b.get("final_bytes")),
+                sr.b(c.get("stored_delta")), sr.b(c.get("metadata_delta")),
+                "yes" if c.get("canonical_equal") else "no", c["verdict"],
             ])
-        lines += [sr.table(["Repeat", "Final first (B)", "Final repeat (B)", "Net first (B)", "Net repeat (B)",
-                            "Net allocated first (B)", "Net allocated repeat (B)", "Store bytes and per-Commit counters"], body), ""]
+        lines += [sr.table(["Repeat", "Pages first (B)", "Pages repeat (B)", "Final first (B)", "Final repeat (B)",
+                            "Max per-Commit Δ new_stored (B)", "Max per-Commit Δ new_metadata (B)",
+                            "new_canonical and logical identical", "Verdict"], body),
+                  "",
+                  "Pages = SQLite `file.bytes` or PostgreSQL schema bytes; Final = Store bytes as defined above "
+                  "(SQLite adds `wal_bytes`).",
+                  ""]
     if notes:
         lines += [notes.strip(), ""]
     return "\n".join(lines).rstrip() + "\n"
