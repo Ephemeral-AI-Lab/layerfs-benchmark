@@ -24,6 +24,10 @@ Commands (from the benchmark repository root), each its own invocation:
 
 A separately labelled extra gate may declare a subset at setup (`--cells C17
 --arms pg-colocated`); it runs the same paired order over that subset only.
+A paired attribution gate may also select another suite's runner and the
+native machine (`--suite pjdfstest --machine native --tool-root DIR`), and a
+Docker worker image (`--worker-image ID`, e.g. the six-suite tool image) used
+by both identities; receipts stay under results/pg-r2-gate/<gate>/.
 
 An artifact DIR holds `layerfs`, `layerfs-daemon`, `manifest.json` (with
 `source_sha`) and `xdg/layerfs/bundle/...`. `next` marks a row attempted before
@@ -43,6 +47,7 @@ counts stay the primary evidence.
 import argparse
 import fcntl
 import hashlib
+import importlib.util
 import json
 import os
 import shutil
@@ -108,9 +113,27 @@ def ledger(gate, event, **fields):
         stream.write(json.dumps({"event": event, "at_utc": now(), **fields}) + "\n")
 
 
+SUITE = "fs-bench-quick"
+MACHINE = "docker"
+
+
+def suite_cells(suite):
+    """CASE_IDS of a suite's cases.py (matrix order of its runner)."""
+    if suite == "fs-bench-quick":
+        return ALL_CELLS
+    spec = importlib.util.spec_from_file_location(f"cases_{suite}", ROOT / suite / "src" / "cases.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return tuple(module.CASE_IDS)
+
+
+def run_path():
+    return ROOT / SUITE / "src" / "run.py"
+
+
 def arm_order(cell, arms=None):
     """The runner's matrix order with `order: alternate` (odd CASE_IDS index reversed)."""
-    ordered = ARMS[::-1] if ALL_CELLS.index(cell) % 2 else ARMS
+    ordered = ARMS[::-1] if suite_cells(SUITE).index(cell) % 2 else ARMS
     return tuple(a for a in ordered if a in (arms or SELECTED_ARMS))
 
 
@@ -119,9 +142,11 @@ SELECTED_ARMS = ARMS
 
 def scope(record):
     """Restrict reporting to a gate's declared cells and arms (an extra subset gate)."""
-    global CELLS, SELECTED_ARMS
+    global CELLS, SELECTED_ARMS, SUITE, MACHINE
     CELLS = tuple(record.get("cells", CELLS))
     SELECTED_ARMS = tuple(record.get("arms", ARMS))
+    SUITE = record.get("suite", "fs-bench-quick")
+    MACHINE = record.get("machine", "docker")
 
 
 def plan(cells=CELLS, arms=ARMS):
@@ -173,6 +198,20 @@ def cli_env(ident_dir):
     )
 
 
+def machines_config(args):
+    """The environment's machine table: only the gate's machine is ready."""
+    machines = {
+        "native": {"name": "native", "ready": MACHINE == "native"},
+        "docker": {"name": "docker", "ready": MACHINE == "docker"},
+        "lima": {"name": "none", "ready": False},
+        "apple-container": {"name": "none", "ready": False},
+    }
+    if args.tool_root:
+        machines[MACHINE]["platform"] = "darwin" if MACHINE == "native" else "linux"
+        machines[MACHINE]["tool_environment"] = {"BENCH_TOOL_ROOT": args.tool_root}
+    return machines
+
+
 def setup(args):
     gate = args.gate
     root = gate_dir(gate)
@@ -180,11 +219,15 @@ def setup(args):
         raise SystemExit(f"{root} exists; every gate needs fresh homes and workers")
     if any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in gate) or len(gate) > 12:
         raise SystemExit("gate id: up to 12 lowercase letters, digits or hyphens")
+    global SUITE, MACHINE
+    SUITE, MACHINE = args.suite, args.machine
     idents = {"a": artifact(args.control), "b": artifact(args.treatment)}
     cells = tuple(args.cells.split(",")) if args.cells else CELLS
     arms = tuple(args.arms.split(",")) if args.arms else ARMS
-    if not set(cells) <= set(ALL_CELLS) or not set(arms) <= set(ARMS):
+    if not set(cells) <= set(suite_cells(SUITE)) or not set(arms) <= set(ARMS):
         raise SystemExit("unknown --cells or --arms")
+    if MACHINE not in ("docker", "native") or (MACHINE == "native" and "pg-colocated" in arms):
+        raise SystemExit("--machine is docker or native; the co-located arm exists on Docker only")
     root.mkdir(parents=True, mode=0o700)
     colocated_ip = subprocess.run(
         ["docker", "inspect", SERVER, "--format", "{{.NetworkSettings.Networks.bridge.IPAddress}}"],
@@ -194,7 +237,7 @@ def setup(args):
         ["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
     ).stdout.strip()
     dirty = subprocess.run(
-        ["git", "-C", str(ROOT), "status", "--porcelain", "--", "fs-bench-quick/src", "shared/src"],
+        ["git", "-C", str(ROOT), "status", "--porcelain", "--", "fs-bench-quick/src", "shared/src", f"{SUITE}/src"],
         capture_output=True, text=True, check=True,
     ).stdout.strip()
     if dirty:
@@ -206,6 +249,10 @@ def setup(args):
         "rule": RULE,
         "cells": cells,
         "arms": arms,
+        "suite": SUITE,
+        "machine": MACHINE,
+        "tool_root": args.tool_root,
+        "worker_image": args.worker_image,
         "server": {"container": SERVER, "published": f"127.0.0.1:{PORT}", "colocated": f"{colocated_ip}:5432"},
         "identities": idents,
         "label": args.label or "",
@@ -229,7 +276,7 @@ def setup(args):
                     name = database(gate, ident, rnd, cell, arm)
                     names.append(name)
                     host = f"127.0.0.1:{PORT}" if arm == "postgresql" else f"{colocated_ip}:5432"
-                    key = f"{cell}/docker" if arm == "postgresql" else f"{cell}/docker/{arm}"
+                    key = f"{cell}/{MACHINE}" if arm == "postgresql" else f"{cell}/{MACHINE}/{arm}"
                     dbs[key] = f"postgresql://bench@{host}/{name}?sslmode=disable"
             cli = str(Path(art["dir"]) / "layerfs")
             env = {
@@ -242,12 +289,7 @@ def setup(args):
                 "empty_source": str(empty),
                 "environment": {"XDG_CACHE_HOME": str(d / "xdg")},
                 "artifacts": {k: art[k] for k in ("cli_sha256", "daemon_sha256", "linux_bundle_sha256")} | {"profile": "release"},
-                "machines": {
-                    "native": {"name": "native", "ready": False},
-                    "docker": {"name": "docker", "ready": True},
-                    "lima": {"name": "none", "ready": False},
-                    "apple-container": {"name": "none", "ready": False},
-                },
+                "machines": machines_config(args),
                 "order": "alternate",
                 "compact_sources": True,
                 "postgresql": {
@@ -265,10 +307,9 @@ def setup(args):
                     {"id": f"pgr2b-{gate}-databases", "owned": True,
                      "release_argv": [sys.executable, str(Path(__file__).resolve()), "finish", "--gate", gate],
                      "note": "the gate's exact row databases on pgr2b-pg; released by gate.py finish"},
-                    {"id": f"docker-worker-{gate}-{ident}", "owned": True,
-                     "release_argv": [cli, "machine", "stop", "docker"],
-                     "note": f"worker of {d / 'home'}; stopped by gate.py finish"},
-                ],
+                ] + ([{"id": f"docker-worker-{gate}-{ident}", "owned": True,
+                       "release_argv": [cli, "machine", "stop", "docker"],
+                       "note": f"worker of {d / 'home'}; stopped by gate.py finish"}] if MACHINE == "docker" else []),
                 "shared_infrastructure": True,
                 "shared_cleanup_complete": False,
                 "prepare_budget_s": 25,
@@ -288,8 +329,20 @@ def setup(args):
     for ident in idents:
         d = root / ident
         started = time.monotonic()
-        out = subprocess.run([str(Path(idents[ident]["dir"]) / "layerfs"), "machine", "start", "docker"],
-                             env=cli_env(d), capture_output=True, text=True, timeout=110)
+        cli = str(Path(idents[ident]["dir"]) / "layerfs")
+        if MACHINE == "native":
+            # The native machine runs this identity's own macOS daemon (no worker).
+            out = subprocess.run([cli, "machine", "update", "native", "--daemon",
+                                  str(Path(idents[ident]["dir"]) / "layerfs-daemon")],
+                                 env=cli_env(d), capture_output=True, text=True, timeout=110)
+        else:
+            if args.worker_image:
+                image = subprocess.run([cli, "machine", "update", "docker", "--image", args.worker_image],
+                                       env=cli_env(d), capture_output=True, text=True, timeout=110)
+                if image.returncode != 0:
+                    raise SystemExit(f"worker image for {ident} refused: {image.stderr[-500:]}")
+            out = subprocess.run([cli, "machine", "start", "docker"],
+                                 env=cli_env(d), capture_output=True, text=True, timeout=110)
         layerfs_id = json.loads((d / "home/layerfs.json").read_text()).get("id", "")
         worker = {"exit": out.returncode, "seconds": round(time.monotonic() - started, 1),
                   "stdout": out.stdout[-2000:], "stderr": out.stderr[-2000:],
@@ -300,11 +353,11 @@ def setup(args):
         print(f"worker {ident}: exit {out.returncode} in {worker['seconds']} s ({worker['container']})")
         if out.returncode != 0:
             raise SystemExit(f"worker {ident} did not start: {out.stderr[-500:]}")
-    print(f"gate {gate}: {len(record['plan'])} rows planned, {len(names)} databases, receipts under {RESULTS / gate}")
+    print(f"gate {gate} ({SUITE} on {MACHINE}): {len(record['plan'])} rows planned, {len(names)} databases, receipts under {RESULTS / gate}")
 
 
 def receipt_path(gate, row):
-    return RESULTS / gate / row["ident"] / f"r{row['round']}" / "rows" / row["cell"] / "docker" / row["arm"]
+    return RESULTS / gate / row["ident"] / f"r{row['round']}" / "rows" / row["cell"] / MACHINE / row["arm"]
 
 
 def bounded(argv, timeout, env, log):
@@ -332,6 +385,7 @@ def next_row(args):
 def one_row(args):
     gate = args.gate
     record = load(gate)
+    scope(record)
     index = record["cursor"]
     if index >= len(record["plan"]):
         print("gate complete: every planned row attempted")
@@ -346,14 +400,14 @@ def one_row(args):
     out.parent.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, BENCH_PG_PASSWORD=PASSWORD_FILE.read_text().strip())
     select = ["--environment", str(campaign / "environment.json"), "--cache", str(campaign / "prepared"),
-              "--case", row["cell"], "--machine", "docker", "--backend", row["arm"]]
+              "--case", row["cell"], "--machine", MACHINE, "--backend", row["arm"]]
     logs = campaign / "logs"
     logs.mkdir(exist_ok=True)
     tag = f"{row['cell']}-{row['arm']}"
     load_before = os.getloadavg()[0]
     started = time.monotonic()
-    pe = bounded([sys.executable, str(RUN), "prepare", *select], PREPARE_TIMEOUT_S, env, logs / f"{tag}.prepare.log")
-    re_ = bounded([sys.executable, str(RUN), "run", *select, "--output", str(out)], RUN_TIMEOUT_S, env,
+    pe = bounded([sys.executable, str(run_path()), "prepare", *select], PREPARE_TIMEOUT_S, env, logs / f"{tag}.prepare.log")
+    re_ = bounded([sys.executable, str(run_path()), "run", *select, "--output", str(out)], RUN_TIMEOUT_S, env,
                   logs / f"{tag}.run.log")
     row.update(prepare_exit=pe, run_exit=re_, load_1m_before=round(load_before, 2),
                wall_s=round(time.monotonic() - started, 1))
@@ -388,6 +442,7 @@ def line(row, path):
 
 def collect(gate):
     record = load(gate)
+    scope(record)
     rows = {}
     for row in record["plan"][: record["cursor"]]:
         path = receipt_path(gate, row) / "receipt.json"
@@ -615,6 +670,7 @@ def finish(args):
     """
     gate = args.gate
     record = load(gate)
+    scope(record)
     if record.get("finished"):
         print("gate already finished; no release is replayed")
         return 0
@@ -629,7 +685,7 @@ def finish(args):
                 results[f"{ident}-r{rnd}"] = "no campaign state"
                 continue
             out = subprocess.run(
-                [sys.executable, str(RUN), "finish", "--environment", str(campaign / "environment.json"),
+                [sys.executable, str(run_path()), "finish", "--environment", str(campaign / "environment.json"),
                  "--cache", str(campaign / "prepared")],
                 env=env, capture_output=True, text=True, timeout=100, cwd=ROOT,
             )
@@ -642,6 +698,9 @@ def finish(args):
                         kept_db.add(database(gate, ident, rnd, row["cell"], row["backend"]))
         if ident in kept_ident:
             results[f"worker-{ident}"] = {"exit": None, "retained": "uncertain row custody; inspect first"}
+            continue
+        if MACHINE != "docker":
+            results[f"worker-{ident}"] = {"exit": 0, "note": "native: no worker"}
             continue
         stop = subprocess.run([str(Path(art["dir"]) / "layerfs"), "machine", "stop", "docker"],
                               env=cli_env(gate_dir(gate) / ident), capture_output=True, text=True, timeout=100)
@@ -672,6 +731,10 @@ def main(argv=None):
     parser.add_argument("--label")
     parser.add_argument("--cells", help="setup: a declared subset of cells, e.g. C17 (extra gate)")
     parser.add_argument("--arms", help="setup: a declared subset of arms, e.g. pg-colocated")
+    parser.add_argument("--suite", default="fs-bench-quick", help="setup: the suite whose runner and cases run")
+    parser.add_argument("--machine", default="docker", choices=("docker", "native"), help="setup: the machine")
+    parser.add_argument("--tool-root", help="setup: BENCH_TOOL_ROOT for a tool suite on this machine")
+    parser.add_argument("--worker-image", help="setup: Docker worker/Sandbox image for both identities")
     parser.add_argument("--reference", help="verdict: an A/A gate whose per-row flags are cross-checked")
     args = parser.parse_args(argv)
     if args.action == "setup":
