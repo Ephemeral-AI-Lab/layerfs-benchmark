@@ -1,0 +1,83 @@
+{
+ "gen_sha256": "8ddd0ab6c6d6fc0984890b174c9f7dab085eca10167c1660a96757248e590a8d",
+ "image": "sha256:fedbb4077dc7cba7771ff10fd0ee2db8ec063a7cea657559819cdcbb4bfb5db5",
+ "model_sha256": "f44c6b23d3035c1af97da133103b2ddf57cf37d977c09e77f11377a46aa307de",
+ "oracle": {
+  "Q1": {
+   "bytes": 4103985,
+   "entries": 2020,
+   "files": 2000,
+   "sha256": "9677da0e3e73f747db7c02988e052dcfbf9641292ec7f83b3b225957c8d76f4e"
+  },
+  "Q2": {
+   "bytes": 932743,
+   "entries": 28,
+   "files": 25,
+   "sha256": "116bd2d9eb280ec98c600afa9addecf9dcd726062aa73169daaa540d7fb86f38"
+  },
+  "Q3": {
+   "bytes": 932743,
+   "entries": 28,
+   "files": 25,
+   "sha256": "116bd2d9eb280ec98c600afa9addecf9dcd726062aa73169daaa540d7fb86f38"
+  },
+  "Q4": {
+   "bytes": 932743,
+   "entries": 28,
+   "files": 25,
+   "sha256": "6137befa51e5af24a4b48f60926a492be7a853f35ded94865502b284ed024f63"
+  },
+  "Q5": {
+   "bytes": 34603009,
+   "entries": 1,
+   "files": 1,
+   "sha256": "74ff3fc0a3a31f0f4ad91789e2f53047db6e3f0b4d1029cd730ecf4177fd9cbb"
+  },
+  "Q6": {
+   "identical": "f84ff81b5e8db3fc656aba8f87e6e60debf47c862387ddfce446529e80df5731",
+   "lane": "ccb4d7ad90dcf365107b95e09a02b2cc9c2a7c6a197caa10fde22de571eb5253"
+  }
+ },
+ "q6": {
+  "base_logical": 65020523,
+  "base_manifest_sha256": "59069f602c04c92b5d3e479754dc392892bab70bdca6e8c9e18c056635f0cd52",
+  "lane_check": {
+   "bytes": 65015696,
+   "empty_dirs": 0,
+   "entries": 9420,
+   "namespace_sha256": "fea94011985edbf5a3145560889eeb8e9b784e2235339961a451f96031a10248",
+   "other": 0,
+   "touched": 111,
+   "touched_sha256": "702283ab7986a0df1e8f4a17b07023b7303c2ffa8712e835e0ecd2e66e2ac909"
+  },
+  "lane_head": {
+   "bytes": 65015696,
+   "empty_dirs": 0,
+   "files": 9409,
+   "links": 11,
+   "model": "fsh-edit-model-v1",
+   "other": 0,
+   "sha256": "ccb4d7ad90dcf365107b95e09a02b2cc9c2a7c6a197caa10fde22de571eb5253"
+  },
+  "shared_check": {
+   "bytes": 65020469,
+   "empty_dirs": 0,
+   "entries": 9415,
+   "namespace_sha256": "d3bdad813b6747410659118a6705a958097bcf3b7f24d7b161d1a30e774adc7e",
+   "other": 0,
+   "touched": 6,
+   "touched_sha256": "d7bca332ac5b467a5158ee857b7d2065aa8e35f226c03c1f860db56f15d7968d"
+  },
+  "shared_head": {
+   "bytes": 65020469,
+   "empty_dirs": 0,
+   "files": 9404,
+   "links": 11,
+   "model": "fsh-edit-model-v1",
+   "other": 0,
+   "sha256": "f84ff81b5e8db3fc656aba8f87e6e60debf47c862387ddfce446529e80df5731"
+  },
+  "workload_sha256": "e595826430a6233690ea71f0b522fa3ac0deabbd7c5570606185bee1cc9182de"
+ },
+ "workload_version": "fs-storage-quick-v1"
+}
