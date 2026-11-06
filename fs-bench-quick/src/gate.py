@@ -422,15 +422,38 @@ def fmt(value):
     return "—" if value is None else f"{value:.0f}"
 
 
+def row_value(r, key):
+    if r is None or r.get("execution") != "PASS":
+        return None
+    if key is None:
+        return (r.get("performance_invocation_elapsed_ns", 0) - r.get("control_overhead_ns", 0)) / 1e6
+    return ms(r, key)
+
+
+def flagged(rows):
+    """The (cell, arm, phase) metrics the per-row 2-pair rule flags."""
+    found = set()
+    for cell in CELLS:
+        for arm in ARMS:
+            for name, key in (*PHASES, ("e2e", None)):
+                a = [row_value(rows.get((cell, arm, "a", n)), key) for n in (1, 2)]
+                b = [row_value(rows.get((cell, arm, "b", n)), key) for n in (1, 2)]
+                if flag(a, b)[2] == "FLAG":
+                    found.add((cell, arm, name))
+    return found
+
+
 def verdict(args):
     gate = args.gate
     record, rows = collect(gate)
+    reference = flagged(collect(args.reference)[1]) if args.reference else None
     lines = [f"# Gate `{gate}` summary", ""]
     ids = record["identities"]
     lines += [
         f"Label: {record.get('label') or '—'}. Harness `{record['harness_commit']}`. Created {record['created_utc']}.",
-        f"Rule (declared before the first row): {RULE}. Paired delta = b − a within a round; "
-        "timings are diagnostic (INELIGIBLE cache state), counts are primary.",
+        "Verdict: counts first. Timing flag: the aggregate rule per arm and phase "
+        f"({AGG_RULE}). Per-row rule, diagnostic only: {RULE}. Paired delta = b − a within a round; "
+        "timings are diagnostic (INELIGIBLE cache state).",
         "",
         "| identity | role | source | CLI sha256 | daemon sha256 | Linux bundle | worker |",
         "|---|---|---|---|---|---|---|",
@@ -487,19 +510,17 @@ def verdict(args):
                 if key == "commit_2" and cell != "C13":
                     cells.append("")
                     continue
-                def value(r, key=key):
-                    if r is None or r.get("execution") != "PASS":
-                        return None
-                    if key is None:
-                        return (r.get("performance_invocation_elapsed_ns", 0) - r.get("control_overhead_ns", 0)) / 1e6
-                    return ms(r, key)
-                a = [value(rows.get((cell, arm, "a", n))) for n in (1, 2)]
-                b = [value(rows.get((cell, arm, "b", n))) for n in (1, 2)]
+                a = [row_value(rows.get((cell, arm, "a", n)), key) for n in (1, 2)]
+                b = [row_value(rows.get((cell, arm, "b", n)), key) for n in (1, 2)]
                 delta, slower, verdict_ = flag(a, b)
                 med = lambda xs: statistics.median([x for x in xs if x is not None]) if any(x is not None for x in xs) else None
                 cells.append(f"{fmt(med(a))} → {fmt(med(b))}; {'' if delta is None else f'{delta:+.0f}'} ({slower}) {verdict_}")
                 if verdict_ == "FLAG":
-                    flags.append(f"{cell}/{arm}/{name}: a {[fmt(x) for x in a]} b {[fmt(x) for x in b]} median delta {delta:+.0f} ms")
+                    cross = ""
+                    if reference is not None:
+                        also = (cell, arm, name) in reference
+                        cross = f"; {'also flagged' if also else 'not flagged'} in {args.reference} (A/A)"
+                    flags.append(f"{cell}/{arm}/{name}: a {[fmt(x) for x in a]} b {[fmt(x) for x in b]} median delta {delta:+.0f} ms{cross}")
             lines.append(f"| {cell} | {arm} | " + " | ".join(cells) + " |")
     lines += ["", "## Per-row flags (2-pair rule; diagnostic, high false-alarm rate)", ""]
     lines += [f"- {f}" for f in flags] or ["- none"]
@@ -554,6 +575,9 @@ def verdict(args):
     ]
     lines += ["", "## Failed, missing or uncleaned rows", ""] + (problems or ["- none"])
     text = "\n".join(lines) + "\n"
+    notes = gate_dir(gate) / "interpretation.md"  # hand-written notes survive regeneration
+    if notes.exists():
+        text += notes.read_text()
     target = gate_dir(gate) / "summary.md"
     target.write_text(text)
     print(text)
@@ -606,6 +630,7 @@ def main(argv=None):
     parser.add_argument("--control")
     parser.add_argument("--treatment")
     parser.add_argument("--label")
+    parser.add_argument("--reference", help="verdict: an A/A gate whose per-row flags are cross-checked")
     args = parser.parse_args(argv)
     if args.action == "setup":
         if not args.control or not args.treatment:
