@@ -1,0 +1,22 @@
+{
+ "arm": "layerfs",
+ "branches": {},
+ "calls": [
+  {
+   "exit": 0,
+   "label": "store_create",
+   "seq": 1,
+   "wall_ns": 38567042
+  },
+  {
+   "exit": 125,
+   "label": "init_floor",
+   "seq": 2,
+   "wall_ns": 15237709
+  }
+ ],
+ "case": "S4",
+ "probes": [],
+ "reason": "init_floor: exit 125: {\"code\":\"Unauthorized\",\"message\":\"/Users/yifanxu/.cache/fsh-ovnfs-cmp/home must be owned by this user and private\",\"detail\":null}",
+ "status": "FAIL"
+}

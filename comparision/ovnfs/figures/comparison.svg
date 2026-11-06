@@ -1,0 +1,248 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 950" width="960" height="950" role="img" aria-labelledby="t d">
+<title id="t">LayerFS v2.0.0 vs ovnfs: storage and speed on four small history shapes</title>
+<desc id="d">Six column charts comparing LayerFS and ovnfs per case S1 to S4; values are listed in README.md.</desc>
+<style>
+  .bg{fill:#fcfcfb} .s1{fill:#2a78d6} .s2{fill:#eb6834}
+  .grid{stroke:#e8e7e3;stroke-width:1} .axis{stroke:#c3c2b7;stroke-width:1}
+  text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+  .t-h1{font-size:19px;font-weight:600;fill:#0b0b0b} .t-sub{font-size:13px;fill:#52514e}
+  .t-title{font-size:13.5px;font-weight:600;fill:#0b0b0b} .t-muted{font-size:12px;fill:#7a7974}
+  .t-axis{font-size:11.5px;fill:#52514e} .t-value{font-size:11px;fill:#0b0b0b}
+  .t-legend{font-size:13px;fill:#0b0b0b} .small{font-size:10.5px}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#1a1a19} .s1{fill:#3987e5} .s2{fill:#d95926}
+    .grid{stroke:#2e2e2c} .axis{stroke:#55544f}
+    .t-h1,.t-title,.t-value,.t-legend{fill:#f0efec} .t-sub,.t-axis{fill:#c3c2b7} .t-muted{fill:#9c9b93}
+  }</style>
+<rect class="bg" x="0" y="0" width="960" height="950"/>
+<text class="t-h1" x="20" y="34">LayerFS v2.0.0 (Docker) vs ovnfs — fs-storage-history base tree</text>
+<text class="t-sub" x="20" y="56">Lower is better in every panel. S1 = 1 branch × 40 commits, S2 = 5 branches × 3, S3 = 4 nested forks × 3, S4 = 5 identical branches × 1.</text>
+<rect class="s1" x="20" y="76" width="12" height="12" rx="3"/>
+<text class="t-legend" x="38" y="86.5">LayerFS v2.0.0</text>
+<rect class="s2" x="170.39999999999998" y="76" width="12" height="12" rx="3"/>
+<text class="t-legend" x="188.39999999999998" y="86.5">ovnfs</text>
+<text class="t-title" x="20" y="130">Total storage after the run</text>
+<text class="t-muted" x="20" y="146">MB</text>
+<line class="grid" x1="72" x2="456" y1="310.0" y2="310.0"/>
+<text class="t-axis" x="66" y="314.0" text-anchor="end">0</text>
+<line class="grid" x1="72" x2="456" y1="272.0" y2="272.0"/>
+<text class="t-axis" x="66" y="276.0" text-anchor="end">50</text>
+<line class="grid" x1="72" x2="456" y1="234.0" y2="234.0"/>
+<text class="t-axis" x="66" y="238.0" text-anchor="end">100</text>
+<line class="grid" x1="72" x2="456" y1="196.0" y2="196.0"/>
+<text class="t-axis" x="66" y="200.0" text-anchor="end">150</text>
+<line class="grid" x1="72" x2="456" y1="158.0" y2="158.0"/>
+<text class="t-axis" x="66" y="162.0" text-anchor="end">200</text>
+<path class="s1" d="M95.0,310.0 V292.1 Q95.0,288.1 99.0,288.1 H115.0 Q119.0,288.1 119.0,292.1 V310.0 Z"><title>S1 layerfs: 28.8 MB</title></path>
+<text class="t-value" x="107.0" y="283.1" text-anchor="middle">28.8</text>
+<path class="s2" d="M121.0,310.0 V230.6 Q121.0,226.6 125.0,226.6 H141.0 Q145.0,226.6 145.0,230.6 V310.0 Z"><title>S1 ovnfs: 110 MB</title></path>
+<text class="t-value" x="133.0" y="221.6" text-anchor="middle">110</text>
+<text class="t-axis" x="120.0" y="326" text-anchor="middle">S1</text>
+<text class="t-muted small" x="120.0" y="340" text-anchor="middle">1×40</text>
+<path class="s1" d="M191.0,310.0 V293.6 Q191.0,289.6 195.0,289.6 H211.0 Q215.0,289.6 215.0,293.6 V310.0 Z"><title>S2 layerfs: 26.8 MB</title></path>
+<text class="t-value" x="203.0" y="284.6" text-anchor="middle">26.8</text>
+<path class="s2" d="M217.0,310.0 V228.4 Q217.0,224.4 221.0,224.4 H237.0 Q241.0,224.4 241.0,228.4 V310.0 Z"><title>S2 ovnfs: 113 MB</title></path>
+<text class="t-value" x="229.0" y="219.4" text-anchor="middle">113</text>
+<text class="t-axis" x="216.0" y="326" text-anchor="middle">S2</text>
+<text class="t-muted small" x="216.0" y="340" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M287.0,310.0 V293.9 Q287.0,289.9 291.0,289.9 H307.0 Q311.0,289.9 311.0,293.9 V310.0 Z"><title>S3 layerfs: 26.5 MB</title></path>
+<text class="t-value" x="299.0" y="284.9" text-anchor="middle">26.5</text>
+<path class="s2" d="M313.0,310.0 V233.1 Q313.0,229.1 317.0,229.1 H333.0 Q337.0,229.1 337.0,233.1 V310.0 Z"><title>S3 ovnfs: 106 MB</title></path>
+<text class="t-value" x="325.0" y="224.1" text-anchor="middle">106</text>
+<text class="t-axis" x="312.0" y="326" text-anchor="middle">S3</text>
+<text class="t-muted small" x="312.0" y="340" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M383.0,310.0 V294.9 Q383.0,290.9 387.0,290.9 H403.0 Q407.0,290.9 407.0,294.9 V310.0 Z"><title>S4 layerfs: 25.1 MB</title></path>
+<text class="t-value" x="395.0" y="285.9" text-anchor="middle">25.1</text>
+<path class="s2" d="M409.0,310.0 V230.9 Q409.0,226.9 413.0,226.9 H429.0 Q433.0,226.9 433.0,230.9 V310.0 Z"><title>S4 ovnfs: 109 MB</title></path>
+<text class="t-value" x="421.0" y="221.9" text-anchor="middle">109</text>
+<text class="t-axis" x="408.0" y="326" text-anchor="middle">S4</text>
+<text class="t-muted small" x="408.0" y="340" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="72" x2="456" y1="310" y2="310"/>
+<text class="t-title" x="490" y="130">History added per commit (incl. new branches)</text>
+<text class="t-muted" x="490" y="146">KB</text>
+<line class="grid" x1="542" x2="926" y1="310.0" y2="310.0"/>
+<text class="t-axis" x="536" y="314.0" text-anchor="end">0</text>
+<line class="grid" x1="542" x2="926" y1="272.0" y2="272.0"/>
+<text class="t-axis" x="536" y="276.0" text-anchor="end">1,000</text>
+<line class="grid" x1="542" x2="926" y1="234.0" y2="234.0"/>
+<text class="t-axis" x="536" y="238.0" text-anchor="end">2,000</text>
+<line class="grid" x1="542" x2="926" y1="196.0" y2="196.0"/>
+<text class="t-axis" x="536" y="200.0" text-anchor="end">3,000</text>
+<line class="grid" x1="542" x2="926" y1="158.0" y2="158.0"/>
+<text class="t-axis" x="536" y="162.0" text-anchor="end">4,000</text>
+<path class="s1" d="M565.0,310.0 V310.0 Q565.0,308.5 566.5,308.5 H587.5 Q589.0,308.5 589.0,310.0 V310.0 Z"><title>S1 layerfs: 3.6 KB</title></path>
+<text class="t-value" x="577.0" y="303.5" text-anchor="middle">3.6</text>
+<path class="s2" d="M591.0,310.0 V305.9 Q591.0,301.9 595.0,301.9 H611.0 Q615.0,301.9 615.0,305.9 V310.0 Z"><title>S1 ovnfs: 212 KB</title></path>
+<text class="t-value" x="603.0" y="296.9" text-anchor="middle">212</text>
+<text class="t-axis" x="590.0" y="326" text-anchor="middle">S1</text>
+<text class="t-muted small" x="590.0" y="340" text-anchor="middle">1×40</text>
+<path class="s1" d="M661.0,310.0 V310.0 Q661.0,308.5 662.5,308.5 H683.5 Q685.0,308.5 685.0,310.0 V310.0 Z"><title>S2 layerfs: 2.8 KB</title></path>
+<text class="t-value" x="673.0" y="303.5" text-anchor="middle">2.8</text>
+<path class="s2" d="M687.0,310.0 V280.4 Q687.0,276.4 691.0,276.4 H707.0 Q711.0,276.4 711.0,280.4 V310.0 Z"><title>S2 ovnfs: 885 KB</title></path>
+<text class="t-value" x="699.0" y="271.4" text-anchor="middle">885</text>
+<text class="t-axis" x="686.0" y="326" text-anchor="middle">S2</text>
+<text class="t-muted small" x="686.0" y="340" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M757.0,310.0 V310.0 Q757.0,308.5 758.5,308.5 H779.5 Q781.0,308.5 781.0,310.0 V310.0 Z"><title>S3 layerfs: 3.5 KB</title></path>
+<text class="t-value" x="769.0" y="303.5" text-anchor="middle">3.5</text>
+<path class="s2" d="M783.0,310.0 V290.7 Q783.0,286.7 787.0,286.7 H803.0 Q807.0,286.7 807.0,290.7 V310.0 Z"><title>S3 ovnfs: 612 KB</title></path>
+<text class="t-value" x="795.0" y="281.7" text-anchor="middle">612</text>
+<text class="t-axis" x="782.0" y="326" text-anchor="middle">S3</text>
+<text class="t-muted small" x="782.0" y="340" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M853.0,310.0 V310.0 Q853.0,308.5 854.5,308.5 H875.5 Q877.0,308.5 877.0,310.0 V310.0 Z"><title>S4 layerfs: 5.7 KB</title></path>
+<text class="t-value" x="865.0" y="303.5" text-anchor="middle">5.7</text>
+<path class="s2" d="M879.0,310.0 V230.6 Q879.0,226.6 883.0,226.6 H899.0 Q903.0,226.6 903.0,230.6 V310.0 Z"><title>S4 ovnfs: 2,194 KB</title></path>
+<text class="t-value" x="891.0" y="221.6" text-anchor="middle">2,194</text>
+<text class="t-axis" x="878.0" y="326" text-anchor="middle">S4</text>
+<text class="t-muted small" x="878.0" y="340" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="542" x2="926" y1="310" y2="310"/>
+<text class="t-title" x="20" y="394">Commit / snapshot latency, median</text>
+<text class="t-muted" x="20" y="410">ms</text>
+<line class="grid" x1="72" x2="456" y1="574.0" y2="574.0"/>
+<text class="t-axis" x="66" y="578.0" text-anchor="end">0</text>
+<line class="grid" x1="72" x2="456" y1="536.0" y2="536.0"/>
+<text class="t-axis" x="66" y="540.0" text-anchor="end">100</text>
+<line class="grid" x1="72" x2="456" y1="498.0" y2="498.0"/>
+<text class="t-axis" x="66" y="502.0" text-anchor="end">200</text>
+<line class="grid" x1="72" x2="456" y1="460.0" y2="460.0"/>
+<text class="t-axis" x="66" y="464.0" text-anchor="end">300</text>
+<line class="grid" x1="72" x2="456" y1="422.0" y2="422.0"/>
+<text class="t-axis" x="66" y="426.0" text-anchor="end">400</text>
+<path class="s1" d="M95.0,574.0 V567.7 Q95.0,563.7 99.0,563.7 H115.0 Q119.0,563.7 119.0,567.7 V574.0 Z"><title>S1 layerfs: 27 ms</title></path>
+<text class="t-value" x="107.0" y="558.7" text-anchor="middle">27</text>
+<path class="s2" d="M121.0,574.0 V510.7 Q121.0,506.7 125.0,506.7 H141.0 Q145.0,506.7 145.0,510.7 V574.0 Z"><title>S1 ovnfs: 177 ms</title></path>
+<text class="t-value" x="133.0" y="501.7" text-anchor="middle">177</text>
+<text class="t-axis" x="120.0" y="590" text-anchor="middle">S1</text>
+<text class="t-muted small" x="120.0" y="604" text-anchor="middle">1×40</text>
+<path class="s1" d="M191.0,574.0 V567.0 Q191.0,563.0 195.0,563.0 H211.0 Q215.0,563.0 215.0,567.0 V574.0 Z"><title>S2 layerfs: 29 ms</title></path>
+<text class="t-value" x="203.0" y="558.0" text-anchor="middle">29</text>
+<path class="s2" d="M217.0,574.0 V497.4 Q217.0,493.4 221.0,493.4 H237.0 Q241.0,493.4 241.0,497.4 V574.0 Z"><title>S2 ovnfs: 212 ms</title></path>
+<text class="t-value" x="229.0" y="488.4" text-anchor="middle">212</text>
+<text class="t-axis" x="216.0" y="590" text-anchor="middle">S2</text>
+<text class="t-muted small" x="216.0" y="604" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M287.0,574.0 V564.3 Q287.0,560.3 291.0,560.3 H307.0 Q311.0,560.3 311.0,564.3 V574.0 Z"><title>S3 layerfs: 36 ms</title></path>
+<text class="t-value" x="299.0" y="555.3" text-anchor="middle">36</text>
+<path class="s2" d="M313.0,574.0 V516.4 Q313.0,512.4 317.0,512.4 H333.0 Q337.0,512.4 337.0,516.4 V574.0 Z"><title>S3 ovnfs: 162 ms</title></path>
+<text class="t-value" x="325.0" y="507.4" text-anchor="middle">162</text>
+<text class="t-axis" x="312.0" y="590" text-anchor="middle">S3</text>
+<text class="t-muted small" x="312.0" y="604" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M383.0,574.0 V558.6 Q383.0,554.6 387.0,554.6 H403.0 Q407.0,554.6 407.0,558.6 V574.0 Z"><title>S4 layerfs: 51 ms</title></path>
+<text class="t-value" x="395.0" y="549.6" text-anchor="middle">51</text>
+<path class="s2" d="M409.0,574.0 V528.2 Q409.0,524.2 413.0,524.2 H429.0 Q433.0,524.2 433.0,528.2 V574.0 Z"><title>S4 ovnfs: 131 ms</title></path>
+<text class="t-value" x="421.0" y="519.2" text-anchor="middle">131</text>
+<text class="t-axis" x="408.0" y="590" text-anchor="middle">S4</text>
+<text class="t-muted small" x="408.0" y="604" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="72" x2="456" y1="574" y2="574"/>
+<text class="t-title" x="490" y="394">Open a branch, median</text>
+<text class="t-muted" x="490" y="410">ms</text>
+<line class="grid" x1="542" x2="926" y1="574.0" y2="574.0"/>
+<text class="t-axis" x="536" y="578.0" text-anchor="end">0</text>
+<line class="grid" x1="542" x2="926" y1="536.0" y2="536.0"/>
+<text class="t-axis" x="536" y="540.0" text-anchor="end">200</text>
+<line class="grid" x1="542" x2="926" y1="498.0" y2="498.0"/>
+<text class="t-axis" x="536" y="502.0" text-anchor="end">400</text>
+<line class="grid" x1="542" x2="926" y1="460.0" y2="460.0"/>
+<text class="t-axis" x="536" y="464.0" text-anchor="end">600</text>
+<line class="grid" x1="542" x2="926" y1="422.0" y2="422.0"/>
+<text class="t-axis" x="536" y="426.0" text-anchor="end">800</text>
+<path class="s1" d="M565.0,574.0 V559.6 Q565.0,555.6 569.0,555.6 H585.0 Q589.0,555.6 589.0,559.6 V574.0 Z"><title>S1 layerfs: 97 ms</title></path>
+<text class="t-value" x="577.0" y="550.6" text-anchor="middle">97</text>
+<path class="s2" d="M591.0,574.0 V527.6 Q591.0,523.6 595.0,523.6 H611.0 Q615.0,523.6 615.0,527.6 V574.0 Z"><title>S1 ovnfs: 265 ms</title></path>
+<text class="t-value" x="603.0" y="518.6" text-anchor="middle">265</text>
+<text class="t-axis" x="590.0" y="590" text-anchor="middle">S1</text>
+<text class="t-muted small" x="590.0" y="604" text-anchor="middle">1×40</text>
+<path class="s1" d="M661.0,574.0 V567.5 Q661.0,563.5 665.0,563.5 H681.0 Q685.0,563.5 685.0,567.5 V574.0 Z"><title>S2 layerfs: 55 ms</title></path>
+<text class="t-value" x="673.0" y="558.5" text-anchor="middle">55</text>
+<path class="s2" d="M687.0,574.0 V491.0 Q687.0,487.0 691.0,487.0 H707.0 Q711.0,487.0 711.0,491.0 V574.0 Z"><title>S2 ovnfs: 458 ms</title></path>
+<text class="t-value" x="699.0" y="482.0" text-anchor="middle">458</text>
+<text class="t-axis" x="686.0" y="590" text-anchor="middle">S2</text>
+<text class="t-muted small" x="686.0" y="604" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M757.0,574.0 V566.8 Q757.0,562.8 761.0,562.8 H777.0 Q781.0,562.8 781.0,566.8 V574.0 Z"><title>S3 layerfs: 59 ms</title></path>
+<text class="t-value" x="769.0" y="557.8" text-anchor="middle">59</text>
+<path class="s2" d="M783.0,574.0 V551.0 Q783.0,547.0 787.0,547.0 H803.0 Q807.0,547.0 807.0,551.0 V574.0 Z"><title>S3 ovnfs: 142 ms</title></path>
+<text class="t-value" x="795.0" y="542.0" text-anchor="middle">142</text>
+<text class="t-axis" x="782.0" y="590" text-anchor="middle">S3</text>
+<text class="t-muted small" x="782.0" y="604" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M853.0,574.0 V564.1 Q853.0,560.1 857.0,560.1 H873.0 Q877.0,560.1 877.0,564.1 V574.0 Z"><title>S4 layerfs: 73 ms</title></path>
+<text class="t-value" x="865.0" y="555.1" text-anchor="middle">73</text>
+<path class="s2" d="M879.0,574.0 V531.8 Q879.0,527.8 883.0,527.8 H899.0 Q903.0,527.8 903.0,531.8 V574.0 Z"><title>S4 ovnfs: 243 ms</title></path>
+<text class="t-value" x="891.0" y="522.8" text-anchor="middle">243</text>
+<text class="t-axis" x="878.0" y="590" text-anchor="middle">S4</text>
+<text class="t-muted small" x="878.0" y="604" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="542" x2="926" y1="574" y2="574"/>
+<text class="t-title" x="20" y="658">Import the 65 MB base tree</text>
+<text class="t-muted" x="20" y="674">s</text>
+<line class="grid" x1="72" x2="456" y1="838.0" y2="838.0"/>
+<text class="t-axis" x="66" y="842.0" text-anchor="end">0</text>
+<line class="grid" x1="72" x2="456" y1="800.0" y2="800.0"/>
+<text class="t-axis" x="66" y="804.0" text-anchor="end">5</text>
+<line class="grid" x1="72" x2="456" y1="762.0" y2="762.0"/>
+<text class="t-axis" x="66" y="766.0" text-anchor="end">10</text>
+<line class="grid" x1="72" x2="456" y1="724.0" y2="724.0"/>
+<text class="t-axis" x="66" y="728.0" text-anchor="end">15</text>
+<line class="grid" x1="72" x2="456" y1="686.0" y2="686.0"/>
+<text class="t-axis" x="66" y="690.0" text-anchor="end">20</text>
+<path class="s1" d="M95.0,838.0 V788.3 Q95.0,784.3 99.0,784.3 H115.0 Q119.0,784.3 119.0,788.3 V838.0 Z"><title>S1 layerfs: 7.1 s</title></path>
+<text class="t-value" x="107.0" y="779.3" text-anchor="middle">7.1</text>
+<path class="s2" d="M121.0,838.0 V837.5 Q121.0,833.5 125.0,833.5 H141.0 Q145.0,833.5 145.0,837.5 V838.0 Z"><title>S1 ovnfs: 0.6 s</title></path>
+<text class="t-value" x="133.0" y="828.5" text-anchor="middle">0.6</text>
+<text class="t-axis" x="120.0" y="854" text-anchor="middle">S1</text>
+<text class="t-muted small" x="120.0" y="868" text-anchor="middle">1×40</text>
+<path class="s1" d="M191.0,838.0 V779.1 Q191.0,775.1 195.0,775.1 H211.0 Q215.0,775.1 215.0,779.1 V838.0 Z"><title>S2 layerfs: 8.3 s</title></path>
+<text class="t-value" x="203.0" y="770.1" text-anchor="middle">8.3</text>
+<path class="s2" d="M217.0,838.0 V837.0 Q217.0,833.0 221.0,833.0 H237.0 Q241.0,833.0 241.0,837.0 V838.0 Z"><title>S2 ovnfs: 0.7 s</title></path>
+<text class="t-value" x="229.0" y="828.0" text-anchor="middle">0.7</text>
+<text class="t-axis" x="216.0" y="854" text-anchor="middle">S2</text>
+<text class="t-muted small" x="216.0" y="868" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M287.0,838.0 V800.0 Q287.0,796.0 291.0,796.0 H307.0 Q311.0,796.0 311.0,800.0 V838.0 Z"><title>S3 layerfs: 5.5 s</title></path>
+<text class="t-value" x="299.0" y="791.0" text-anchor="middle">5.5</text>
+<path class="s2" d="M313.0,838.0 V837.3 Q313.0,833.3 317.0,833.3 H333.0 Q337.0,833.3 337.0,837.3 V838.0 Z"><title>S3 ovnfs: 0.6 s</title></path>
+<text class="t-value" x="325.0" y="828.3" text-anchor="middle">0.6</text>
+<text class="t-axis" x="312.0" y="854" text-anchor="middle">S3</text>
+<text class="t-muted small" x="312.0" y="868" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M383.0,838.0 V765.5 Q383.0,761.5 387.0,761.5 H403.0 Q407.0,761.5 407.0,765.5 V838.0 Z"><title>S4 layerfs: 10.1 s</title></path>
+<text class="t-value" x="395.0" y="756.5" text-anchor="middle">10.1</text>
+<path class="s2" d="M409.0,838.0 V838.0 Q409.0,835.0 412.0,835.0 H430.0 Q433.0,835.0 433.0,838.0 V838.0 Z"><title>S4 ovnfs: 0.4 s</title></path>
+<text class="t-value" x="421.0" y="830.0" text-anchor="middle">0.4</text>
+<text class="t-axis" x="408.0" y="854" text-anchor="middle">S4</text>
+<text class="t-muted small" x="408.0" y="868" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="72" x2="456" y1="838" y2="838"/>
+<text class="t-title" x="490" y="658">Read the whole tree in a fresh view, median</text>
+<text class="t-muted" x="490" y="674">s</text>
+<line class="grid" x1="542" x2="926" y1="838.0" y2="838.0"/>
+<text class="t-axis" x="536" y="842.0" text-anchor="end">0</text>
+<line class="grid" x1="542" x2="926" y1="800.0" y2="800.0"/>
+<text class="t-axis" x="536" y="804.0" text-anchor="end">5</text>
+<line class="grid" x1="542" x2="926" y1="762.0" y2="762.0"/>
+<text class="t-axis" x="536" y="766.0" text-anchor="end">10</text>
+<line class="grid" x1="542" x2="926" y1="724.0" y2="724.0"/>
+<text class="t-axis" x="536" y="728.0" text-anchor="end">15</text>
+<line class="grid" x1="542" x2="926" y1="686.0" y2="686.0"/>
+<text class="t-axis" x="536" y="690.0" text-anchor="end">20</text>
+<path class="s1" d="M565.0,838.0 V741.7 Q565.0,737.7 569.0,737.7 H585.0 Q589.0,737.7 589.0,741.7 V838.0 Z"><title>S1 layerfs: 13.2 s</title></path>
+<text class="t-value" x="577.0" y="732.7" text-anchor="middle">13.2</text>
+<path class="s2" d="M591.0,838.0 V758.1 Q591.0,754.1 595.0,754.1 H611.0 Q615.0,754.1 615.0,758.1 V838.0 Z"><title>S1 ovnfs: 11.0 s</title></path>
+<text class="t-value" x="603.0" y="749.1" text-anchor="middle">11.0</text>
+<text class="t-axis" x="590.0" y="854" text-anchor="middle">S1</text>
+<text class="t-muted small" x="590.0" y="868" text-anchor="middle">1×40</text>
+<path class="s1" d="M661.0,838.0 V787.7 Q661.0,783.7 665.0,783.7 H681.0 Q685.0,783.7 685.0,787.7 V838.0 Z"><title>S2 layerfs: 7.1 s</title></path>
+<text class="t-value" x="673.0" y="778.7" text-anchor="middle">7.1</text>
+<path class="s2" d="M687.0,838.0 V729.2 Q687.0,725.2 691.0,725.2 H707.0 Q711.0,725.2 711.0,729.2 V838.0 Z"><title>S2 ovnfs: 14.8 s</title></path>
+<text class="t-value" x="699.0" y="720.2" text-anchor="middle">14.8</text>
+<text class="t-axis" x="686.0" y="854" text-anchor="middle">S2</text>
+<text class="t-muted small" x="686.0" y="868" text-anchor="middle">5 br×3</text>
+<path class="s1" d="M757.0,838.0 V786.8 Q757.0,782.8 761.0,782.8 H777.0 Q781.0,782.8 781.0,786.8 V838.0 Z"><title>S3 layerfs: 7.3 s</title></path>
+<text class="t-value" x="769.0" y="777.8" text-anchor="middle">7.3</text>
+<path class="s2" d="M783.0,838.0 V798.5 Q783.0,794.5 787.0,794.5 H803.0 Q807.0,794.5 807.0,798.5 V838.0 Z"><title>S3 ovnfs: 5.7 s</title></path>
+<text class="t-value" x="795.0" y="789.5" text-anchor="middle">5.7</text>
+<text class="t-axis" x="782.0" y="854" text-anchor="middle">S3</text>
+<text class="t-muted small" x="782.0" y="868" text-anchor="middle">4 forks×3</text>
+<path class="s1" d="M853.0,838.0 V751.1 Q853.0,747.1 857.0,747.1 H873.0 Q877.0,747.1 877.0,751.1 V838.0 Z"><title>S4 layerfs: 12.0 s</title></path>
+<text class="t-value" x="865.0" y="742.1" text-anchor="middle">12.0</text>
+<path class="s2" d="M879.0,838.0 V791.3 Q879.0,787.3 883.0,787.3 H899.0 Q903.0,787.3 903.0,791.3 V838.0 Z"><title>S4 ovnfs: 6.7 s</title></path>
+<text class="t-value" x="891.0" y="782.3" text-anchor="middle">6.7</text>
+<text class="t-axis" x="878.0" y="854" text-anchor="middle">S4</text>
+<text class="t-muted small" x="878.0" y="868" text-anchor="middle">5 same×1</text>
+<line class="axis" x1="542" x2="926" y1="838" y2="838"/>
+<text class="t-muted" x="20" y="926">Storage: LayerFS = SQLite file + WAL; ovnfs = state directory, allocated bytes (ext4). Per commit: LayerFS Σ new_stored; ovnfs apparent growth.</text>
+<text class="t-muted" x="20" y="942">Timings: warm, one sample, Docker shared with other sessions (1-min load 13–27) — diagnostic only. 2026-11-06, LayerFS b4fa173e40, ovnfs cdb3fb6.</text>
+</svg>
