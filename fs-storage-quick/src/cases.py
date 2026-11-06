@@ -366,9 +366,12 @@ def _q6_steps(name, plan):
             {"op": "commit", "ws": branch, "timeout_s": 120, "label": f"{branch}/01"},
             {"op": "unmount", "ws": branch},
         ]
-    # b01 is verified by content; b02.. by root identity with b01 (root_checks, after `commit list`).
-    out.append({"op": "verify", "sandbox": b, "project": last, "branch": "b01", "name": "v01",
-                "command": namespace_command(plan["shared_touched"]), "check": check_namespace(plan["shared_check"])})
+    # Every identical head is verified by content: their root ids differ (inode metadata such as
+    # mtime differs per Branch), so root identity is not a content check.
+    for index in range(1, Q6_IDENTICAL + 1):
+        out.append({"op": "verify", "sandbox": b, "project": last, "branch": f"b{index:02d}",
+                    "name": f"v{index:02d}", "command": namespace_command(plan["shared_touched"]),
+                    "check": check_namespace(plan["shared_check"])})
     out.append({"op": "close", "sandbox": b})
     return out
 
@@ -408,6 +411,5 @@ def spec(case, backend, name, config, database_url=None, q6=None):
         + [{"project": last, "name": b, "from": "main"} for b in identical],
         "steps": _q6_steps(name, q6),
         "collect": [{"project": p1, "branch": "lane"}] + [{"project": last, "branch": b} for b in identical],
-        "root_checks": [{"project": last, "branch": b, "reference": "b01"} for b in identical[1:]],
         "init_logical": q6["base_logical"] * Q6_INITS,
     }

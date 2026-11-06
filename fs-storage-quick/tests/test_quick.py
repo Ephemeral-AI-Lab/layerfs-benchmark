@@ -119,20 +119,9 @@ class SpecTests(unittest.TestCase):
         self.assertEqual(spec["floor_project"]["project"], "t-q6p/e")
         ops = [s["op"] for s in spec["steps"]]
         self.assertEqual(ops.count("commit"), cases.Q6_EDIT_COMMITS + cases.Q6_IDENTICAL)
-        self.assertEqual(ops.count("verify"), 2)  # lane and b01 by content
-        self.assertEqual([c["branch"] for c in spec["root_checks"]], ["b02", "b03"])  # by root identity
+        self.assertEqual(ops.count("verify"), 1 + cases.Q6_IDENTICAL)  # every head by content
         self.assertEqual(len(spec["collect"]), 1 + cases.Q6_IDENTICAL)
         self.assertEqual(spec["init_logical"], 10)
-
-    def test_root_check(self):
-        row = {"histories": [{"project": "s/p1", "branch": "b01", "head_root": "r"},
-                             {"project": "s/p1", "branch": "b02", "head_root": "r"},
-                             {"project": "s/p1", "branch": "b03", "head_root": "x"}],
-               "verify_results": [{"project": "s/p1", "branch": "b01", "verdict": "PASS"}]}
-        rows.root_check(row, {"project": "s/p1", "branch": "b02", "reference": "b01"})
-        rows.root_check(row, {"project": "s/p1", "branch": "b03", "reference": "b01"})
-        self.assertEqual([r["verdict"] for r in row["verify_results"][1:]], ["PASS", "FAIL"])
-        self.assertEqual(row["verification_failures"], ["s/p1@b03"])
 
 
 class FakeCampaign:

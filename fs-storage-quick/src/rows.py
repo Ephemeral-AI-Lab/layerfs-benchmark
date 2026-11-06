@@ -60,7 +60,7 @@ def run_step(driver, step, workspaces, machine):
 
 
 def collect(driver, project, branch):
-    """``Driver.commits`` that also keeps the head Commit's ``root`` object id."""
+    """``Driver.commits`` that also records the head Commit's ``root`` object id (diagnostic)."""
     head = {}
 
     def page(argv):
@@ -75,25 +75,6 @@ def collect(driver, project, branch):
     driver.row.setdefault("histories", []).append(history)
     driver.campaign.persist()
     return history
-
-
-def root_check(row, item):
-    """A head verified by identity: same root object id as a content-verified head.
-
-    Object ids are BLAKE3 content addresses, so an equal root is the same tree.
-    The reference head must itself have passed its manifest check.
-    """
-    roots = {(h["project"], h["branch"]): h.get("head_root") for h in row.get("histories", [])}
-    mine = roots.get((item["project"], item["branch"]))
-    reference = roots.get((item["project"], item["reference"]))
-    verified = any(r["project"] == item["project"] and r["branch"] == item["reference"] and r["verdict"] == "PASS"
-                   for r in row.get("verify_results", []))
-    record = {"project": item["project"], "branch": item["branch"], "method": f"root == {item['reference']} root",
-              "root": mine, "reference_root": reference, "verdict": "PASS"}
-    if not (mine and mine == reference and verified):
-        record["verdict"] = "FAIL"
-        row.setdefault("verification_failures", []).append(f"{item['project']}@{item['branch']}")
-    row.setdefault("verify_results", []).append(record)
 
 
 def run_row(campaign, row, spec, verify=True):
@@ -131,9 +112,6 @@ def run_row(campaign, row, spec, verify=True):
         driver.probe(name, "final", allocated)
         for item in spec.get("collect", []):
             collect(driver, item["project"], item["branch"])
-        if verify:
-            for item in spec.get("root_checks", []):
-                root_check(row, item)
         row["execution"] = "PASS"
         if not verify:
             row["verification"] = "SKIPPED"

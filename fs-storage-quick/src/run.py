@@ -158,10 +158,12 @@ def harness_identity():
     for p in files + shared:
         digest.update(p.name.encode() + hashlib.sha256(p.read_bytes()).digest())
     try:
-        head = subprocess.run(["git", "-C", str(HERE), "rev-parse", "HEAD"], capture_output=True, text=True,
-                              timeout=10).stdout.strip()
-        dirty = bool(subprocess.run(["git", "-C", str(HERE.parent), "status", "--porcelain", "."],
-                                    capture_output=True, text=True, timeout=10).stdout.strip())
+        got = subprocess.run(["git", "-C", str(HERE), "rev-parse", "HEAD"], capture_output=True, text=True,
+                             timeout=10)
+        head = got.stdout.strip() if got.returncode == 0 else None
+        dirty = None if head is None else bool(subprocess.run(
+            ["git", "-C", str(HERE.parent), "status", "--porcelain", "."],
+            capture_output=True, text=True, timeout=10).stdout.strip())
     except (OSError, subprocess.TimeoutExpired):
         head, dirty = None, None
     return {"git_head": head, "suite_dirty": dirty, "sources_sha256": digest.hexdigest()}

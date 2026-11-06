@@ -34,8 +34,10 @@ Docker for SQLite), floor probe, (Q6: base Init + probe), forks, one Sandbox,
 one Exec per part and one Commit per plan entry, unmount, a fresh mount of each
 head in the same Sandbox for final-state verification, close, quiesced final
 probe, paged `commit list`, release (or deferral for the late probe).
-Q6 verifies `lane` and `b01` by content (namespace digest plus SHA-256 of
-every touched path) and `b02`, `b03` by root object identity with `b01`.
+Q6 verifies every head by content: the namespace digest (every path's kind,
+mode and size) plus the SHA-256 of every path the edit model touched. Root
+object ids of the identical Branches differ (per-Branch inode metadata), so
+root identity is not used as a content check.
 
 Counts were cut from #85's initial table after two probes on a loaded Docker
 host (other owners' Linux builds running): PostgreSQL took 314 s with 50 × 20
