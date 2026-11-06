@@ -18,7 +18,7 @@ The LayerFS engine: Workspaces, file I/O, metadata and Commit.
 | Benchmark | Measures | What it checks | Latest run |
 | --- | --- | --- | --- |
 | [fio](fio/) | speed | buffered sequential and random file I/O | 2026-11-06 · `b919f50e` · Diagnostic terminal: PASS · [report](result/2026-11-06/fio/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
-| [fs-bench-quick](fs-bench-quick/) | speed | CLI case times for twelve small file workloads | 2026-11-06 · `b919f50e` · 96/96 CLI execution checks passed. Case and final runtime cleanup: COMPLETE · [report](result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+| [fs-bench-quick](fs-bench-quick/) | speed | CLI case times for eighteen small file workloads | 2026-11-06 · `b919f50e` · 96/96 CLI execution checks passed. Case and final runtime cleanup: COMPLETE · [report](result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 | [fsstress](fsstress/) | correctness | random concurrent filesystem operations | 2026-11-06 · `b9ad9edd` · Diagnostic terminal: PASS · [report](result/2026-11-06/fsstress/b9ad9edd7ea3a9314625dee53466aa59a7ea69c7/report.md) |
 | [fsx](fsx/) | correctness | random file reads, writes and truncates checked by fsx itself | 2026-11-06 · `b919f50e` · Diagnostic terminal: PASS · [report](result/2026-11-06/fsx/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 | [mdtest](mdtest/) | speed | create, stat and remove 512 empty files or directories | 2026-11-06 · `b919f50e` · Diagnostic terminal: PASS · [report](result/2026-11-06/mdtest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |

@@ -177,8 +177,10 @@ def calibration_lines(calibration):
         "## Round-trip calibration",
         "",
         "`pgrtt.py` from each client location: address resolution, then 20 fresh connections (TCP connect; one SSLRequest "
-        "probe, which a plaintext server answers `N` and which an unset `sslmode` (`prefer`) adds to every connection; startup to "
-        "ReadyForQuery), then 200 simple-protocol `SELECT 1` on one connection. Milliseconds, medians unless marked p90. "
+        "probe, which a plaintext server answers `N` and which an unset `sslmode` (`prefer`) adds to every connection; as the first "
+        "server reply it also includes the server starting a backend; startup to ReadyForQuery), then 200 simple-protocol "
+        "`SELECT 1` on one connection. Milliseconds, medians unless marked p90. Resolve is one `getaddrinfo` call and "
+        "includes the client's first-call library loading. "
         "Guests and the trust rows use a trust-authenticated calibration role; the SCRAM rows add the Store user's SCRAM-SHA-256 exchange.",
         "",
         "| Client | Route | Target | Peer | Auth | Resolve | TCP connect | SSL probe | Startup | SELECT 1 | SELECT 1 p90 |",
@@ -378,9 +380,14 @@ def render(suite, state, cleanup, config):
         "",
         (
             "Times are milliseconds of CLI calls including launch/routing. Create means Sandbox creation. "
-            "Close is Sandbox close; Store release is Store remove (SQLite) or disconnect (PostgreSQL). End-to-end covers "
-            "create through Store release and intervening harness work, minus any declared observer control calls; it "
-            "excludes preparation, Python startup and optional proof. "
+            "Close is Sandbox close; Store release is Store remove (SQLite) or disconnect (PostgreSQL). "
+            + (
+                "End-to-end is the sum of the measured calls from create through Store release, without harness gaps; it "
+                if config.get("end_to_end") == "phase_sum"
+                else "End-to-end covers create through Store release and intervening harness work, minus any declared "
+                "observer control calls; it "
+            )
+            + "excludes preparation, Python startup and optional proof. "
             "Ratios divide the machine's time by Docker's time for the same cell/backend; Docker = 1.00, "
             "below 1 means less elapsed time. One sample per row, no median or repeatability claim."
         ),
