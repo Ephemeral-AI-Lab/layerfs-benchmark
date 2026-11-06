@@ -49,9 +49,11 @@ verification mount with one manifest Exec, unmount, close.
   `server.schemas.layerfs`, plus the server WAL LSN from the owned server.
 - The SQLite WAL stays near its 4 MiB limit after quiesce, so small Store
   deltas (per Branch) mostly measure WAL reuse. Report main-file and WAL
-  parts, and use each Branch's own Σ `new_stored + new_metadata` from the
-  paged `commit list` as the per-Branch cost.
-- Init storage is in no Commit; unattributed bytes are reported after Init.
+  parts, and use each Branch's own Σ `new_stored` from the paged
+  `commit list` as the per-Branch cost.
+- `new_stored` is every new pack byte of a Commit and `new_metadata` a subset
+  of it: payload = stored − metadata; unattributed = growth after Init −
+  Σ `new_stored` (Init storage is in no Commit).
 - References come from the oracle in [src/refs.py](src/refs.py) once per
   workload version (the shared directory-based `references.compute` would
   need ~83 GB of state directories).

@@ -28,14 +28,30 @@ BACKENDS = ("sqlite", "postgresql")
 NAMES = {"sqlite": "SQLite", "postgresql": "PostgreSQL"}
 
 
+SUPERSEDED = []  # (case, backend, attempt dir, row) of attempts replaced by a rerun
+
+
 def load(results):
+    """The latest attempt per row: `<case>-<backend>`, then `-r2`, `-r3`, …"""
     rows = {}
+    SUPERSEDED.clear()
     for case_id in cases.CASE_IDS:
         for backend in BACKENDS:
-            path = Path(results) / f"{case_id}-{backend}" / "result.json"
-            if path.exists():
-                rows[(case_id, backend)] = json.loads(path.read_text())
+            attempts = []
+            for suffix in [""] + [f"-r{i}" for i in range(2, 10)]:
+                path = Path(results) / f"{case_id}-{backend}{suffix}" / "result.json"
+                if path.exists():
+                    attempts.append((path.parent.name, json.loads(path.read_text())))
+            if attempts:
+                rows[(case_id, backend)] = attempts[-1][1]
+                SUPERSEDED.extend((case_id, backend, name, row) for name, row in attempts[:-1])
     return rows
+
+
+def superseded_table():
+    out = [[c, NAMES[k], name, row["execution"], row.get("cleanup"), row.get("reason") or "—"]
+           for c, k, name, row in SUPERSEDED]
+    return table(["Case", "Backend", "Attempt", "Execution", "Cleanup", "Reason"], out) if out else ""
 
 
 def outcome(row):
@@ -88,15 +104,40 @@ def summary_table(rows):
                 out.append([case_id, NAMES[backend], "NOT_RUN"] + ["—"] * 10)
                 continue
             t = row.get("totals", {})
+            stored, meta = t.get("sum_new_stored"), t.get("sum_new_metadata")
+            payload = stored - meta if isinstance(stored, int) and isinstance(meta, int) else None
+            after = t["growth"] - stored if isinstance(stored, int) and "growth" in t else None
             out.append([
                 case_id, NAMES[backend], outcome(row), b(t.get("commits")), b(t.get("floor")),
                 b(t.get("init")), b(t.get("final")), b(t.get("net")), b(t.get("growth")),
-                b(t.get("sum_new_stored")), b(t.get("sum_new_metadata")),
-                signed(t.get("unattributed_after_init")), b(t.get("net_allocated")),
+                b(stored), b(payload), b(meta), signed(after),
             ])
     return table(["Case", "Backend", "Outcome", "Commits", "Floor (B)", "Init (B)", "Final (B)",
-                  "Net (B)", "Growth after Init (B)", "Σ new_stored (B)", "Σ new_metadata (B)",
-                  "Unattributed after Init (B)", "Net allocated (B)"], out)
+                  "Net (B)", "Growth after Init (B)", "Σ new_stored (B)", "of which payload (B)",
+                  "of which metadata (B)", "Unattributed after Init and packs (B)"], out)
+
+
+def server_wal(row):
+    """PostgreSQL server WAL between each Store's floor and final probes, summed (server-wide)."""
+    total = 0
+    for store in row["stores"]:
+        try:
+            a = storage.pg_lsn_bytes(store["floor"]["server_wal_lsn"])
+            z = storage.pg_lsn_bytes(store["final"]["server_wal_lsn"])
+        except (KeyError, ValueError, TypeError, AttributeError):
+            return None
+        total += z - a
+    return total
+
+
+def postgresql_table(rows):
+    out = []
+    for case_id in cases.CASE_IDS:
+        row = rows.get((case_id, "postgresql"))
+        if row is None or not row.get("totals", {}).get("complete"):
+            continue
+        out.append([case_id, b(row["totals"]["net"]), b(server_wal(row))])
+    return table(["Case", "Net schema bytes (B)", "Server WAL floor→final (B, server-wide)"], out)
 
 
 def sqlite_parts_table(rows):
@@ -105,11 +146,14 @@ def sqlite_parts_table(rows):
         row = rows.get((case_id, "sqlite"))
         if row is None or not row.get("totals", {}).get("complete"):
             continue
+        growth = file_part(row, "file_bytes") - init_part(row, "file_bytes")
+        stored = row["totals"]["sum_new_stored"]
         out.append([case_id, b(init_part(row, "file_bytes")), b(file_part(row, "file_bytes")),
-                    b(file_part(row, "wal_bytes")),
-                    b(file_part(row, "file_bytes") - init_part(row, "file_bytes"))])
-    return table(["Case", "Init: main file (B)", "Net: main file (B)", "Net: WAL (B)",
-                  "Main-file growth after Init (B)"], out)
+                    b(file_part(row, "wal_bytes")), b(row["totals"]["net"]),
+                    b(file_part(row, "allocated_bytes")), b(growth), signed(growth - stored)])
+    return table(["Case", "Init, file only (B)", "Net, file only (B)", "Net WAL (B)",
+                  "Net, file + WAL (B)", "Net allocated (B)", "Growth after Init, file only (B)",
+                  "File-only growth − Σ new_stored (B)"], out)
 
 
 def commit_rows(row):
@@ -159,10 +203,12 @@ def h01_section(rows):
         if row and row.get("totals", {}).get("complete"):
             t = row["totals"]
             growth.append([NAMES[backend], b(t["growth"]), b(round(t["growth"] / t["commits"])),
-                           b(round((t["sum_new_stored"] + t["sum_new_metadata"]) / t["commits"])),
-                           b(t["head_logical"])])
+                           b(round(t["sum_new_stored"] / t["commits"])),
+                           b(round((t["sum_new_stored"] - t["sum_new_metadata"]) / t["commits"])),
+                           b(round(t["sum_new_metadata"] / t["commits"])), b(t["head_logical"])])
     lines.append(table(["Backend", "Growth after Init (B)", "Growth per Commit (B)",
-                        "Σ new_stored+new_metadata per Commit (B)", "Head logical (B)"], growth))
+                        "new_stored per Commit (B)", "payload per Commit (B)",
+                        "new_metadata per Commit (B)", "Head logical (B)"], growth))
     return "\n".join(lines)
 
 
@@ -171,17 +217,18 @@ def branch_section(rows, case_id):
     for backend in BACKENDS:
         row = rows.get((case_id, backend))
         if not row or not row.get("totals", {}).get("complete"):
-            out.append([NAMES[backend]] + ["—"] * 10)
+            out.append([NAMES[backend]] + ["—"] * 11)
             continue
-        own = [x["sum_new_stored"] + x["sum_new_metadata"] for _, _, x in branches(row)]
+        own = [x["sum_new_stored"] for _, _, x in branches(row)]
+        meta = [x["sum_new_metadata"] for _, _, x in branches(row)]
         delta = [x["marginal_bytes"] for _, _, x in branches(row)]
         count = len(own)
         t = row["totals"]
-        out.append([NAMES[backend], b(count), *spread(own), *spread(delta),
-                    b(round(t["growth"] / count))])
-    return table(["Backend", "Branches", "Own Σ new_stored+new_metadata: min (B)", "median (B)",
-                  "mean (B)", "max (B)", "Store delta per Branch: min (B)", "median (B)",
-                  "mean (B)", "max (B)", "Growth after Init ÷ Branches (B)"], out)
+        out.append([NAMES[backend], b(count), *spread(own), b(round(statistics.mean(meta))),
+                    *spread(delta), b(round(t["growth"] / count))])
+    return table(["Backend", "Branches", "Own Σ new_stored: min (B)", "median (B)", "mean (B)",
+                  "max (B)", "of which metadata, mean (B)", "Store delta per Branch: min (B)",
+                  "median (B)", "mean (B)", "max (B)", "Growth after Init ÷ Branches (B)"], out)
 
 
 def h04_levels(rows):
@@ -214,14 +261,14 @@ def project_section(rows):
                     previous = project["after_init"]
             else:
                 inits = [s["accounting"]["init"] for s in row["stores"]]
-            own = [p["sum_new_stored"] + p["sum_new_metadata"]
+            own = [p["sum_new_stored"]
                    for s in row["stores"] for p in s["projects"]]
             out.append([case_id, NAMES[backend], b(inits[0]), b(min(inits[1:] or inits)),
                         b(round(statistics.mean(inits[1:] or inits))), b(max(inits[1:] or inits)),
                         b(round(statistics.mean(own))),
                         b(round(row["totals"]["net"] / len(own)))])
     lines.append(table(["Case", "Backend", "First project Init (B)", "Later Inits: min (B)",
-                        "mean (B)", "max (B)", "Own Σ new_stored+new_metadata per project (B)",
+                        "mean (B)", "max (B)", "Own Σ new_stored per project (B)",
                         "Net ÷ projects (B)"], out))
     lines.append("")
     gain = []
@@ -272,6 +319,34 @@ def reference_section(rows, refs):
     return "\n".join(lines)
 
 
+def opcost_section(rows):
+    import opcost
+
+    out = []
+    for backend in BACKENDS:
+        fits = {}
+        for field in ("new_stored", "new_metadata"):
+            points = []
+            for case_id in ("H01", "H02", "H04", "H05", "H07"):
+                row = rows.get((case_id, backend))
+                if row and outcome(row) == "PASS":
+                    points += opcost.samples(row, field)
+            fits[field] = opcost.fit(points) if points else (None, 0)
+        stored, count = fits["new_stored"]
+        meta, _ = fits["new_metadata"]
+        if not stored or not meta:
+            continue
+        for kind in opcost.KINDS:
+            out.append([NAMES[backend], kind, b(count), b(round(stored[kind])),
+                        b(round(stored[kind] - meta[kind])), b(round(meta[kind]))])
+    return ("Least-squares fit of per-Commit bytes on the five operation counts over every Commit "
+            "of H01, H02, H04, H05 and H07 (no intercept; the counts always sum to 5, so each "
+            "coefficient carries a fifth of the fixed per-Commit cost). Differences between kinds "
+            "are the useful part; this is a diagnostic estimate, not a measurement.\n\n"
+            + table(["Backend", "Operation", "Commits", "new_stored per op (B)",
+                     "payload per op (B)", "new_metadata per op (B)"], out))
+
+
 def lifecycle_table(rows):
     out = []
     for case_id in cases.CASE_IDS:
@@ -283,7 +358,7 @@ def lifecycle_table(rows):
             heads = [x["verification"] for _, _, x in branches(row)]
             out.append([case_id, NAMES[backend], row["execution"],
                         f"{heads.count('PASS')}/{len(heads)}", row["cleanup"], b(len(row["stores"])),
-                        b(row.get("calls")), f"{row['wall_ns_ineligible'] / 1e9:.1f}"])
+                        b(row.get("calls")), f"{row['wall_ns_ineligible'] / 1e9:.1f}" if row.get("wall_ns_ineligible") else "—"])
     return table(["Case", "Backend", "Execution", "Heads verified", "Cleanup", "Stores", "CLI/Docker calls",
                   "Row wall (s, INELIGIBLE)"], out)
 
@@ -349,14 +424,23 @@ def main(argv=None):
         "**Floor** = Store bytes after `store create`/`connect` + `project init` of an empty folder "
         "(+ `store push` for SQLite). **Init** = after every base `project init` − floor (the Init floor). "
         "**Net** = final − floor. **Growth after Init** = final − Init floor. SQLite bytes are "
-        "`file.bytes + file.wal_bytes`; PostgreSQL bytes are `server.schemas.layerfs`. Unattributed after "
-        "Init = growth − (Σ new_stored + Σ new_metadata), over distinct Commits.", "",
+        "`file.bytes + file.wal_bytes`; PostgreSQL bytes are `server.schemas.layerfs`. In LayerFS 2.0 "
+        "`new_stored` counts every new pack byte of a Commit and `new_metadata` is a subset of it, so "
+        "payload = new_stored − new_metadata and **unattributed after Init and packs** = growth − "
+        "Σ new_stored over distinct Commits (database pages, indexes, free space and WAL). The spec's "
+        "net − (Σ new_stored + Σ new_metadata) counts metadata twice and is not used.", "",
         "## Lifecycle", "",
         lifecycle_table(rows), "",
+        *(["Superseded attempts (kept as local evidence; see Observations):", "",
+           superseded_table(), ""] if SUPERSEDED else []),
         "## Store bytes", "",
         summary_table(rows), "",
-        "SQLite parts (Σ over Stores):", "",
+        "SQLite parts (Σ over Stores). The product keeps a WAL of up to 4 MiB after quiesce, "
+        "so file-only figures are shown beside file + WAL:", "",
         sqlite_parts_table(rows), "",
+        "PostgreSQL server WAL (the server is owned and serves one row at a time, but the LSN is "
+        "server-wide):", "",
+        postgresql_table(rows), "",
         "## H01 long history", "",
         h01_section(rows), "",
         "## H02 many branches", "",
@@ -370,6 +454,8 @@ def main(argv=None):
         project_section(rows), "",
         "## H07 combined", "",
         branch_section(rows, "H07"), "",
+        "## Cost per operation kind", "",
+        opcost_section(rows), "",
         "## References", "",
         reference_section(rows, refs), "",
         *[s.strip() + "\n" for s in rest],
