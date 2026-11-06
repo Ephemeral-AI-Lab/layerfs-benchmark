@@ -38,6 +38,7 @@ counts stay the primary evidence.
 """
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -301,6 +302,16 @@ def bounded(argv, timeout, env, log):
 
 
 def next_row(args):
+    # Rows are strictly serial: a second `next` while one runs is refused.
+    with (gate_dir(args.gate) / ".lock").open("a") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise SystemExit("another gate row is running; rows are serial") from None
+        return one_row(args)
+
+
+def one_row(args):
     gate = args.gate
     record = load(gate)
     index = record["cursor"]
