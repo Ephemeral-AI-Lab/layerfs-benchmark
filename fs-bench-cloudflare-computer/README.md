@@ -80,4 +80,7 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 ## Past runs
 
 <!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-06 | `6d820c756b` | 6 of 8 rows ran all twelve scenarios (2 NOT_RUN, 6 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
 <!-- runs:end -->

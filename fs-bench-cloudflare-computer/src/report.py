@@ -50,7 +50,8 @@ def render(state, cleanup, config):
         "",
         "> Status: Diagnostic observations; every timing and ratio is performance-ineligible.",
         "",
-        f"**{passed} of 8 rows ran all twelve scenarios (execution {dict(counts)}); "
+        f"**{passed} of 8 rows ran all twelve scenarios "
+        f"({', '.join(f'{n} {k}' for k, n in sorted(counts.items()))}); "
         f"final cleanup {cleanup_state}.** One sample per row; every time and ratio is an "
         "INELIGIBLE diagnostic.",
         "",
@@ -150,6 +151,25 @@ def render(state, cleanup, config):
                 "| " + " | ".join([label, cache, *(ms(v) for v in values), *ratios]) + " |"
             )
         lines.append("")
+    passing = [(m, b, r) for (m, b), r in rows.items() if r.get("execution") == "PASS"]
+    if passing:
+        sums = sorted((r["tool_metrics"]["sum_ns"], m, b) for m, b, r in passing)
+        e2e = max(r.get("performance_invocation_elapsed_ns") or 0 for _, _, r in passing)
+        kinds = Counter((r.get("commit") or {}).get("kind", "—") for _, _, r in passing)
+        lines += [
+            "## Main observations",
+            "",
+            f"- Sum of scenario times ranged from {ms(sums[0][0])} ms ({TITLES[sums[0][1]]} "
+            f"{DATABASES[sums[0][2]]}) to {ms(sums[-1][0])} ms ({TITLES[sums[-1][1]]} "
+            f"{DATABASES[sums[-1][2]]}).",
+            f"- Longest complete row: {ms(e2e)} ms against the declared 25,000 ms budget.",
+            "- LayerFS Commit results: "
+            + ", ".join(f"{n} {k}" for k, n in sorted(kinds.items()))
+            + "; the script removes every directory it creates, so nothing new is committed.",
+            "- Single unrepeated samples under shared host load: differences of a few tens of "
+            "percent between rows are within what one sample can show and are not a ranking.",
+            "",
+        ]
     lines += [
         "## Limits and cleanup",
         "",
