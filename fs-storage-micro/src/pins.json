@@ -1,0 +1,184 @@
+{
+ "emit": {
+  "M01": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M02": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M03": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M04": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M05": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M06": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M07": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  },
+  "M08": {
+   "image": "sha256:bed5e0a65ac07c69cc0989663ab155d84ac6cbbb42a887996d00b5e937480f34",
+   "route": "docker"
+  }
+ },
+ "gen_sha256": "9efa7744f4bce76933ad1db066da53f7e723a08f7dfa9f50caf17b2b3ec3031d",
+ "input_sha256": {
+  "M01": "48d65ba128c324fb255ba91bc319a72c07d9f11837afdaa69afab54e28812d26",
+  "M02": "6b4c0d699526e3d590ffb845811d9150ab79336d74d27ca01d06cd31434f1bd4",
+  "M03": "85e2ae2b360478f4a2801d6dd6b2fbc01c2a67ec8057b368bca307dc62101588",
+  "M04": "85e2ae2b360478f4a2801d6dd6b2fbc01c2a67ec8057b368bca307dc62101588",
+  "M05": "2aecadd4889a2b65fa2850e1ede01ff30c4b514b83116ccb3927df244eed2dea",
+  "M06": "675e8850ffb0c59b3fb530dcc352075074b44fa8c54b5570901a7d70b1d4367e",
+  "M07": "fefb53c760fb72097ed5351f601af6971e3945beafd6bce640fb8146e1cd423d",
+  "M08": "abfd7f6fdd440485968e104a6c9fbf0a513cbffc68edf7f402214d83eaf8e123"
+ },
+ "oracle": {
+  "M01": {
+   "bytes": 20647445,
+   "entries": 10100,
+   "files": 10000,
+   "sha256": "e3c090689e190e543bc1cae9a51329d9e0a5e23ab8f1070a5d30da85649918d2"
+  },
+  "M02": {
+   "bytes": 550000000,
+   "entries": 2321,
+   "files": 2200,
+   "sha256": "50016df89e6664932492719a1aa007ebd3427b9d8096607ebc85b2b36126ae56"
+  },
+  "M03": {
+   "bytes": 4081892,
+   "entries": 110,
+   "files": 100,
+   "sha256": "e8c06e8a85721f7b2279eb695daa4f0fc031d9ca67f8b34442c542a0499aa74b"
+  },
+  "M04": {
+   "bytes": 4081892,
+   "entries": 110,
+   "files": 100,
+   "sha256": "e8c06e8a85721f7b2279eb695daa4f0fc031d9ca67f8b34442c542a0499aa74b"
+  },
+  "M05": {
+   "bytes": 4081892,
+   "entries": 110,
+   "files": 100,
+   "sha256": "f00881a9404e93a7a0ce96ae57f5012a741053d489a9e32677d92623365a7afa"
+  },
+  "M06": {
+   "bytes": 68157441,
+   "entries": 1,
+   "files": 1,
+   "sha256": "933c1c4816fc64af5d99047a62f30c6bfa4371aa646ccd4f6d40918d924fffa7"
+  },
+  "M07": {
+   "bytes": 201326592,
+   "entries": 3,
+   "files": 3,
+   "sha256": "7fa4022c260952aa969ccef2ab23058ba45769e43a40df080854c6d6bec77545"
+  },
+  "M08": {
+   "bytes": 33542144,
+   "entries": 1,
+   "files": 1,
+   "sha256": "451e5c124318dddacd25e0d2cbc714f88ff9c7e4639aacef5665995e025636f4"
+  }
+ },
+ "references": {
+  "M01": {
+   "cdc_oracle": 20647445,
+   "cdc_unique_raw_bytes": 20647445,
+   "git_pack": 21314353,
+   "logical_bytes": 20647445,
+   "tar_zstd": 20891541,
+   "whole_file_unique": 20647445
+  },
+  "M02": {
+   "cdc_oracle": 34607799,
+   "cdc_unique_raw_bytes": 50000000,
+   "git_pack": 33444866,
+   "logical_bytes": 600000000,
+   "tar_zstd": 396879583,
+   "whole_file_unique": 50000000
+  },
+  "M03": {
+   "cdc_oracle": 30832515,
+   "cdc_unique_raw_bytes": 85718215,
+   "git_pack": 2457557,
+   "logical_bytes": 85718215,
+   "tar_zstd": 26316489,
+   "whole_file_unique": 85718215
+  },
+  "M04": {
+   "cdc_oracle": 30832515,
+   "cdc_unique_raw_bytes": 85718215,
+   "git_pack": 2457557,
+   "logical_bytes": 85718215,
+   "tar_zstd": 26316489,
+   "whole_file_unique": 85718215
+  },
+  "M05": {
+   "cdc_oracle": 30832515,
+   "cdc_unique_raw_bytes": 85718215,
+   "git_pack": 30268553,
+   "logical_bytes": 85718215,
+   "tar_zstd": 26316957,
+   "whole_file_unique": 85718215
+  },
+  "M06": {
+   "cdc_oracle": 68256206,
+   "cdc_unique_raw_bytes": 68256206,
+   "git_pack": 68194222,
+   "logical_bytes": 404750344,
+   "tar_zstd": 404762832,
+   "whole_file_unique": 404750344
+  },
+  "M07": {
+   "cdc_oracle": 92435496,
+   "cdc_unique_raw_bytes": 134250496,
+   "git_pack": 88915283,
+   "logical_bytes": 402653184,
+   "tar_zstd": 221762925,
+   "whole_file_unique": 201326592,
+   "zstd3_random.bin": 67110410,
+   "zstd3_text.txt": 20412198,
+   "zstd3_zeros.bin": 2067
+  },
+  "M08": {
+   "cdc_oracle": 101912518,
+   "cdc_unique_raw_bytes": 249747284,
+   "git_pack": 13001168,
+   "logical_bytes": 402505728,
+   "tar_zstd": 132242533,
+   "whole_file_unique": 402505728,
+   "zstd3_state01": 11012086,
+   "zstd3_state02": 11013359,
+   "zstd3_state03": 11012285,
+   "zstd3_state04": 11011948,
+   "zstd3_state05": 11010947,
+   "zstd3_state06": 11012087,
+   "zstd3_state07": 11010976,
+   "zstd3_state08": 11012334,
+   "zstd3_state09": 11012507,
+   "zstd3_state10": 11012653,
+   "zstd3_state11": 11012119,
+   "zstd3_state12": 11012119
+  }
+ },
+ "references_json_sha256": "d82e103fca53f0977fcd8c9868804d97dbaaa67610fc63688ca6bcd1918f2c93",
+ "tools": {
+  "python": "3.14.3",
+  "zstd": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+ },
+ "workload_version": "fs-storage-micro-v1"
+}
