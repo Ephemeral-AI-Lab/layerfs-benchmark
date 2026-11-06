@@ -81,8 +81,8 @@ def store_bytes_table(rows):
 def attribution_table(rows):
     headers = [
         "Case", "Database", "Commits", "Σ logical (B)", "Σ new_canonical (B)",
-        "Σ new_stored (B)", "Σ new_metadata (B)", "Net (B)", "Unattributed (B)",
-        "Logical ÷ net",
+        "Σ new_stored (B)", "Σ new_metadata (B)", "Σ payload = stored − metadata (B)",
+        "Net (B)", "Net − Σ new_stored (B)", "Spec unattributed (B)", "Logical ÷ net",
     ]
     body = []
     for row in ordered(rows):
@@ -90,7 +90,8 @@ def attribution_table(rows):
         body.append([
             row["case"], BACKEND_NAMES[row["backend"]], s.get("commits", "—"),
             b(s.get("sum_logical")), b(s.get("sum_new_canonical")), b(s.get("sum_new_stored")),
-            b(s.get("sum_new_metadata")), b(s.get("net_bytes")), signed(s.get("unattributed_bytes")),
+            b(s.get("sum_new_metadata")), b(s.get("sum_new_payload")), b(s.get("net_bytes")),
+            signed(s.get("unattributed_after_packs_bytes")), signed(s.get("unattributed_bytes")),
             ratio(s.get("logical_per_net"), 2),
         ])
     return table(headers, body)
@@ -123,7 +124,7 @@ def references_bytes_table(references, order=None):
     names = ("whole_file_unique", "tar_zstd", "git_pack", "cdc_oracle")
     headers = ["Case", "Whole-file unique (B)", "Σ tar|zstd-3 (B)", "Git pack+idx (B)", "CDC oracle, approx. (B)"]
     body = [
-        [case] + [b(references[case].get(name)) for name in names]
+        [case] + [b(references.get(case, {}).get(name)) for name in names]
         for case in (order or sorted(references))
     ]
     return table(headers, body)
