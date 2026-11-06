@@ -224,15 +224,22 @@ def main(argv=None):
         ha, hb = history(d10["sqlite"]["row"]), history(repeat["row"])
         same_stored = [x["new_stored"] for x in ha] == [x["new_stored"] for x in hb]
         same_meta = [x["new_metadata"] for x in ha] == [x["new_metadata"] for x in hb]
+        def drow(label, key):
+            x, y = a.get(key), b2.get(key)
+            return [label, sr.b(x), sr.b(y), sr.signed(y - x) if isinstance(x, int) and isinstance(y, int) else "—"]
+
         drows = [
-            ["Final Store bytes (B)", sr.b(a["final_bytes"]), sr.b(b2["final_bytes"]), sr.signed(b2["final_bytes"] - a["final_bytes"])],
-            ["Net (B)", sr.b(a["net_bytes"]), sr.b(b2["net_bytes"]), sr.signed(b2["net_bytes"] - a["net_bytes"])],
-            ["Σ new_stored (B)", sr.b(a["sum_new_stored"]), sr.b(b2["sum_new_stored"]), sr.signed(b2["sum_new_stored"] - a["sum_new_stored"])],
-            ["Σ new_metadata (B)", sr.b(a["sum_new_metadata"]), sr.b(b2["sum_new_metadata"]), sr.signed(b2["sum_new_metadata"] - a["sum_new_metadata"])],
-            ["Net allocated (B)", sr.b(a["net_allocated_bytes"]), sr.b(b2["net_allocated_bytes"]), sr.signed((b2["net_allocated_bytes"] or 0) - (a["net_allocated_bytes"] or 0))],
+            drow("Net file bytes, no WAL (B)", "net_file_bytes"),
+            drow("Net WAL bytes (B)", "net_wal_bytes"),
+            drow("Net file + WAL (B)", "net_bytes"),
+            drow("Net allocated (B)", "net_allocated_bytes"),
+            drow("Σ new_stored (B)", "sum_new_stored"),
+            drow("Σ new_metadata (B)", "sum_new_metadata"),
         ]
+        drift = [abs(x["new_stored"] - y["new_stored"]) for x, y in zip(ha, hb)]
         lines += [f"D10 SQLite repeated once in campaign `{repeat['campaign']}` (outcome {outcome(repeat['row'])}), same product, image and seed. "
-                  f"Per-Commit new_stored identical: **{same_stored}**; per-Commit new_metadata identical: **{same_meta}**.", ""]
+                  f"Per-Commit new_stored identical: **{same_stored}** (largest per-Commit difference {sr.b(max(drift) if drift else None)} B); "
+                  f"per-Commit new_metadata identical: **{same_meta}**. The Store is not byte-identical on repeat; see the table.", ""]
         lines += sr.table(["Metric", "First run", "Repeat", "Δ"], drows).splitlines()
     else:
         lines += ["Not run."]
@@ -263,7 +270,7 @@ def main(argv=None):
         "which can hold already-checkpointed frames. The parts and the allocated bytes are listed separately.",
         "- PostgreSQL Store bytes are the `layerfs` schema's relation sizes (tables, TOAST, indexes); server WAL is not part of the Store "
         "and is recorded only as a WAL position (diagnostic).",
-        "- Unattributed bytes are measured once per row (final − floor − Σ new_stored − Σ new_metadata), not per Commit: "
+        "- Bytes outside Commit packs (net − Σ new_stored) are measured once per row, not per Commit: "
         "the CLI exposes no Store-wide total between Commits without closing the Workspace.",
         "- The CDC oracle is approximate and has no delta encoding, so it is a dedup-only reference, not a lower bound.",
         "- dsh-dedup v1.0.0 numbers came through the SDK route (Init of state 1, older policy history) and are context, not a baseline.",
@@ -279,23 +286,37 @@ def main(argv=None):
 
 
 def observations(table_rows, refs):
-    out = []
+    out = [
+        "- `new_stored` is all new pack bytes of a Commit and `new_metadata` its metadata subset (LayerFS 2.0 "
+        "CommitStatistics), so payload = stored − metadata and the Store bytes no Commit accounts for are "
+        "net − Σ new_stored. The spec formula net − (Σ new_stored + Σ new_metadata) counts metadata twice; it is "
+        "listed as \"Spec unattributed\" only for comparability."
+    ]
     for r in table_rows:
         s = r.get("summary")
         if not s:
             continue
         c = r["case"]
-        git = refs[c]["git_pack"]["bytes"]
-        out.append(
-            f"- {c} {NAMES[r['backend']]}: net {sr.b(s['net_bytes'])} B = {s['net_bytes'] / git:.3f}× Git pack+idx, "
-            f"{s['net_bytes'] / refs[c]['tar_zstd']['bytes']:.3f}× Σ tar|zstd-3, {s['net_bytes'] / refs[c]['cdc_oracle']['bytes']:.3f}× the CDC oracle; "
-            f"Σ new_stored {sr.b(s['sum_new_stored'])} B = {s['sum_new_stored'] / git:.3f}× Git; unattributed {sr.signed(s['unattributed_bytes'])} B "
-            f"({s['unattributed_bytes'] / s['net_bytes']:.1%} of net)."
+        ref = refs[c]["git_pack"]["bytes"]
+        text = (
+            f"- {c} {NAMES[r['backend']]}: net {sr.b(s['net_bytes'])} B = {s['net_bytes'] / ref:.3f}× Git pack+idx, "
+            f"{s['net_bytes'] / refs[c]['tar_zstd']['bytes']:.3f}× Σ tar|zstd-3, {s['net_bytes'] / refs[c]['cdc_oracle']['bytes']:.3f}× the CDC oracle. "
+            f"Σ new_stored {sr.b(s['sum_new_stored'])} B = {s['sum_new_stored'] / ref:.3f}× Git (payload {sr.b(s['sum_new_payload'])} B, "
+            f"metadata {sr.b(s['sum_new_metadata'])} B); net − Σ new_stored {sr.signed(s['unattributed_after_packs_bytes'])} B "
+            f"({s['unattributed_after_packs_bytes'] / s['net_bytes']:.1%} of net)"
         )
+        if r["backend"] == "sqlite" and isinstance(s.get("net_file_bytes"), int):
+            text += (f"; file-only net (no WAL) {sr.b(s['net_file_bytes'])} B = {s['net_file_bytes'] / ref:.3f}× Git, "
+                     f"WAL {sr.b(s['net_wal_bytes'])} B")
+        wal = storage.server_wal_bytes(r["row"]) if r["backend"] == "postgresql" else None
+        if isinstance(wal, int):
+            text += f"; server WAL generated floor→final {sr.b(wal)} B (diagnostic, not Store bytes)"
+        out.append(text + ".")
     ctx = cases.DSH_DEDUP_V1_ALLOCATED_BYTES
     out.append(
-        f"- Context only: dsh-dedup v1.0.0 (SDK route) recorded {sr.b(ctx['D10'])} B (D10) and {sr.b(ctx['D03'])} B (D03) of Store allocation, "
-        "with payload 41,472,751 B and 51,897,185 B."
+        f"- Context only: dsh-dedup v1.0.0 (SDK route, Init of state 1, older policy history) recorded {sr.b(ctx['D10'])} B (D10) and "
+        f"{sr.b(ctx['D03'])} B (D03) of Store allocation, with offline payload 41,472,751 B / 51,897,185 B and metadata "
+        "1,325,047 B / 2,457,063 B. Not comparable as a baseline."
     )
     return out
 
