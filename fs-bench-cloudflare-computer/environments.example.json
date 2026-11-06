@@ -21,9 +21,9 @@
       "name": "native",
       "ready": false,
       "platform": "darwin",
-      "unavailable_reason": "frozen fs-bench.sh needs bash 4 or newer; remove this line once a pinned bash 4+ is on the native Exec path",
       "tool_environment": {
-        "BENCH_TOOL_ROOT": "UNAVAILABLE"
+        "BENCH_TOOL_ROOT": "/absolute/native-tools",
+        "PATH": "/absolute/native-tools/bin:/usr/bin:/bin:/usr/sbin:/sbin"
       }
     },
     "docker": {

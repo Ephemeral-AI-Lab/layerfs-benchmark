@@ -44,6 +44,19 @@ layerfs machine create <name> apple-container --cpus 2 --memory 2G --disk 8G \
 
 ## Native macOS
 
-macOS ships bash 3.2.57. A native row needs a pinned bash 4+ built from source
-and supplied on the Exec path, recorded here with its hash. None is provided
-yet, so native rows are NOT_RUN.
+macOS ships bash 3.2.57 and a BSD `sha256sum` without `--quiet`. Native rows
+use a tool folder outside any Store, set as `BENCH_TOOL_ROOT`, holding:
+
+| File | Identity |
+| --- | --- |
+| `fs-bench.sh` | the frozen script, SHA-256 `0e2004339a92…37230ef` |
+| `bin/bash` | GNU bash 5.2.37 from `bash-5.2.37.tar.gz` (SHA-256 `9599b22ecd1d…a621ff`), `./configure --without-bash-malloc --disable-nls`, built with Apple clang on macOS 26.4.1 arm64; binary SHA-256 `fbea3631ff82…50f94fc`; links only macOS system libraries |
+| `bin/sha256sum` | 9-line wrapper: exactly `-c --quiet` runs `/sbin/sha256sum -c -` and prints only on failure; anything else goes to `/sbin/sha256sum`; SHA-256 `838a14f6ab33…46a2cc` |
+
+Set the native machine's `tool_environment` to
+`BENCH_TOOL_ROOT=<folder>` and `PATH=<folder>/bin:/usr/bin:/bin:/usr/sbin:/sbin`.
+The body then runs the script with the pinned bash and checks its hash with the
+wrapper; git is macOS's `/usr/bin/git` (2.39.5, Apple Git-154).
+
+The 2026-11-06 build is cached in `~/.cache/fs-bench-cloudflare-computer/tools/`
+with its source tarball; it is not published here.

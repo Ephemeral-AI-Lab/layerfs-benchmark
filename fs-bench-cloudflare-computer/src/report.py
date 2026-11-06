@@ -56,7 +56,16 @@ def render(state, cleanup, config):
         "INELIGIBLE diagnostic.",
         "",
         f"LayerFS `{state['source_sha']}` (remote `layerfs_v2_0_0`, resolved at campaign start). "
-        f"Harness `{config.get('harness_commit', 'working tree')}`. Each row runs Cloudflare "
+        + (
+            "Campaigns: " + "; ".join(
+                f"`{c['campaign_id']}` (harness `{c['harness_commit'][:10]}`): "
+                + (", ".join(c["rows"]) or "no executed rows")
+                for c in state["campaigns"]
+            ) + ". All campaigns use the same CLI, daemon, Linux bundle and image. "
+            if state.get("campaigns")
+            else f"Harness `{config.get('harness_commit', 'working tree')}`. "
+        )
+        + "Each row runs Cloudflare "
         f"Computer's byte-identical `script/fs-bench.sh` (Computer `{cases.SOURCE_COMMIT}`, "
         f"SHA-256 `{cases.SCRIPT_SHA256}`) once, with REPS=1, WARMUP=0, RANDOMIZE_TARGETS=0, no "
         "BASE, and the twelve offline scenarios. The script times each scenario itself with "
@@ -76,6 +85,17 @@ def render(state, cleanup, config):
         f"Environment: {config.get('environment_description', 'UNAVAILABLE')}",
         "",
     ]
+    native = config.get("native_tools")
+    if native:
+        lines += [
+            f"Native macOS ships bash 3.2, which the script cannot run, so native rows put a pinned "
+            f"GNU bash {native['bash']['version']} (source SHA-256 `{native['bash']['source_sha256'][:16]}…`, "
+            f"binary `{native['bash']['binary_sha256'][:16]}…`) first on the Exec PATH, plus a small "
+            "`sha256sum` wrapper that gives macOS's checker GNU's `-c --quiet` form. The workload "
+            "command is byte-identical on every row. Native Workspaces are NFS mounts, and every "
+            "`stat`, `mkdir` and `echo >` loop step launches a macOS process.",
+            "",
+        ]
     artifacts = config.get("artifacts", {})
     if artifacts:
         lines += ["| Build input | Identity |", "| --- | --- |"]
@@ -107,7 +127,9 @@ def render(state, cleanup, config):
                 TITLES[machine],
                 DATABASES[backend],
                 row.get("execution", "NOT_RUN"),
-                row.get("cleanup", "NOT_RUN"),
+                {"COMPLETE_AFTER_INSPECTION": "COMPLETE (after inspection)"}.get(
+                    row.get("cleanup", "NOT_RUN"), row.get("cleanup", "NOT_RUN")
+                ),
                 ms(timings.get("sandbox_create")),
                 ms(timings.get("exec")),
                 ms(timings.get("commit")),
@@ -120,7 +142,18 @@ def render(state, cleanup, config):
     reasons = {}
     for (machine, backend), row in rows.items():
         if row.get("execution") != "PASS" and row.get("reason"):
-            reasons.setdefault(row["reason"], []).append(f"{TITLES[machine]} {DATABASES[backend]}")
+            reason = row["reason"]
+            if row.get("reason") == "exec: CLI/process exit -9":
+                reason = (
+                    "the Exec was stopped at the row's 25 s budget (CLI killed, exit -9), so the "
+                    "script's reply and scenario times were lost"
+                )
+            if row.get("custody_resolution"):
+                reason += (
+                    "; afterwards inspection found no script process, an idle Workspace and an "
+                    "empty root, and the row was released through the CLI"
+                )
+            reasons.setdefault(reason, []).append(f"{TITLES[machine]} {DATABASES[backend]}")
     for reason, names in reasons.items():
         lines.append(f"- {', '.join(names)}: {safe(reason)}")
     if reasons:
@@ -166,6 +199,20 @@ def render(state, cleanup, config):
             "- LayerFS Commit results: "
             + ", ".join(f"{n} {k}" for k, n in sorted(kinds.items()))
             + "; the script removes every directory it creates, so nothing new is committed.",
+        ]
+        native = [(b, r) for m, b, r in passing if m == "native"]
+        docker = {b: r for m, b, r in passing if m == "docker"}
+        if native and any(b in docker for b, _ in native):
+            b, r = next((b, r) for b, r in native if b in docker)
+            stat = scenario_ns(r).get("stat 1000 files")
+            base = scenario_ns(docker[b]).get("stat 1000 files")
+            lines.append(
+                f"- Native macOS is the slowest machine and runs at the edge of the 25 s budget: "
+                f"`stat 1000 files` took {ms(stat)} ms against Docker's {ms(base)} ms on "
+                f"{DATABASES[b]}. The 1,000-step loops launch one macOS process per file on an NFS "
+                "mount; the 64 MiB rows are close to Docker."
+            )
+        lines += [
             "- Single unrepeated samples under shared host load: differences of a few tens of "
             "percent between rows are within what one sample can show and are not a ranking.",
             "",
@@ -185,20 +232,46 @@ def render(state, cleanup, config):
     return "\n".join(lines)
 
 
+def merge(states, configs):
+    """Rows from several campaigns at one product commit; an executed row wins over NOT_RUN."""
+    if len({s["source_sha"] for s in states}) != 1:
+        raise SystemExit("campaigns measured different product commits")
+    merged = {"source_sha": states[0]["source_sha"], "rows": {}, "campaigns": []}
+    for state, config in zip(states, configs):
+        executed = []
+        for key, row in state.get("rows", {}).items():
+            if row.get("execution") != "NOT_RUN" or key not in merged["rows"]:
+                merged["rows"][key] = row
+            if row.get("execution") != "NOT_RUN":
+                machine, backend = key.split("/")[1:]
+                executed.append(f"{TITLES[machine]} {DATABASES[backend]}")
+        merged["campaigns"].append({
+            "campaign_id": config["campaign_id"],
+            "harness_commit": config.get("harness_commit", "working tree"),
+            "rows": executed,
+        })
+    config = dict(configs[0])
+    for other in configs[1:]:
+        config.setdefault("native_tools", other.get("native_tools"))
+    return merged, config
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, required=True, help="the campaign cache")
+    parser.add_argument("--input", type=Path, nargs="+", required=True, help="campaign caches")
     parser.add_argument("--cleanup", type=Path, required=True)
-    parser.add_argument("--environment", type=Path, required=True)
+    parser.add_argument("--environment", type=Path, nargs="+", required=True, help="one per --input, same order")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if len(args.input) != len(args.environment):
+        parser.error("give one --environment per --input")
     if args.output.exists():
         parser.error("report already exists; do not overwrite released results")
-    text = render(
-        json.loads((args.input / "campaign.json").read_text()),
-        json.loads(args.cleanup.read_text()),
-        json.loads(args.environment.read_text()),
+    state, config = merge(
+        [json.loads((path / "campaign.json").read_text()) for path in args.input],
+        [json.loads(path.read_text()) for path in args.environment],
     )
+    text = render(state, json.loads(args.cleanup.read_text()), config)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(text + "\n")
     print(args.output)

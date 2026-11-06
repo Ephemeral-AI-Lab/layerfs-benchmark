@@ -46,7 +46,9 @@ Prerequisites, all described in [TOOL.md](TOOL.md):
 - matched release CLI, native daemon and a Linux bundle sealed with that image;
 - LayerFS machines: Docker on the image, Lima and Apple Container from the
   bundle's archive;
-- a dedicated PostgreSQL server with one empty database per PostgreSQL row.
+- a dedicated PostgreSQL server with one empty database per PostgreSQL row;
+- for native macOS, a pinned bash 4+ and a `sha256sum -c --quiet` wrapper on
+  the Exec PATH ([TOOL.md](TOOL.md#native-macos)).
 
 Config: copy [environments.example.json](environments.example.json), replace
 placeholders and keep `"shared_infrastructure": true`, so a NOT_RUN row does
@@ -82,5 +84,5 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `6d820c756b` | 6 of 8 rows ran all twelve scenarios (2 NOT_RUN, 6 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
+| 2026-11-06 | `6d820c756b` | 7 of 8 rows ran all twelve scenarios (1 FAIL, 7 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
 <!-- runs:end -->

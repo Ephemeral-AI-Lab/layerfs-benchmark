@@ -133,5 +133,19 @@ class Report(unittest.TestCase):
         self.assertLess(text.index("Scenario times, SQLite"), text.index("Scenario times, PostgreSQL"))
 
 
+class Merge(unittest.TestCase):
+    def test_executed_row_wins_over_not_run(self):
+        a = {"source_sha": "a" * 40, "rows": {"B01/native/sqlite": {"execution": "NOT_RUN", "reason": "bash"},
+                                               "B01/docker/sqlite": {"execution": "PASS"}}}
+        b = {"source_sha": "a" * 40, "rows": {"B01/native/sqlite": {"execution": "FAIL", "reason": "budget"}}}
+        state, config = report.merge([a, b], [{"campaign_id": "x"}, {"campaign_id": "y", "native_tools": {"k": 1}}])
+        self.assertEqual(state["rows"]["B01/native/sqlite"]["execution"], "FAIL")
+        self.assertEqual(state["rows"]["B01/docker/sqlite"]["execution"], "PASS")
+        self.assertEqual([c["rows"] for c in state["campaigns"]], [["Docker SQLite"], ["native SQLite"]])
+        self.assertEqual(config["native_tools"], {"k": 1})
+        with self.assertRaises(SystemExit):
+            report.merge([a, {"source_sha": "b" * 40, "rows": {}}], [{"campaign_id": "x"}, {"campaign_id": "y"}])
+
+
 if __name__ == "__main__":
     unittest.main()

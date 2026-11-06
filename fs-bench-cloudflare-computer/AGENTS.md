@@ -38,9 +38,13 @@ The Linux machines use one Sandbox image: the LayerFS runtime image (Debian 12,
 bash 5, GNU coreutils, git) plus gawk and the frozen script
 ([image/Dockerfile](image/Dockerfile)). See [TOOL.md](TOOL.md).
 
-Native macOS has bash 3.2, which the script cannot run (`declare -A`). Native
-rows are NOT_RUN unless a pinned bash 4+ is supplied on the Exec path; the
-script itself is never patched.
+Native macOS has bash 3.2, which the script cannot run (`declare -A`), and its
+`sha256sum` has no `--quiet`. Native rows put a pinned bash 5.2.37 and a small
+`sha256sum -c --quiet` wrapper first on the Exec PATH through the machine's
+`tool_environment` ([TOOL.md](TOOL.md)); the workload command and the script
+stay byte-identical to the Linux rows. Without them, native rows are NOT_RUN.
+Native rows run close to the 25 s budget (macOS launches one process per file
+in the 1,000-step loops on an NFS mount); a row over it is FAIL, never retried.
 
 Use the shared runner ([src/run.py](src/run.py)) unchanged: create, mount, one
 Exec, LayerFS Commit, unmount, close, Store remove or disconnect. The script
