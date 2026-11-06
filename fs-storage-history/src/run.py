@@ -12,6 +12,7 @@ is provisioned and released outside this script and recorded in the config.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -27,18 +28,31 @@ import driver  # noqa: E402
 import measure  # noqa: E402
 
 
+def sha256(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def docker_free_bytes(image):
+    """Free bytes on the Docker guest's root filesystem (read-only probe)."""
+    got = measure.run_command(["docker", "run", "--rm", "--network", "none", "--pull", "never",
+                               "--entrypoint", "df", image, "-B1", "--output=avail", "/"],
+                              measure.Deadline.after(60))
+    lines = got["stdout"].split()
+    return int(lines[-1]) if got["process_exit"] == 0 and lines and lines[-1].isdigit() else None
+
+
 def preflight(config):
     """Check pinned identities before a row; return (base_state, problems)."""
     problems = []
     cli = Path(config["cli"])
     if not cli.is_absolute() or not cli.is_file():
         problems.append("pinned CLI missing or not absolute")
-    elif driver.file_sha256(cli) != config["artifacts"]["cli_sha256"]:
+    elif sha256(cli) != config["artifacts"]["cli_sha256"]:
         problems.append("CLI hash differs from artifacts.cli_sha256")
     empty = Path(config["empty_source"])
     if not empty.is_dir() or any(empty.iterdir()):
         problems.append("empty source missing or not empty")
-    model_sha = driver.file_sha256(SRC / "model.py")
+    model_sha = sha256(SRC / "model.py")
     if model_sha != config["artifacts"].get("model_sha256"):
         problems.append("model.py differs from the image's recorded model_sha256")
     state = base.load_tree(config["base_dir"])
@@ -46,7 +60,8 @@ def preflight(config):
         base.check_pins(state.summary())
     except SystemExit as error:
         problems.append(str(error))
-    env = driver.environment(config)
+    env = dict(os.environ, **config.get("environment", {}), LAYERFS_HOME=config["home"],
+               LAYERFS_CONSTRUCTION_WORKERS="1")
     got = measure.run_command([config["cli"], "machine", "get", "docker"],
                               measure.Deadline.after(30), env=env)
     try:
@@ -57,6 +72,11 @@ def preflight(config):
             problems.append(f"docker machine is {machine.get('state')}")
     except ValueError:
         problems.append("machine get docker gave no JSON")
+    free = docker_free_bytes(config["artifacts"]["sandbox_image"])
+    minimum = config.get("docker_min_free_bytes", 20 * 2**30)
+    if free is None or free < minimum:
+        problems.append(f"Docker guest free space {free} B is below {minimum} B; not started "
+                        "(capacity, not a product result)")
     return state, problems
 
 
@@ -83,14 +103,12 @@ def main(argv=None):
     if not (args.environment and args.case and args.backend and args.output):
         parser.error("row needs --environment, --case, --backend and --output")
     config = json.loads(Path(args.environment).read_text())
-    config.setdefault("docker_worker", driver.docker_worker(config["home"]))
     state, problems = preflight(config)
     if problems:
         print(json.dumps({"case": args.case, "backend": args.backend, "execution": "NOT_RUN",
                           "reasons": problems}))
         return 1
-    row = driver.Row(config, args.case, args.backend, args.output, state,
-                     config["base_dir"], driver.environment(config))
+    row = driver.Row(config, args.case, args.backend, args.output, state, config["base_dir"])
     result = row.run()
     print(json.dumps({k: result.get(k) for k in (
         "case", "backend", "execution", "verification", "cleanup", "reason")}))
