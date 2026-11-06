@@ -263,13 +263,18 @@ def compare(baseline, candidate, tables=None):
             if kind == "workload" and mark not in ("same", "n/a"):
                 out["not_comparable"].append(f"{key}: {name} differs ({a} → {b})")
             elif mark == "HIGHER":
-                out["regressions"].append(f"{key}: {name} {delta:+,} B ({pct:+.2f}%), band ±{band:,}")
+                out["regressions"].append(f"{key}: {name} {delta:+,} B ({fmt_pct(pct)}), band ±{band:,}")
             elif mark == "lower":
-                out["improvements"].append(f"{key}: {name} {delta:+,} B ({pct:+.2f}%)")
+                out["improvements"].append(f"{key}: {name} {delta:+,} B ({fmt_pct(pct)})")
         if cand.get("verification") != "PASS":
             out["not_comparable"].append(f"{key}: candidate verification {cand.get('verification')}")
         out["rows"].append(row)
     return out
+
+
+def fmt_pct(pct):
+    """Δ% text; a zero baseline has no percentage."""
+    return f"{pct:+.2f}%" if pct is not None else "Δ% n/a, baseline 0"
 
 
 def add_repeat(baseline, repeat):

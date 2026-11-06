@@ -259,6 +259,18 @@ class CompareTests(unittest.TestCase):
         cand["rows"]["Q1/sqlite"]["commits"] = 1
         self.assertEqual(results.compare(base, cand)["regressions"], [])
 
+    def test_zero_baseline_regression_has_no_percentage(self):
+        # #86 moved all bytes from the WAL to the file: a base file net of 0 must not crash compare.
+        base = export_of([summary("Q1", "sqlite")])
+        cand = export_of([summary("Q1", "sqlite")])
+        for field, _ in ((f, k) for _, f, k in results.metrics("sqlite") if k == "store"):
+            base["rows"]["Q1/sqlite"][field] = 0
+            cand["rows"]["Q1/sqlite"][field] = 1_000_000
+        out = results.compare(base, cand)
+        self.assertTrue(out["regressions"])
+        self.assertTrue(all("baseline 0" in r for r in out["regressions"]))
+        self.assertIn("—", results.compare_markdown(out, base, cand))
+
     def test_workload_mismatch_is_not_comparable(self):
         base = export_of([summary("Q1", "sqlite")])
         cand = export_of([summary("Q1", "sqlite", raw=1)])
