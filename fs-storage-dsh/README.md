@@ -67,4 +67,5 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
 | 2026-11-06 | `6d820c756b` | 4 of 4 rows PASS (applied, committed, measured and verified at state 157); net Store bytes D10 56,139,776 B SQLite / 69,967,872 B PostgreSQL, D03 73,015,296 B / 93,388,800 B, against a Git pack + idx of 41,805,317 / 48,166,223 B; final cleanup COMPLETE | [report](../result/2026-11-06/fs-storage-dsh/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
+| 2026-11-06 | `b4fa173e40` | 3 of 4 rows PASS (applied, committed, measured and verified at state 157); net Store bytes D10 57,081,856 B SQLite / 70,008,832 B PostgreSQL, D03 72,966,144 B / — B, against a Git pack + idx of 41,805,317 / 48,166,223 B; final cleanup INCOMPLETE | [report](../result/2026-11-06/fs-storage-dsh/b4fa173e401fc87af6610c151225096288e4ba57/report.md) |
 <!-- runs:end -->
