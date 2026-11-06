@@ -1,0 +1,73 @@
+{
+ "campaign_id": "fsq-example",
+ "source_sha": "b4fa173e401fc87af6610c151225096288e4ba57",
+ "cli": "/absolute/pinned-release/layerfs",
+ "home": "/absolute/owned-private-home",
+ "empty_source": "/absolute/owned-empty-source",
+ "base_dir": "/absolute/private/base-157",
+ "environment": {
+  "XDG_CACHE_HOME": "/absolute/private-xdg (bundle at layerfs/bundle/2.0.0/linux-aarch64)"
+ },
+ "artifacts": {
+  "cli_sha256": "69d320f8f9fe86bf78ac18ab7c1a9c0e44c933b2c2493763bd2282e1dff9a348",
+  "daemon_sha256": "e04a45593a206338696fd7748f205a272f46ebb754e4b49c40aeb0953ce70000",
+  "linux_bundle_sha256": "a8c8daf34097cc61e21ac07b6f5de32b76a7c4a485601ee7c8d6668a2c612d37",
+  "profile": "release",
+  "base_image": "sha256:afa1ef9c27294f9c7298820c06483e6fb1ddafc43a7cc7d6dec8cd2e67abf38e",
+  "sandbox_image": "sha256:<fs-storage-quick:v1 image id> (fs-storage-quick:v1)",
+  "label": ""
+ },
+ "machines": {
+  "docker": {
+   "name": "docker",
+   "ready": true,
+   "platform": "linux"
+  }
+ },
+ "storage": {
+  "server_wal_argv": [
+   "docker",
+   "exec",
+   "<pg-container>",
+   "psql",
+   "-U",
+   "bench",
+   "-d",
+   "postgres",
+   "-Atc",
+   "select pg_current_wal_lsn()"
+  ]
+ },
+ "attribution": {
+  "sqlite3": "/opt/homebrew/opt/sqlite/bin/sqlite3"
+ },
+ "postgresql": {
+  "password_env": "BENCH_PG_PASSWORD",
+  "server_container": "<pg-container>",
+  "server_image": "postgres:17-bookworm sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652, 1 CPU / 512 MiB, 127.0.0.1:<port>",
+  "disposal_resource": "campaign-databases",
+  "databases": {
+   "Q1/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q1",
+   "Q2/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q2",
+   "Q3/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q3",
+   "Q4/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q4",
+   "Q5/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q5",
+   "Q6/postgresql": "postgresql://bench@127.0.0.1:<port>/fsqexample_q6"
+  }
+ },
+ "resources": [
+  {
+   "id": "campaign-databases",
+   "owned": true,
+   "release_argv": [
+    "docker",
+    "exec",
+    "<pg-container>",
+    "sh",
+    "-c",
+    "for d in fsqexample_q1 fsqexample_q2 fsqexample_q3 fsqexample_q4 fsqexample_q5 fsqexample_q6; do dropdb -U bench --if-exists \"$d\" || exit 1; done"
+   ]
+  }
+ ],
+ "shared_infrastructure": false
+}

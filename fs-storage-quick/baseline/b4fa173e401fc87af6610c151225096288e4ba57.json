@@ -1,0 +1,2415 @@
+{
+ "suite": "fs-storage-quick",
+ "format": 1,
+ "workload_version": "fs-storage-quick-v1",
+ "gen_sha256": "8ddd0ab6c6d6fc0984890b174c9f7dab085eca10167c1660a96757248e590a8d",
+ "model_sha256": "f44c6b23d3035c1af97da133103b2ddf57cf37d977c09e77f11377a46aa307de",
+ "pins_sha256": "0d40f379bb114eab63ea4b907fe623d5dab4940ba32c12cebf17b7c8e765b66e",
+ "campaign_id": "q85-base2",
+ "source_sha": "b4fa173e401fc87af6610c151225096288e4ba57",
+ "artifacts": {
+  "cli_sha256": "69d320f8f9fe86bf78ac18ab7c1a9c0e44c933b2c2493763bd2282e1dff9a348",
+  "daemon_sha256": "e04a45593a206338696fd7748f205a272f46ebb754e4b49c40aeb0953ce70000",
+  "linux_bundle_sha256": "a8c8daf34097cc61e21ac07b6f5de32b76a7c4a485601ee7c8d6668a2c612d37",
+  "profile": "release",
+  "base_image": "sha256:afa1ef9c27294f9c7298820c06483e6fb1ddafc43a7cc7d6dec8cd2e67abf38e",
+  "sandbox_image": "sha256:fedbb4077dc7cba7771ff10fd0ee2db8ec063a7cea657559819cdcbb4bfb5db5 (fs-storage-quick:v1)"
+ },
+ "late_probe": {
+  "rows": [
+   "Q1/docker/sqlite",
+   "Q2/docker/sqlite",
+   "Q3/docker/sqlite",
+   "Q4/docker/sqlite",
+   "Q5/docker/sqlite",
+   "Q6/docker/sqlite",
+   "Q1/docker/postgresql",
+   "Q2/docker/postgresql",
+   "Q3/docker/postgresql",
+   "Q4/docker/postgresql",
+   "Q5/docker/postgresql",
+   "Q6/docker/postgresql"
+  ],
+  "slept_s": 74.95,
+  "wait_s": 75.0
+ },
+ "wall_ineligible": {
+  "sqlite": {
+   "matrix_wall_s": 52.9,
+   "sum_row_wall_s": 52.8,
+   "rows": 6
+  },
+  "postgresql": {
+   "matrix_wall_s": 117.4,
+   "sum_row_wall_s": 117.0,
+   "rows": 6
+  }
+ },
+ "rows": {
+  "Q1/sqlite": {
+   "id": "Q1/docker/sqlite",
+   "case": "Q1",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 1,
+   "raw": 4103985,
+   "sum_logical_commits": 4103985,
+   "init_logical": 0,
+   "sum_new_canonical": 4356403,
+   "sum_new_stored": 4132314,
+   "sum_new_metadata": 17201,
+   "sum_new_payload": 4115113,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 9011200,
+    "file_bytes": 4816896,
+    "wal_bytes": 4194304,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": null
+   },
+   "late": {
+    "total_bytes": 5009408,
+    "file_bytes": 5009408,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 8798208,
+   "net_file_bytes": 4603904,
+   "net_wal_bytes": 4194304,
+   "net_schema_bytes": null,
+   "late_net_bytes": 4796416,
+   "late_net_file_bytes": 4796416,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 240.7,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 4103985,
+     "new_canonical": 4356403,
+     "new_stored": 4132314,
+     "new_metadata": 17201,
+     "wall_ms_ineligible": 411.2,
+     "cli_cpu_ms_ineligible": 10.2
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 4.7,
+    "commit_wall_ms_sum": 411.2,
+    "commit_wall_ms_median": 411.2,
+    "commit_wall_ms_max": 411.2,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     997.8
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 28,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 28,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q1/postgresql": {
+   "id": "Q1/docker/postgresql",
+   "case": "Q1",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 1,
+   "raw": 4103985,
+   "sum_logical_commits": 4103985,
+   "init_logical": 0,
+   "sum_new_canonical": 4356403,
+   "sum_new_stored": 4132321,
+   "sum_new_metadata": 17208,
+   "sum_new_payload": 4115113,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1F1EFE20"
+   },
+   "final": {
+    "total_bytes": 6864896,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 6864896,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1F8E2D18"
+   },
+   "late": {
+    "total_bytes": 6914048,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 6914048,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {},
+   "net_bytes": 6111232,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 6111232,
+   "late_net_bytes": 6160384,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 173.1,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 4103985,
+     "new_canonical": 4356403,
+     "new_stored": 4132321,
+     "new_metadata": 17208,
+     "wall_ms_ineligible": 802.6,
+     "cli_cpu_ms_ineligible": 11.3
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 20.9,
+    "commit_wall_ms_sum": 802.6,
+    "commit_wall_ms_median": 802.6,
+    "commit_wall_ms_max": 802.6,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     9509.0
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 6,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 6,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q2/sqlite": {
+   "id": "Q2/docker/sqlite",
+   "case": "Q2",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12157920,
+   "sum_new_stored": 612161,
+   "sum_new_metadata": 5473,
+   "sum_new_payload": 606688,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 1939304,
+    "file_bytes": 212992,
+    "wal_bytes": 1726312,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 419
+   },
+   "late": {
+    "total_bytes": 888832,
+    "file_bytes": 888832,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 1726312,
+   "net_file_bytes": 0,
+   "net_wal_bytes": 1726312,
+   "net_schema_bytes": null,
+   "late_net_bytes": 675840,
+   "late_net_file_bytes": 675840,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 234.8,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 72.8,
+     "cli_cpu_ms_ineligible": 10.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 933559,
+     "new_stored": 7078,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 49.3,
+     "cli_cpu_ms_ineligible": 10.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 934570,
+     "new_stored": 7289,
+     "new_metadata": 409,
+     "wall_ms_ineligible": 54.6,
+     "cli_cpu_ms_ineligible": 11.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 934632,
+     "new_stored": 7374,
+     "new_metadata": 410,
+     "wall_ms_ineligible": 58.3,
+     "cli_cpu_ms_ineligible": 12.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935278,
+     "new_stored": 7385,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 52.6,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935338,
+     "new_stored": 7193,
+     "new_metadata": 415,
+     "wall_ms_ineligible": 65.5,
+     "cli_cpu_ms_ineligible": 11.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 935667,
+     "new_stored": 7385,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 59.1,
+     "cli_cpu_ms_ineligible": 10.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 935696,
+     "new_stored": 7268,
+     "new_metadata": 416,
+     "wall_ms_ineligible": 78.4,
+     "cli_cpu_ms_ineligible": 13.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 935538,
+     "new_stored": 67666,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 67.2,
+     "cli_cpu_ms_ineligible": 10.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 935573,
+     "new_stored": 25544,
+     "new_metadata": 395,
+     "wall_ms_ineligible": 89.0,
+     "cli_cpu_ms_ineligible": 11.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 935759,
+     "new_stored": 72658,
+     "new_metadata": 421,
+     "wall_ms_ineligible": 80.9,
+     "cli_cpu_ms_ineligible": 11.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 935983,
+     "new_stored": 52019,
+     "new_metadata": 421,
+     "wall_ms_ineligible": 50.5,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 935840,
+     "new_stored": 21219,
+     "new_metadata": 420,
+     "wall_ms_ineligible": 47.8,
+     "cli_cpu_ms_ineligible": 10.8
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 6.2,
+    "commit_wall_ms_sum": 826.0,
+    "commit_wall_ms_median": 59.1,
+    "commit_wall_ms_max": 89.0,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     167.6
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 4,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 4,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q2/postgresql": {
+   "id": "Q2/docker/postgresql",
+   "case": "Q2",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12157920,
+   "sum_new_stored": 612151,
+   "sum_new_metadata": 5463,
+   "sum_new_payload": 606688,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1F996000"
+   },
+   "final": {
+    "total_bytes": 1695744,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1695744,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FA80408"
+   },
+   "late": {
+    "total_bytes": 1695744,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 1695744,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {},
+   "net_bytes": 942080,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 942080,
+   "late_net_bytes": 942080,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 162.6,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 196.8,
+     "cli_cpu_ms_ineligible": 9.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 933559,
+     "new_stored": 7076,
+     "new_metadata": 410,
+     "wall_ms_ineligible": 127.4,
+     "cli_cpu_ms_ineligible": 10.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 934570,
+     "new_stored": 7291,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 148.1,
+     "cli_cpu_ms_ineligible": 10.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 934632,
+     "new_stored": 7375,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 103.4,
+     "cli_cpu_ms_ineligible": 10.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935278,
+     "new_stored": 7386,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 200.4,
+     "cli_cpu_ms_ineligible": 10.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935338,
+     "new_stored": 7190,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 241.2,
+     "cli_cpu_ms_ineligible": 10.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 935667,
+     "new_stored": 7383,
+     "new_metadata": 410,
+     "wall_ms_ineligible": 190.6,
+     "cli_cpu_ms_ineligible": 10.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 935696,
+     "new_stored": 7264,
+     "new_metadata": 412,
+     "wall_ms_ineligible": 183.6,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 935538,
+     "new_stored": 67665,
+     "new_metadata": 411,
+     "wall_ms_ineligible": 173.1,
+     "cli_cpu_ms_ineligible": 10.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 935573,
+     "new_stored": 25547,
+     "new_metadata": 398,
+     "wall_ms_ineligible": 235.4,
+     "cli_cpu_ms_ineligible": 12.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 935759,
+     "new_stored": 72654,
+     "new_metadata": 417,
+     "wall_ms_ineligible": 152.7,
+     "cli_cpu_ms_ineligible": 10.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 935983,
+     "new_stored": 52015,
+     "new_metadata": 417,
+     "wall_ms_ineligible": 233.9,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 935840,
+     "new_stored": 21222,
+     "new_metadata": 423,
+     "wall_ms_ineligible": 155.9,
+     "cli_cpu_ms_ineligible": 11.6
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 11.0,
+    "commit_wall_ms_sum": 2342.5,
+    "commit_wall_ms_median": 183.6,
+    "commit_wall_ms_max": 241.2,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     249.7
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 7,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 7,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q3/sqlite": {
+   "id": "Q3/docker/sqlite",
+   "case": "Q3",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12164904,
+   "sum_new_stored": 815382,
+   "sum_new_metadata": 6953,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 2466664,
+    "file_bytes": 212992,
+    "wal_bytes": 2253672,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 547
+   },
+   "late": {
+    "total_bytes": 1130496,
+    "file_bytes": 1130496,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 2253672,
+   "net_file_bytes": 0,
+   "net_wal_bytes": 2253672,
+   "net_schema_bytes": null,
+   "late_net_bytes": 917504,
+   "late_net_file_bytes": 917504,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 228.7,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 40.5,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934141,
+     "new_stored": 20242,
+     "new_metadata": 527,
+     "wall_ms_ineligible": 62.5,
+     "cli_cpu_ms_ineligible": 11.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935152,
+     "new_stored": 24416,
+     "new_metadata": 527,
+     "wall_ms_ineligible": 74.2,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935214,
+     "new_stored": 28394,
+     "new_metadata": 529,
+     "wall_ms_ineligible": 59.6,
+     "cli_cpu_ms_ineligible": 11.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935860,
+     "new_stored": 32311,
+     "new_metadata": 533,
+     "wall_ms_ineligible": 57.2,
+     "cli_cpu_ms_ineligible": 11.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935920,
+     "new_stored": 36073,
+     "new_metadata": 537,
+     "wall_ms_ineligible": 59.5,
+     "cli_cpu_ms_ineligible": 12.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936249,
+     "new_stored": 39939,
+     "new_metadata": 535,
+     "wall_ms_ineligible": 55.1,
+     "cli_cpu_ms_ineligible": 9.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936278,
+     "new_stored": 43441,
+     "new_metadata": 540,
+     "wall_ms_ineligible": 44.1,
+     "cli_cpu_ms_ineligible": 11.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936120,
+     "new_stored": 46846,
+     "new_metadata": 537,
+     "wall_ms_ineligible": 52.4,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936155,
+     "new_stored": 50274,
+     "new_metadata": 530,
+     "wall_ms_ineligible": 71.8,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936341,
+     "new_stored": 53790,
+     "new_metadata": 555,
+     "wall_ms_ineligible": 70.3,
+     "cli_cpu_ms_ineligible": 14.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936565,
+     "new_stored": 57150,
+     "new_metadata": 543,
+     "wall_ms_ineligible": 57.4,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936422,
+     "new_stored": 60423,
+     "new_metadata": 541,
+     "wall_ms_ineligible": 47.7,
+     "cli_cpu_ms_ineligible": 12.2
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 6.4,
+    "commit_wall_ms_sum": 752.3,
+    "commit_wall_ms_median": 57.4,
+    "commit_wall_ms_max": 74.2,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     160.6
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 5,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 5,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q3/postgresql": {
+   "id": "Q3/docker/postgresql",
+   "case": "Q3",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12164904,
+   "sum_new_stored": 815394,
+   "sum_new_metadata": 6965,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FB34768"
+   },
+   "final": {
+    "total_bytes": 2097152,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2097152,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FC7F178"
+   },
+   "late": {
+    "total_bytes": 2097152,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2097152,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {},
+   "net_bytes": 1343488,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 1343488,
+   "late_net_bytes": 1343488,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 151.1,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934487,
+     "new_stored": 322083,
+     "new_metadata": 519,
+     "wall_ms_ineligible": 268.8,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934141,
+     "new_stored": 20245,
+     "new_metadata": 530,
+     "wall_ms_ineligible": 221.2,
+     "cli_cpu_ms_ineligible": 11.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935152,
+     "new_stored": 24418,
+     "new_metadata": 529,
+     "wall_ms_ineligible": 223.6,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935214,
+     "new_stored": 28392,
+     "new_metadata": 527,
+     "wall_ms_ineligible": 386.5,
+     "cli_cpu_ms_ineligible": 12.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935860,
+     "new_stored": 32312,
+     "new_metadata": 534,
+     "wall_ms_ineligible": 256.3,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 935920,
+     "new_stored": 36069,
+     "new_metadata": 533,
+     "wall_ms_ineligible": 238.5,
+     "cli_cpu_ms_ineligible": 14.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936249,
+     "new_stored": 39938,
+     "new_metadata": 534,
+     "wall_ms_ineligible": 187.3,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936278,
+     "new_stored": 43439,
+     "new_metadata": 538,
+     "wall_ms_ineligible": 143.7,
+     "cli_cpu_ms_ineligible": 11.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936120,
+     "new_stored": 46846,
+     "new_metadata": 537,
+     "wall_ms_ineligible": 158.6,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936155,
+     "new_stored": 50276,
+     "new_metadata": 532,
+     "wall_ms_ineligible": 121.7,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936341,
+     "new_stored": 53792,
+     "new_metadata": 557,
+     "wall_ms_ineligible": 154.2,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936565,
+     "new_stored": 57160,
+     "new_metadata": 553,
+     "wall_ms_ineligible": 113.2,
+     "cli_cpu_ms_ineligible": 10.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936422,
+     "new_stored": 60424,
+     "new_metadata": 542,
+     "wall_ms_ineligible": 115.1,
+     "cli_cpu_ms_ineligible": 13.0
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 11.9,
+    "commit_wall_ms_sum": 2588.7,
+    "commit_wall_ms_median": 187.3,
+    "commit_wall_ms_max": 386.5,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     170.5
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 18,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 18,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q4/sqlite": {
+   "id": "Q4/docker/sqlite",
+   "case": "Q4",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12166204,
+   "sum_new_stored": 815499,
+   "sum_new_metadata": 7070,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 2474904,
+    "file_bytes": 212992,
+    "wal_bytes": 2261912,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 549
+   },
+   "late": {
+    "total_bytes": 1130496,
+    "file_bytes": 1130496,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 2261912,
+   "net_file_bytes": 0,
+   "net_wal_bytes": 2261912,
+   "net_schema_bytes": null,
+   "late_net_bytes": 917504,
+   "late_net_file_bytes": 917504,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 222.8,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934587,
+     "new_stored": 322089,
+     "new_metadata": 525,
+     "wall_ms_ineligible": 59.1,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934241,
+     "new_stored": 20230,
+     "new_metadata": 515,
+     "wall_ms_ineligible": 107.1,
+     "cli_cpu_ms_ineligible": 12.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935252,
+     "new_stored": 24419,
+     "new_metadata": 530,
+     "wall_ms_ineligible": 85.1,
+     "cli_cpu_ms_ineligible": 12.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935314,
+     "new_stored": 28396,
+     "new_metadata": 531,
+     "wall_ms_ineligible": 42.5,
+     "cli_cpu_ms_ineligible": 10.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935960,
+     "new_stored": 32320,
+     "new_metadata": 542,
+     "wall_ms_ineligible": 46.7,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 936020,
+     "new_stored": 36082,
+     "new_metadata": 546,
+     "wall_ms_ineligible": 62.9,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936349,
+     "new_stored": 39953,
+     "new_metadata": 549,
+     "wall_ms_ineligible": 42.6,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936378,
+     "new_stored": 43452,
+     "new_metadata": 551,
+     "wall_ms_ineligible": 61.0,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936220,
+     "new_stored": 46858,
+     "new_metadata": 549,
+     "wall_ms_ineligible": 48.3,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936255,
+     "new_stored": 50280,
+     "new_metadata": 536,
+     "wall_ms_ineligible": 67.1,
+     "cli_cpu_ms_ineligible": 10.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936441,
+     "new_stored": 53797,
+     "new_metadata": 562,
+     "wall_ms_ineligible": 64.9,
+     "cli_cpu_ms_ineligible": 12.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936665,
+     "new_stored": 57175,
+     "new_metadata": 568,
+     "wall_ms_ineligible": 100.5,
+     "cli_cpu_ms_ineligible": 12.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936522,
+     "new_stored": 60448,
+     "new_metadata": 566,
+     "wall_ms_ineligible": 60.2,
+     "cli_cpu_ms_ineligible": 11.1
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 6.1,
+    "commit_wall_ms_sum": 848.0,
+    "commit_wall_ms_median": 61.0,
+    "commit_wall_ms_max": 107.1,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     119.3
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 6,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 6,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q4/postgresql": {
+   "id": "Q4/docker/postgresql",
+   "case": "Q4",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 13,
+   "raw": 12116994,
+   "sum_logical_commits": 12116994,
+   "init_logical": 0,
+   "sum_new_canonical": 12166204,
+   "sum_new_stored": 815488,
+   "sum_new_metadata": 7059,
+   "sum_new_payload": 808429,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FD334D8"
+   },
+   "final": {
+    "total_bytes": 2097152,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2097152,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FE7E988"
+   },
+   "late": {
+    "total_bytes": 2097152,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 2097152,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {},
+   "net_bytes": 1343488,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 1343488,
+   "late_net_bytes": 1343488,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 140.6,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 930725,
+     "new_canonical": 934587,
+     "new_stored": 322087,
+     "new_metadata": 523,
+     "wall_ms_ineligible": 271.3,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 930462,
+     "new_canonical": 934241,
+     "new_stored": 20230,
+     "new_metadata": 515,
+     "wall_ms_ineligible": 166.1,
+     "cli_cpu_ms_ineligible": 13.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 931473,
+     "new_canonical": 935252,
+     "new_stored": 24419,
+     "new_metadata": 530,
+     "wall_ms_ineligible": 134.2,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 931535,
+     "new_canonical": 935314,
+     "new_stored": 28398,
+     "new_metadata": 533,
+     "wall_ms_ineligible": 109.3,
+     "cli_cpu_ms_ineligible": 11.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 932181,
+     "new_canonical": 935960,
+     "new_stored": 32320,
+     "new_metadata": 542,
+     "wall_ms_ineligible": 147.9,
+     "cli_cpu_ms_ineligible": 11.3
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 932241,
+     "new_canonical": 936020,
+     "new_stored": 36083,
+     "new_metadata": 547,
+     "wall_ms_ineligible": 119.8,
+     "cli_cpu_ms_ineligible": 10.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c07",
+     "logical": 932570,
+     "new_canonical": 936349,
+     "new_stored": 39952,
+     "new_metadata": 548,
+     "wall_ms_ineligible": 124.4,
+     "cli_cpu_ms_ineligible": 10.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c08",
+     "logical": 932599,
+     "new_canonical": 936378,
+     "new_stored": 43452,
+     "new_metadata": 551,
+     "wall_ms_ineligible": 123.2,
+     "cli_cpu_ms_ineligible": 11.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c09",
+     "logical": 932441,
+     "new_canonical": 936220,
+     "new_stored": 46859,
+     "new_metadata": 550,
+     "wall_ms_ineligible": 187.6,
+     "cli_cpu_ms_ineligible": 12.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c10",
+     "logical": 932476,
+     "new_canonical": 936255,
+     "new_stored": 50271,
+     "new_metadata": 527,
+     "wall_ms_ineligible": 163.2,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c11",
+     "logical": 932662,
+     "new_canonical": 936441,
+     "new_stored": 53795,
+     "new_metadata": 560,
+     "wall_ms_ineligible": 112.5,
+     "cli_cpu_ms_ineligible": 11.2
+    },
+    {
+     "branch": "p@lane",
+     "label": "c12",
+     "logical": 932886,
+     "new_canonical": 936665,
+     "new_stored": 57174,
+     "new_metadata": 567,
+     "wall_ms_ineligible": 102.2,
+     "cli_cpu_ms_ineligible": 10.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c13",
+     "logical": 932743,
+     "new_canonical": 936522,
+     "new_stored": 60448,
+     "new_metadata": 566,
+     "wall_ms_ineligible": 131.9,
+     "cli_cpu_ms_ineligible": 10.5
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 11.0,
+    "commit_wall_ms_sum": 1893.6,
+    "commit_wall_ms_median": 131.9,
+    "commit_wall_ms_max": 271.3,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     162.8
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 0,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 0,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q5/sqlite": {
+   "id": "Q5/docker/sqlite",
+   "case": "Q5",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 6,
+   "raw": 203423752,
+   "sum_logical_commits": 203423752,
+   "init_logical": 0,
+   "sum_new_canonical": 34942963,
+   "sum_new_stored": 34788498,
+   "sum_new_metadata": 135039,
+   "sum_new_payload": 34653459,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 37818368,
+    "file_bytes": 33624064,
+    "wal_bytes": 4194304,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": null
+   },
+   "late": {
+    "total_bytes": 35311616,
+    "file_bytes": 35311616,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {},
+   "net_bytes": 37605376,
+   "net_file_bytes": 33411072,
+   "net_wal_bytes": 4194304,
+   "net_schema_bytes": null,
+   "late_net_bytes": 35098624,
+   "late_net_file_bytes": 35098624,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 217.5,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 33554432,
+     "new_canonical": 33662164,
+     "new_stored": 33651782,
+     "new_metadata": 61106,
+     "wall_ms_ineligible": 421.4,
+     "cli_cpu_ms_ineligible": 13.4
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 33554433,
+     "new_canonical": 6475,
+     "new_stored": 5618,
+     "new_metadata": 5564,
+     "wall_ms_ineligible": 23.8,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 33554434,
+     "new_canonical": 40017,
+     "new_stored": 16850,
+     "new_metadata": 16667,
+     "wall_ms_ineligible": 36.5,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 33554434,
+     "new_canonical": 92820,
+     "new_stored": 41478,
+     "new_metadata": 30437,
+     "wall_ms_ineligible": 35.4,
+     "cli_cpu_ms_ineligible": 11.5
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 34603010,
+     "new_canonical": 1122780,
+     "new_stored": 1067039,
+     "new_metadata": 15642,
+     "wall_ms_ineligible": 43.7,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 34603009,
+     "new_canonical": 18707,
+     "new_stored": 5731,
+     "new_metadata": 5623,
+     "wall_ms_ineligible": 25.2,
+     "cli_cpu_ms_ineligible": 10.9
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 5.6,
+    "commit_wall_ms_sum": 586.0,
+    "commit_wall_ms_median": 35.95,
+    "commit_wall_ms_max": 421.4,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     374.9
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4096,
+    "net_file_bytes": 4096,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 1,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 1,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q5/postgresql": {
+   "id": "Q5/docker/postgresql",
+   "case": "Q5",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 6,
+   "raw": 203423752,
+   "sum_logical_commits": 203423752,
+   "init_logical": 0,
+   "sum_new_canonical": 34942963,
+   "sum_new_stored": 34788498,
+   "sum_new_metadata": 135039,
+   "sum_new_payload": 34653459,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/1FF32CE8"
+   },
+   "final": {
+    "total_bytes": 37445632,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 37445632,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/2235F378"
+   },
+   "late": {
+    "total_bytes": 37462016,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 37462016,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {},
+   "net_bytes": 36691968,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 36691968,
+   "late_net_bytes": 36708352,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 128.2,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p@lane",
+     "label": "c01",
+     "logical": 33554432,
+     "new_canonical": 33662164,
+     "new_stored": 33651782,
+     "new_metadata": 61106,
+     "wall_ms_ineligible": 1749.2,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c02",
+     "logical": 33554433,
+     "new_canonical": 6475,
+     "new_stored": 5618,
+     "new_metadata": 5564,
+     "wall_ms_ineligible": 203.1,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p@lane",
+     "label": "c03",
+     "logical": 33554434,
+     "new_canonical": 40017,
+     "new_stored": 16850,
+     "new_metadata": 16667,
+     "wall_ms_ineligible": 174.8,
+     "cli_cpu_ms_ineligible": 14.0
+    },
+    {
+     "branch": "p@lane",
+     "label": "c04",
+     "logical": 33554434,
+     "new_canonical": 92820,
+     "new_stored": 41478,
+     "new_metadata": 30437,
+     "wall_ms_ineligible": 680.4,
+     "cli_cpu_ms_ineligible": 13.7
+    },
+    {
+     "branch": "p@lane",
+     "label": "c05",
+     "logical": 34603010,
+     "new_canonical": 1122780,
+     "new_stored": 1067039,
+     "new_metadata": 15642,
+     "wall_ms_ineligible": 254.1,
+     "cli_cpu_ms_ineligible": 14.1
+    },
+    {
+     "branch": "p@lane",
+     "label": "c06",
+     "logical": 34603009,
+     "new_canonical": 18707,
+     "new_stored": 5731,
+     "new_metadata": 5623,
+     "wall_ms_ineligible": 93.1,
+     "cli_cpu_ms_ineligible": 11.3
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 12.8,
+    "commit_wall_ms_sum": 3154.7,
+    "commit_wall_ms_median": 228.6,
+    "commit_wall_ms_max": 1749.2,
+    "init_wall_ms": [],
+    "verify_wall_ms": [
+     1344.1
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 1,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 1,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q6/sqlite": {
+   "id": "Q6/docker/sqlite",
+   "case": "Q6",
+   "backend": "sqlite",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 23,
+   "raw": 1560458138,
+   "sum_logical_commits": 1495437615,
+   "init_logical": 65020523,
+   "sum_new_canonical": 1292935,
+   "sum_new_stored": 72135,
+   "sum_new_metadata": 52017,
+   "sum_new_payload": 20118,
+   "floor": {
+    "total_bytes": 212992,
+    "file_bytes": 212992,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "final": {
+    "total_bytes": 27864752,
+    "file_bytes": 24412160,
+    "wal_bytes": 3452592,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 838
+   },
+   "late": {
+    "total_bytes": 24580096,
+    "file_bytes": 24580096,
+    "wal_bytes": 0,
+    "schema_bytes": null,
+    "allocated_bytes": null,
+    "wal_frames": 0
+   },
+   "inits": {
+    "init_p1": {
+     "total_bytes": 24412160,
+     "file_bytes": 24412160,
+     "wal_bytes": 0,
+     "schema_bytes": null,
+     "allocated_bytes": null,
+     "wal_frames": 0
+    }
+   },
+   "net_bytes": 27651760,
+   "net_file_bytes": 24199168,
+   "net_wal_bytes": 3452592,
+   "net_schema_bytes": null,
+   "late_net_bytes": 24367104,
+   "late_net_file_bytes": 24367104,
+   "late_net_wal_bytes": 0,
+   "late_idle_s": 193.9,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p1@lane",
+     "label": "lane/01",
+     "logical": 65019323,
+     "new_canonical": 77364,
+     "new_stored": 6636,
+     "new_metadata": 6029,
+     "wall_ms_ineligible": 57.7,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/02",
+     "logical": 65019491,
+     "new_canonical": 40721,
+     "new_stored": 1950,
+     "new_metadata": 1136,
+     "wall_ms_ineligible": 27.7,
+     "cli_cpu_ms_ineligible": 10.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/03",
+     "logical": 65019648,
+     "new_canonical": 35158,
+     "new_stored": 1553,
+     "new_metadata": 932,
+     "wall_ms_ineligible": 34.5,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/04",
+     "logical": 65019094,
+     "new_canonical": 53870,
+     "new_stored": 1697,
+     "new_metadata": 911,
+     "wall_ms_ineligible": 27.3,
+     "cli_cpu_ms_ineligible": 10.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/05",
+     "logical": 65016203,
+     "new_canonical": 58155,
+     "new_stored": 1879,
+     "new_metadata": 1045,
+     "wall_ms_ineligible": 36.2,
+     "cli_cpu_ms_ineligible": 11.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/06",
+     "logical": 65016130,
+     "new_canonical": 53895,
+     "new_stored": 3993,
+     "new_metadata": 3404,
+     "wall_ms_ineligible": 47.4,
+     "cli_cpu_ms_ineligible": 14.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/07",
+     "logical": 65019323,
+     "new_canonical": 64718,
+     "new_stored": 2831,
+     "new_metadata": 1128,
+     "wall_ms_ineligible": 59.8,
+     "cli_cpu_ms_ineligible": 13.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/08",
+     "logical": 65019972,
+     "new_canonical": 36767,
+     "new_stored": 2045,
+     "new_metadata": 1022,
+     "wall_ms_ineligible": 62.9,
+     "cli_cpu_ms_ineligible": 13.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/09",
+     "logical": 65018370,
+     "new_canonical": 78589,
+     "new_stored": 1541,
+     "new_metadata": 948,
+     "wall_ms_ineligible": 48.1,
+     "cli_cpu_ms_ineligible": 12.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/10",
+     "logical": 65019820,
+     "new_canonical": 40461,
+     "new_stored": 9875,
+     "new_metadata": 8527,
+     "wall_ms_ineligible": 35.1,
+     "cli_cpu_ms_ineligible": 12.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/11",
+     "logical": 65022328,
+     "new_canonical": 52716,
+     "new_stored": 4774,
+     "new_metadata": 3482,
+     "wall_ms_ineligible": 42.3,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/12",
+     "logical": 65024863,
+     "new_canonical": 45856,
+     "new_stored": 2585,
+     "new_metadata": 1124,
+     "wall_ms_ineligible": 60.9,
+     "cli_cpu_ms_ineligible": 11.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/13",
+     "logical": 65015007,
+     "new_canonical": 53447,
+     "new_stored": 3307,
+     "new_metadata": 2511,
+     "wall_ms_ineligible": 52.7,
+     "cli_cpu_ms_ineligible": 12.5
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/14",
+     "logical": 65015337,
+     "new_canonical": 52863,
+     "new_stored": 1689,
+     "new_metadata": 1011,
+     "wall_ms_ineligible": 37.4,
+     "cli_cpu_ms_ineligible": 11.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/15",
+     "logical": 65015513,
+     "new_canonical": 61932,
+     "new_stored": 3068,
+     "new_metadata": 2582,
+     "wall_ms_ineligible": 55.0,
+     "cli_cpu_ms_ineligible": 13.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/16",
+     "logical": 65015041,
+     "new_canonical": 75784,
+     "new_stored": 1624,
+     "new_metadata": 1042,
+     "wall_ms_ineligible": 43.5,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/17",
+     "logical": 65019161,
+     "new_canonical": 54979,
+     "new_stored": 3077,
+     "new_metadata": 1103,
+     "wall_ms_ineligible": 62.3,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/18",
+     "logical": 65023551,
+     "new_canonical": 98454,
+     "new_stored": 3369,
+     "new_metadata": 1111,
+     "wall_ms_ineligible": 32.5,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/19",
+     "logical": 65023533,
+     "new_canonical": 87637,
+     "new_stored": 6058,
+     "new_metadata": 5275,
+     "wall_ms_ineligible": 29.0,
+     "cli_cpu_ms_ineligible": 11.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/20",
+     "logical": 65015397,
+     "new_canonical": 73426,
+     "new_stored": 5232,
+     "new_metadata": 4684,
+     "wall_ms_ineligible": 35.0,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p1@b01",
+     "label": "b01/01",
+     "logical": 65020170,
+     "new_canonical": 42121,
+     "new_stored": 1424,
+     "new_metadata": 1082,
+     "wall_ms_ineligible": 85.3,
+     "cli_cpu_ms_ineligible": 12.6
+    },
+    {
+     "branch": "p1@b02",
+     "label": "b02/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 963,
+     "new_metadata": 963,
+     "wall_ms_ineligible": 42.4,
+     "cli_cpu_ms_ineligible": 14.2
+    },
+    {
+     "branch": "p1@b03",
+     "label": "b03/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 965,
+     "new_metadata": 965,
+     "wall_ms_ineligible": 25.0,
+     "cli_cpu_ms_ineligible": 10.5
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 23.9,
+    "commit_wall_ms_sum": 1040.0,
+    "commit_wall_ms_median": 42.4,
+    "commit_wall_ms_max": 85.3,
+    "init_wall_ms": [
+     7374.9
+    ],
+    "verify_wall_ms": [
+     1904.8,
+     957.6,
+     1145.2,
+     1659.9
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 49056,
+    "net_file_bytes": 65536,
+    "net_wal_bytes": 16480,
+    "late_net_bytes": 49152,
+    "late_net_file_bytes": 49152,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 7,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 7,
+    "sum_new_canonical": 0
+   }
+  },
+  "Q6/postgresql": {
+   "id": "Q6/docker/postgresql",
+   "case": "Q6",
+   "backend": "postgresql",
+   "execution": "PASS",
+   "verification": "PASS",
+   "cleanup": "COMPLETE",
+   "reason": null,
+   "commits": 23,
+   "raw": 1560458138,
+   "sum_logical_commits": 1495437615,
+   "init_logical": 65020523,
+   "sum_new_canonical": 1292935,
+   "sum_new_stored": 72114,
+   "sum_new_metadata": 51996,
+   "sum_new_payload": 20118,
+   "floor": {
+    "total_bytes": 753664,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 753664,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/22413748"
+   },
+   "final": {
+    "total_bytes": 38912000,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 38912000,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/252FDAF8"
+   },
+   "late": {
+    "total_bytes": 32112640,
+    "file_bytes": null,
+    "wal_bytes": null,
+    "schema_bytes": 32112640,
+    "allocated_bytes": null,
+    "wal_frames": null,
+    "server_wal_lsn": "0/253F5B40"
+   },
+   "inits": {
+    "init_p1": {
+     "total_bytes": 38633472,
+     "file_bytes": null,
+     "wal_bytes": null,
+     "schema_bytes": 38633472,
+     "allocated_bytes": null,
+     "wal_frames": null,
+     "server_wal_lsn": "0/25296000"
+    }
+   },
+   "net_bytes": 38158336,
+   "net_file_bytes": null,
+   "net_wal_bytes": null,
+   "net_schema_bytes": 38158336,
+   "late_net_bytes": 31358976,
+   "late_net_file_bytes": null,
+   "late_net_wal_bytes": null,
+   "late_idle_s": 79.1,
+   "late_status": "MEASURED",
+   "curve": [
+    {
+     "branch": "p1@lane",
+     "label": "lane/01",
+     "logical": 65019323,
+     "new_canonical": 77364,
+     "new_stored": 6637,
+     "new_metadata": 6030,
+     "wall_ms_ineligible": 311.5,
+     "cli_cpu_ms_ineligible": 13.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/02",
+     "logical": 65019491,
+     "new_canonical": 40721,
+     "new_stored": 1950,
+     "new_metadata": 1136,
+     "wall_ms_ineligible": 135.9,
+     "cli_cpu_ms_ineligible": 11.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/03",
+     "logical": 65019648,
+     "new_canonical": 35158,
+     "new_stored": 1551,
+     "new_metadata": 930,
+     "wall_ms_ineligible": 92.7,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/04",
+     "logical": 65019094,
+     "new_canonical": 53870,
+     "new_stored": 1699,
+     "new_metadata": 913,
+     "wall_ms_ineligible": 94.6,
+     "cli_cpu_ms_ineligible": 10.9
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/05",
+     "logical": 65016203,
+     "new_canonical": 58155,
+     "new_stored": 1880,
+     "new_metadata": 1046,
+     "wall_ms_ineligible": 120.9,
+     "cli_cpu_ms_ineligible": 10.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/06",
+     "logical": 65016130,
+     "new_canonical": 53895,
+     "new_stored": 3993,
+     "new_metadata": 3404,
+     "wall_ms_ineligible": 139.9,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/07",
+     "logical": 65019323,
+     "new_canonical": 64718,
+     "new_stored": 2829,
+     "new_metadata": 1126,
+     "wall_ms_ineligible": 143.5,
+     "cli_cpu_ms_ineligible": 10.8
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/08",
+     "logical": 65019972,
+     "new_canonical": 36767,
+     "new_stored": 2047,
+     "new_metadata": 1024,
+     "wall_ms_ineligible": 108.9,
+     "cli_cpu_ms_ineligible": 12.2
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/09",
+     "logical": 65018370,
+     "new_canonical": 78589,
+     "new_stored": 1541,
+     "new_metadata": 948,
+     "wall_ms_ineligible": 145.4,
+     "cli_cpu_ms_ineligible": 12.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/10",
+     "logical": 65019820,
+     "new_canonical": 40461,
+     "new_stored": 9875,
+     "new_metadata": 8527,
+     "wall_ms_ineligible": 141.9,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/11",
+     "logical": 65022328,
+     "new_canonical": 52716,
+     "new_stored": 4770,
+     "new_metadata": 3478,
+     "wall_ms_ineligible": 144.9,
+     "cli_cpu_ms_ineligible": 11.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/12",
+     "logical": 65024863,
+     "new_canonical": 45856,
+     "new_stored": 2586,
+     "new_metadata": 1125,
+     "wall_ms_ineligible": 205.7,
+     "cli_cpu_ms_ineligible": 13.0
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/13",
+     "logical": 65015007,
+     "new_canonical": 53447,
+     "new_stored": 3303,
+     "new_metadata": 2507,
+     "wall_ms_ineligible": 152.0,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/14",
+     "logical": 65015337,
+     "new_canonical": 52863,
+     "new_stored": 1682,
+     "new_metadata": 1004,
+     "wall_ms_ineligible": 131.4,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/15",
+     "logical": 65015513,
+     "new_canonical": 61932,
+     "new_stored": 3069,
+     "new_metadata": 2583,
+     "wall_ms_ineligible": 131.4,
+     "cli_cpu_ms_ineligible": 11.4
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/16",
+     "logical": 65015041,
+     "new_canonical": 75784,
+     "new_stored": 1624,
+     "new_metadata": 1042,
+     "wall_ms_ineligible": 129.2,
+     "cli_cpu_ms_ineligible": 11.7
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/17",
+     "logical": 65019161,
+     "new_canonical": 54979,
+     "new_stored": 3076,
+     "new_metadata": 1102,
+     "wall_ms_ineligible": 85.1,
+     "cli_cpu_ms_ineligible": 9.3
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/18",
+     "logical": 65023551,
+     "new_canonical": 98454,
+     "new_stored": 3364,
+     "new_metadata": 1106,
+     "wall_ms_ineligible": 231.4,
+     "cli_cpu_ms_ineligible": 10.6
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/19",
+     "logical": 65023533,
+     "new_canonical": 87637,
+     "new_stored": 6058,
+     "new_metadata": 5275,
+     "wall_ms_ineligible": 167.7,
+     "cli_cpu_ms_ineligible": 12.1
+    },
+    {
+     "branch": "p1@lane",
+     "label": "lane/20",
+     "logical": 65015397,
+     "new_canonical": 73426,
+     "new_stored": 5233,
+     "new_metadata": 4685,
+     "wall_ms_ineligible": 146.6,
+     "cli_cpu_ms_ineligible": 13.6
+    },
+    {
+     "branch": "p1@b01",
+     "label": "b01/01",
+     "logical": 65020170,
+     "new_canonical": 42121,
+     "new_stored": 1424,
+     "new_metadata": 1082,
+     "wall_ms_ineligible": 70.7,
+     "cli_cpu_ms_ineligible": 10.7
+    },
+    {
+     "branch": "p1@b02",
+     "label": "b02/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 961,
+     "new_metadata": 961,
+     "wall_ms_ineligible": 78.4,
+     "cli_cpu_ms_ineligible": 13.0
+    },
+    {
+     "branch": "p1@b03",
+     "label": "b03/01",
+     "logical": 65020170,
+     "new_canonical": 27011,
+     "new_stored": 962,
+     "new_metadata": 962,
+     "wall_ms_ineligible": 88.0,
+     "cli_cpu_ms_ineligible": 9.9
+    }
+   ],
+   "diagnostics": {
+    "label": "INELIGIBLE wall / local CLI process CPU; Commit statistics beyond bytes UNAVAILABLE",
+    "row_wall_s": 49.4,
+    "commit_wall_ms_sum": 3197.7,
+    "commit_wall_ms_median": 135.9,
+    "commit_wall_ms_max": 311.5,
+    "init_wall_ms": [
+     16581.0
+    ],
+    "verify_wall_ms": [
+     7398.3,
+     3546.7,
+     3345.0,
+     1751.4
+    ],
+    "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
+    "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 139264,
+    "late_net_bytes": 155648,
+    "sum_new_stored": 25,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 25,
+    "sum_new_canonical": 0
+   }
+  }
+ },
+ "harness": {
+  "git_head": "275e024a19aaea3f9d268a123774bbdd4e5da9e0",
+  "sources_sha256": "9dbce5c8a4565a9ae18c14aeb3202b0f0cfe21ead657de41dbe2ba442b288f0a",
+  "suite_dirty": false
+ },
+ "repeat": {
+  "campaign_id": "q85-base3",
+  "source_sha": "b4fa173e401fc87af6610c151225096288e4ba57",
+  "harness": {
+   "git_head": "275e024a19aaea3f9d268a123774bbdd4e5da9e0",
+   "sources_sha256": "9dbce5c8a4565a9ae18c14aeb3202b0f0cfe21ead657de41dbe2ba442b288f0a",
+   "suite_dirty": true
+  },
+  "wall_ineligible": {
+   "sqlite": {
+    "matrix_wall_s": 56.4,
+    "sum_row_wall_s": 56.2,
+    "rows": 6
+   },
+   "postgresql": {
+    "matrix_wall_s": 119.8,
+    "sum_row_wall_s": 119.3,
+    "rows": 6
+   }
+  }
+ }
+}
