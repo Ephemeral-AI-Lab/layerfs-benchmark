@@ -23,6 +23,7 @@ import cases  # noqa: E402
 import storage  # noqa: E402
 
 BACKENDS = ("sqlite", "postgresql")
+REFERENCE_NAMES = ("whole_file_unique", "tar_zstd", "git_pack", "cdc_oracle")
 runner = storage.load_runner(cases)
 
 
@@ -83,8 +84,9 @@ def run_one(campaign, case, backend, repeat, verify=True):
         return row
     url = config.get("postgresql", {}).get("databases", {}).get(db_key)
     storage.run_row(campaign, row, cases.spec(case, backend, name, config, url), verify=verify)
+    refs = cases.REFERENCES.get(case) or {}
     row["summary"] = storage.row_summary(
-        row, cases.REFERENCES.get(case), (cases.REFERENCES.get(case) or {}).get("whole_file_unique")
+        row, {k: refs[k] for k in REFERENCE_NAMES if k in refs}, refs.get("whole_file_unique")
     )
     campaign.persist()
     return row
