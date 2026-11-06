@@ -71,6 +71,11 @@ class ParseTests(unittest.TestCase):
         self.assertFalse(storage.safe_database_url("postgresql://u:pw@h:1/d"))
         self.assertFalse(storage.safe_database_url("postgresql://u@h/d?password=x"))
 
+    def test_server_wal_bytes(self):
+        row = {"probes": {"floor": {"s": {"server_wal_lsn": "0/10"}}, "final": {"s": {"server_wal_lsn": "1/0"}}}}
+        self.assertEqual(storage.server_wal_bytes(row), (1 << 32) - 16)
+        self.assertIsNone(storage.server_wal_bytes({"probes": {"floor": {"s": {}}, "final": {}}}))
+
     def test_allocated_argv_is_read_only(self):
         argv = storage.allocated_argv("vol", "sha256:abc", "st")
         self.assertIn("vol:/d:ro", argv)
@@ -127,6 +132,8 @@ class SummaryTests(unittest.TestCase):
         self.assertEqual(s["sum_new_stored"], 15)
         self.assertEqual(s["sum_new_metadata"], 3)
         self.assertEqual(s["unattributed_bytes"], 5000 - 18)
+        self.assertEqual(s["sum_new_payload"], 12)  # new_stored includes new_metadata
+        self.assertEqual(s["unattributed_after_packs_bytes"], 5000 - 15)
         self.assertEqual(s["net_allocated_bytes"], 4096)
         self.assertAlmostEqual(s["net_per_reference"]["git_pack"], 2.0)
         self.assertIsNone(s["net_per_reference"]["zero"])
