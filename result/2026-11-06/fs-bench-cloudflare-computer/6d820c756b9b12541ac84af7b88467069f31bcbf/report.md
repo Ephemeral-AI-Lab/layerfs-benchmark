@@ -2,9 +2,9 @@
 
 > Status: Diagnostic observations; every timing and ratio is performance-ineligible.
 
-**7 of 8 rows ran all twelve scenarios (1 FAIL, 7 PASS); final cleanup COMPLETE.** One sample per row; every time and ratio is an INELIGIBLE diagnostic.
+**8 of 8 rows ran all twelve scenarios (8 PASS); final cleanup COMPLETE.** One sample per row; every time and ratio is an INELIGIBLE diagnostic.
 
-LayerFS `6d820c756b9b12541ac84af7b88467069f31bcbf` (remote `layerfs_v2_0_0`, resolved at campaign start). Campaigns: `fbcc-1106b` (harness `28cc23c220`): Apple Container PostgreSQL, Apple Container SQLite, Docker PostgreSQL, Docker SQLite, Lima PostgreSQL, Lima SQLite; `fbcc-1106c` (harness `5fda719141`): native PostgreSQL, native SQLite. All campaigns use the same CLI, daemon, Linux bundle and image. Each row runs Cloudflare Computer's byte-identical `script/fs-bench.sh` (Computer `de87919a4fd37242e960e13b7b3ba802d1eef0a0`, SHA-256 `0e2004339a9269b88c2de451d56575957477bde16b96a10cf1837519e37230ef`) once, with REPS=1, WARMUP=0, RANDOMIZE_TARGETS=0, no BASE, and the twelve offline scenarios. The script times each scenario itself with `date +%s%N`, inside the Workspace, in a fresh directory it removes afterwards. Computer itself is not measured.
+LayerFS `6d820c756b9b12541ac84af7b88467069f31bcbf` (remote `layerfs_v2_0_0`, resolved at campaign start). Campaigns: `fbcc-1106b` (harness `28cc23c220`): Apple Container PostgreSQL, Apple Container SQLite, Docker PostgreSQL, Docker SQLite, Lima PostgreSQL, Lima SQLite; `fbcc-1106c` (harness `5fda719141`): native PostgreSQL, native SQLite; `fbcc-1106d` (harness `8ceb8c4068`): native SQLite. All campaigns use the same CLI, daemon, Linux bundle and image. Each row runs Cloudflare Computer's byte-identical `script/fs-bench.sh` (Computer `de87919a4fd37242e960e13b7b3ba802d1eef0a0`, SHA-256 `0e2004339a9269b88c2de451d56575957477bde16b96a10cf1837519e37230ef`) once, with REPS=1, WARMUP=0, RANDOMIZE_TARGETS=0, no BASE, and the twelve offline scenarios. The script times each scenario itself with `date +%s%N`, inside the Workspace, in a fresh directory it removes afterwards. Computer itself is not measured.
 
 All LayerFS work uses the public CLI: Sandbox create, Workspace mount, one Exec running the script on the Workspace root, LayerFS Commit, unmount, Sandbox close and Store remove/disconnect. SQLite Disposable/WAL/OFF; PostgreSQL synchronous commit off; one construction worker; kernel writeback off.
 
@@ -30,32 +30,33 @@ CLI call times in milliseconds, including launch and routing. Create is Sandbox 
 | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | Docker | SQLite | PASS | COMPLETE | 325.0 | 5,173.9 | 19.6 | 258.2 | 5,825.9 | UpToDate |
 | Docker | PostgreSQL | PASS | COMPLETE | 575.2 | 5,193.8 | 43.8 | 251.7 | 6,218.0 | UpToDate |
-| native | SQLite | FAIL | COMPLETE (after inspection) | 45.3 | 24,912.3 | — | — | 25,006.1 | — |
+| native | SQLite | PASS | COMPLETE | 714.6 | 23,492.7 | 93.9 | 82.9 | 24,466.8 | UpToDate |
 | native | PostgreSQL | PASS | COMPLETE | 101.4 | 24,330.7 | 157.1 | 107.0 | 24,868.8 | UpToDate |
 | Lima | SQLite | PASS | COMPLETE | 796.8 | 7,164.8 | 25.0 | 138.4 | 8,200.3 | UpToDate |
 | Lima | PostgreSQL | PASS | COMPLETE | 944.0 | 4,735.7 | 42.5 | 154.0 | 6,032.0 | UpToDate |
 | Apple Container | SQLite | PASS | COMPLETE | 92.0 | 6,015.2 | 16.7 | 57.6 | 6,250.3 | UpToDate |
 | Apple Container | PostgreSQL | PASS | COMPLETE | 318.6 | 4,311.7 | 137.5 | 88.8 | 5,112.1 | UpToDate |
 
-- native SQLite: the Exec was stopped at the row's 25 s budget (CLI killed, exit -9), so the script's reply and scenario times were lost; afterwards inspection found no script process, an idle Workspace and an empty root, and the row was released through the CLI
+- native SQLite ran under a 60 s budget (owner, 2026-11-06: native macOS launches one process per file on an NFS mount; the frozen script needs more than 25 s there); other rows use 25 s. This row took 24,466.8 ms end to end.
+- Superseded attempt: native SQLite in `fbcc-1106c` was FAIL (Exec 24,912.3 ms, budget 25 s); it is retained, not relabeled.
 
 ## Scenario times, SQLite
 
 | Scenario | Cache state | Docker ms | native ms | Lima ms | Apple Container ms | native / Docker | Lima / Docker | Apple Container / Docker |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| create 1000 files | self-contained | 281.5 | — | 199.9 | 260.2 | — | 0.71 | 0.92 |
-| stat 1000 files | self-contained | 693.2 | — | 1,163.0 | 797.1 | — | 1.68 | 1.15 |
-| rm 1000 files | self-contained | 337.4 | — | 478.5 | 461.2 | — | 1.42 | 1.37 |
-| mkdir tree (10x10x10) | self-contained | 561.6 | — | 966.1 | 812.8 | — | 1.72 | 1.45 |
-| find tree | self-contained | 718.7 | — | 1,050.8 | 708.2 | — | 1.46 | 0.99 |
-| write 64 MiB | self-contained | 152.7 | — | 248.1 | 183.4 | — | 1.62 | 1.20 |
-| copy 64 MiB | self-contained | 312.6 | — | 498.6 | 308.9 | — | 1.59 | 0.99 |
-| read 64 MiB | self-contained | 139.9 | — | 167.4 | 174.5 | — | 1.20 | 1.25 |
-| pure read 64 MiB | own-write warm | 11.6 | — | 7.1 | 6.5 | — | 0.61 | 0.56 |
-| pure copy 64 MiB | own-write warm | 164.2 | — | 188.3 | 230.8 | — | 1.15 | 1.41 |
-| overwrite 64 MiB | own-write warm | 82.0 | — | 72.5 | 69.8 | — | 0.88 | 0.85 |
-| git init + commit 100 files | self-contained | 138.8 | — | 148.6 | 123.8 | — | 1.07 | 0.89 |
-| Sum of scenarios | — | 3,594.3 | — | 5,189.0 | 4,137.3 | — | 1.44 | 1.15 |
+| create 1000 files | self-contained | 281.5 | 705.6 | 199.9 | 260.2 | 2.51 | 0.71 | 0.92 |
+| stat 1000 files | self-contained | 693.2 | 6,784.1 | 1,163.0 | 797.1 | 9.79 | 1.68 | 1.15 |
+| rm 1000 files | self-contained | 337.4 | 1,243.5 | 478.5 | 461.2 | 3.69 | 1.42 | 1.37 |
+| mkdir tree (10x10x10) | self-contained | 561.6 | 4,291.9 | 966.1 | 812.8 | 7.64 | 1.72 | 1.45 |
+| find tree | self-contained | 718.7 | 4,815.9 | 1,050.8 | 708.2 | 6.70 | 1.46 | 0.99 |
+| write 64 MiB | self-contained | 152.7 | 143.0 | 248.1 | 183.4 | 0.94 | 1.62 | 1.20 |
+| copy 64 MiB | self-contained | 312.6 | 260.2 | 498.6 | 308.9 | 0.83 | 1.59 | 0.99 |
+| read 64 MiB | self-contained | 139.9 | 135.7 | 167.4 | 174.5 | 0.97 | 1.20 | 1.25 |
+| pure read 64 MiB | own-write warm | 11.6 | 13.8 | 7.1 | 6.5 | 1.19 | 0.61 | 0.56 |
+| pure copy 64 MiB | own-write warm | 164.2 | 131.3 | 188.3 | 230.8 | 0.80 | 1.15 | 1.41 |
+| overwrite 64 MiB | own-write warm | 82.0 | 75.7 | 72.5 | 69.8 | 0.92 | 0.88 | 0.85 |
+| git init + commit 100 files | self-contained | 138.8 | 516.0 | 148.6 | 123.8 | 3.72 | 1.07 | 0.89 |
+| Sum of scenarios | — | 3,594.3 | 19,116.8 | 5,189.0 | 4,137.3 | 5.32 | 1.44 | 1.15 |
 
 ## Scenario times, PostgreSQL
 
@@ -78,14 +79,14 @@ CLI call times in milliseconds, including launch and routing. Create is Sandbox 
 ## Main observations
 
 - Sum of scenario times ranged from 2,938.0 ms (Apple Container PostgreSQL) to 19,832.8 ms (native PostgreSQL).
-- Longest complete row: 24,868.8 ms against the declared 25,000 ms budget.
-- LayerFS Commit results: 7 UpToDate; the script removes every directory it creates, so nothing new is committed.
-- Native macOS is the slowest machine and runs at the edge of the 25 s budget: `stat 1000 files` took 7,135.3 ms against Docker's 712.5 ms on PostgreSQL. The 1,000-step loops launch one macOS process per file on an NFS mount; the 64 MiB rows are close to Docker.
+- Longest complete row: 24,868.8 ms.
+- LayerFS Commit results: 8 UpToDate; the script removes every directory it creates, so nothing new is committed.
+- Native macOS is the slowest machine: `stat 1000 files` took 6,784.1 ms against Docker's 693.2 ms on SQLite. The 1,000-step loops launch one macOS process per file on an NFS mount; the 64 MiB rows are close to Docker.
 - Single unrepeated samples under shared host load: differences of a few tens of percent between rows are within what one sample can show and are not a ranking.
 
 ## Limits and cleanup
 
 Each row is one unrepeated sample on a shared macOS host. Other owners' containers and VMs ran during the campaign and were left alone. No cache was cleared or proven cold. Execution PASS means the CLI lifecycle succeeded and the script reported one sample for each of the twelve scenarios; it is not independent content verification (every scenario deletes its own directory).
 
-Final cleanup: **COMPLETE**. All six executed rows released their Sandbox and Store through the CLI (case cleanup COMPLETE). Shared infrastructure was then released once in dependency order in 2.781 s: the Lima and Apple Container machines, the Docker machine worker, its container and data volume, the dedicated PostgreSQL server, container and data volume (all row databases), and the Apple container service the campaign started. Verified afterwards: no campaign containers, volumes or VMs, no Stores or Sandboxes. Kept: the pinned release binaries, sealed bundle and suite image, the build worktree's private caches, and local receipts. An earlier attempt in this session (campaign fbcc-1106a) ran no rows; its configuration let a NOT_RUN native prepare release all infrastructure, which completed cleanly and led to the shared-infrastructure rule in AGENTS.md. Native follow-up campaign fbcc-1106c: the native PostgreSQL row released through the CLI; the native SQLite row's Exec was killed at its budget, so its Sandbox and Store stayed live until inspection showed no script process, an idle Workspace with no pending changes and an empty root; it was then unmounted, closed and removed through the CLI. Its dedicated PostgreSQL server, container and data volume were released in 0.705 s. Verified afterwards: no Stores, Sandboxes, campaign containers or volumes, and no native daemon. Kept: the pinned native bash 5.2.37 and sha256sum wrapper in the tool cache.
+Final cleanup: **COMPLETE**. All six executed rows released their Sandbox and Store through the CLI (case cleanup COMPLETE). Shared infrastructure was then released once in dependency order in 2.781 s: the Lima and Apple Container machines, the Docker machine worker, its container and data volume, the dedicated PostgreSQL server, container and data volume (all row databases), and the Apple container service the campaign started. Verified afterwards: no campaign containers, volumes or VMs, no Stores or Sandboxes. Kept: the pinned release binaries, sealed bundle and suite image, the build worktree's private caches, and local receipts. An earlier attempt in this session (campaign fbcc-1106a) ran no rows; its configuration let a NOT_RUN native prepare release all infrastructure, which completed cleanly and led to the shared-infrastructure rule in AGENTS.md. Native follow-up campaign fbcc-1106c: the native PostgreSQL row released through the CLI; the native SQLite row's Exec was killed at its budget, so its Sandbox and Store stayed live until inspection showed no script process, an idle Workspace with no pending changes and an empty root; it was then unmounted, closed and removed through the CLI. Its dedicated PostgreSQL server, container and data volume were released in 0.705 s. Verified afterwards: no Stores, Sandboxes, campaign containers or volumes, and no native daemon. Kept: the pinned native bash 5.2.37 and sha256sum wrapper in the tool cache. Native SQLite rerun campaign fbcc-1106d (owner-approved 60 s native budget) used no PostgreSQL or VM; its row released its Sandbox and Store through the CLI, and afterwards no Stores, Sandboxes or native daemon remained.
 

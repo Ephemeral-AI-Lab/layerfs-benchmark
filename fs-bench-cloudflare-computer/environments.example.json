@@ -73,5 +73,12 @@
   "prepare_budget_s": 25,
   "performance_budget_s": 25,
   "cleanup_budget_s": 10,
-  "shared_infrastructure": true
+  "shared_infrastructure": true,
+  "budget_exceptions": {
+    "native": {
+      "max_s": 60,
+      "approved_by": "owner, 2026-11-06",
+      "reason": "native macOS launches one process per file on an NFS mount; the frozen script needs more than 25 s there"
+    }
+  }
 }

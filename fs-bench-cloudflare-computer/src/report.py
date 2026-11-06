@@ -161,7 +161,8 @@ def render(state, cleanup, config):
             exception = row["budget_exception"]
             lines.append(
                 f"- {TITLES[machine]} {DATABASES[backend]} ran under a {exception['max_s']} s budget "
-                f"({safe(exception['approved_by'])}: {safe(exception['reason'])}); other rows use 25 s."
+                f"({safe(exception['approved_by'])}: {safe(exception['reason'])}); other rows use 25 s. "
+                f"This row took {ms(row.get('performance_invocation_elapsed_ns'))} ms end to end."
             )
     for old in state.get("superseded", []):
         machine, backend = old["id"].split("/")[1:]

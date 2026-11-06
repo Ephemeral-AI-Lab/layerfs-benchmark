@@ -43,8 +43,8 @@ Native macOS has bash 3.2, which the script cannot run (`declare -A`), and its
 `sha256sum -c --quiet` wrapper first on the Exec PATH through the machine's
 `tool_environment` ([TOOL.md](TOOL.md)); the workload command and the script
 stay byte-identical to the Linux rows. Without them, native rows are NOT_RUN.
-Native rows run close to the 25 s budget (macOS launches one process per file
-in the 1,000-step loops on an NFS mount); a row over it is FAIL, never retried.
+Native rows run close to 25 s (macOS launches one process per file in the
+1,000-step loops on an NFS mount).
 
 Use the shared runner ([src/run.py](src/run.py)) unchanged: create, mount, one
 Exec, LayerFS Commit, unmount, close, Store remove or disconnect. The script
@@ -60,8 +60,13 @@ Release shared infrastructure yourself after the last row.
 ## Budgets, results and limits
 
 The whole script runs in one Exec, so each row has a declared 25 s performance
-budget (the shared runner's maximum) and a 25 s setup budget. A row over budget
-is FAIL. No command runs longer than two minutes.
+budget and a 25 s setup budget. **Native macOS rows use 60 s** (owner,
+2026-11-06), declared as `budget_exceptions.native` (`max_s`, `approved_by`,
+`reason`) in the campaign config; the shared runner records it on the row and
+never allows more than 110 s. A row over its budget is FAIL and is not
+retried; a later attempt under a changed budget is a new campaign, and the
+report keeps the earlier attempt as superseded. No command runs longer than two
+minutes.
 
 Report a lifecycle table for the eight rows, then one scenario table per
 database with Docker as the baseline column and `machine / Docker` ratios.

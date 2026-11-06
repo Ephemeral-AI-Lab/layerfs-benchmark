@@ -73,7 +73,7 @@ python3 fs-bench-cloudflare-computer/src/report.py --input $C --cleanup /retaine
   --environment $E --output result/YYYY-MM-DD/fs-bench-cloudflare-computer/FULL_LAYERFS_SHA/report.md
 ```
 
-Each row has a 25 s budget. Run the harness checks with an explicit bound:
+Each row has a 25 s budget; native macOS rows have 60 s ([AGENTS.md](AGENTS.md)). Run the harness checks with an explicit bound:
 
 ```bash
 python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "discover", "-s", "fs-bench-cloudflare-computer/tests", "-v"], check=True, timeout=30)'
@@ -84,5 +84,5 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `6d820c756b` | 7 of 8 rows ran all twelve scenarios (1 FAIL, 7 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
+| 2026-11-06 | `6d820c756b` | 8 of 8 rows ran all twelve scenarios (8 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
 <!-- runs:end -->
