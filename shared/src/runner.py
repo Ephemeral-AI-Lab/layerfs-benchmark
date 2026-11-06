@@ -27,8 +27,13 @@ import measure
 
 MACHINES = ("native", "docker", "lima", "apple-container")
 BACKENDS = ("sqlite", "postgresql")
+# Optional declared route arm: PostgreSQL on the daemon's own Docker network.
+COLOCATED = "pg-colocated"
+ARMS = (*BACKENDS, COLOCATED)
 CELLS = getattr(cases, "CASE_IDS", tuple(f"C{i:02d}" for i in range(1, 13)))
 HARNESS_FILES = ("run.py", "cases.py", "runner.py", "measure.py")
+OBSERVER_DATABASE = re.compile(r"[a-z0-9_]{1,63}")
+LOG_LINE = re.compile(r"\[(\d+)\] db=(\S+) LOG:\s+(.*)$")
 
 
 class Failure(Exception):
@@ -37,21 +42,88 @@ class Failure(Exception):
         self.uncertain = uncertain
 
 
-def selections(cells=CELLS, machines=MACHINES, backends=BACKENDS):
-    return [
-        {
-            "cell": cell,
-            "machine": machine,
-            "backend": backend,
-            "id": f"{cell}/{machine}/{backend}",
-        }
-        for cell in CELLS
-        if cell in cells
-        for machine in MACHINES
-        if machine in machines
-        for backend in BACKENDS
-        if backend in backends
-    ]
+def kind(backend):
+    """The Store backend of a selected arm; route arms keep their backend."""
+    return "sqlite" if backend == "sqlite" else "postgresql"
+
+
+def selections(
+    cells=CELLS, machines=MACHINES, backends=ARMS, colocated=(), alternate=False
+):
+    """Matrix order: cell, machine, then arm.
+
+    `colocated` names machines that also register the co-located PostgreSQL
+    arm. `alternate` reverses the arm order on every second cell (C02, C04, ...)
+    so first-touch effects do not always land on the same backend.
+    """
+    rows = []
+    for index, cell in enumerate(CELLS):
+        if cell not in cells:
+            continue
+        for machine in MACHINES:
+            if machine not in machines:
+                continue
+            arms = BACKENDS + ((COLOCATED,) if machine in colocated else ())
+            if alternate and index % 2:
+                arms = arms[::-1]
+            rows.extend(
+                {
+                    "cell": cell,
+                    "machine": machine,
+                    "backend": backend,
+                    "id": f"{cell}/{machine}/{backend}",
+                }
+                for backend in arms
+                if backend in backends
+            )
+    return rows
+
+
+def matrix_options(config):
+    return {
+        "colocated": tuple(
+            config.get("postgresql", {}).get("colocated_machines", ())
+        ),
+        "alternate": config.get("order") == "alternate",
+    }
+
+
+def database_key(row):
+    key = f"{row['cell']}/{row['machine']}"
+    return key if row["backend"] == "postgresql" else f"{key}/{row['backend']}"
+
+
+def connection_counts(text, row_id, database):
+    """Attribute logged connections to the phase between this row's markers.
+
+    Each boundary call logs `pg62-boundary row=<id> next=<phase>`; a logged
+    `connection authorized` for the row's database counts toward the phase
+    that marker opened, with the client address from its `connection received`.
+    """
+    hosts, phase, counts = {}, None, {}
+    for line in text.splitlines():
+        match = LOG_LINE.search(line)
+        if not match:
+            continue
+        pid, message = match.group(1), match.group(3)
+        if message.startswith("connection received: host="):
+            hosts[pid] = message.split("host=", 1)[1].split()[0]
+        elif message.startswith("pg62-boundary "):
+            fields = dict(
+                item.split("=", 1) for item in message.split()[1:] if "=" in item
+            )
+            if fields.get("row") == row_id:
+                phase = None if fields.get("next") == "end" else fields.get("next")
+        elif message.startswith("connection authorized:") and phase:
+            fields = dict(
+                item.split("=", 1) for item in message.split()[2:] if "=" in item
+            )
+            if fields.get("database") == database:
+                entry = counts.setdefault(phase, {"connections": 0, "sources": {}})
+                entry["connections"] += 1
+                source = hosts.get(pid, "unknown")
+                entry["sources"][source] = entry["sources"].get(source, 0) + 1
+    return counts
 
 
 def digest(path):
@@ -147,7 +219,7 @@ class Campaign:
                 "campaign_id": config["campaign_id"],
                 "source_sha": config["source_sha"],
                 "config_sha256": self.identity,
-                "matrix": selections(),
+                "matrix": selections(**matrix_options(config)),
                 "rows": {},
                 "resources": config.get("resources", []),
                 "cleanup": "NOT_RUN",
@@ -306,9 +378,9 @@ class Campaign:
             return "empty source fixture is unavailable"
         if any(Path(self.config["empty_source"]).iterdir()):
             return "empty source fixture is not empty"
-        if row["backend"] == "postgresql":
+        if kind(row["backend"]) == "postgresql":
             pg = self.config.get("postgresql", {})
-            url = pg.get("databases", {}).get(f"{row['cell']}/{row['machine']}")
+            url = pg.get("databases", {}).get(database_key(row))
             if not url:
                 return "independently provisioned PostgreSQL database missing"
             parsed = urlsplit(url)
@@ -366,7 +438,7 @@ class Campaign:
                 self.call(row, "store_create", ["store", "create", store], deadline)
             else:
                 pg = self.config["postgresql"]
-                url = pg["databases"][f"{row['cell']}/{row['machine']}"]
+                url = pg["databases"][database_key(row)]
                 self.call(
                     row,
                     "store_connect",
@@ -488,9 +560,142 @@ class Campaign:
         for index, argv in enumerate(selected.get("commands", [])):
             self.call(row, f"cache_{phase}_{index}", argv, deadline, cli=False)
         evidence = selected.get("evidence", {})
-        verdict = measure.assess_cache(evidence, phase, row["machine"], row["backend"])
+        verdict = measure.assess_cache(
+            evidence, phase, row["machine"], kind(row["backend"])
+        )
         row.setdefault("cache", {})[phase] = verdict
         self.persist()
+
+    def observer_database(self, row):
+        if kind(row["backend"]) != "postgresql":
+            return None
+        url = self.config["postgresql"]["databases"][database_key(row)]
+        name = urlsplit(url).path.lstrip("/")
+        if not OBSERVER_DATABASE.fullmatch(name):
+            raise Failure("observed database name must be lowercase [a-z0-9_]")
+        return name
+
+    def boundary(self, row, next_phase, deadline):
+        """Close the observed phase and open the next one (None: end).
+
+        One administrative psql call on the dedicated server: snapshot this
+        row's database in pg_stat_statements, reset it, and log a marker that
+        attributes later connections. SQLite rows make the same call with the
+        marker only, so both backends see the same gaps between phases. The
+        call is control overhead, never a phase timing; its failure leaves the
+        phase's counts unavailable and does not touch LayerFS custody.
+        """
+        observer = self.config.get("postgresql", {}).get("observer")
+        if not observer:
+            return
+        database = self.observer_database(row)
+        previous = row.get("observed_phase")
+        scope = (
+            "FROM pg_stat_statements s JOIN pg_database d ON d.oid = s.dbid "
+            f"WHERE d.datname = '{database}'"
+        )
+        sql = []
+        if database and previous:
+            sql += [
+                "SELECT 'total', coalesce(sum(calls), 0), count(*), "
+                "coalesce(round(sum(total_exec_time)::numeric, 3), 0), "
+                f"coalesce(sum(rows), 0) {scope}",
+                "SELECT 'top', calls, round(total_exec_time::numeric, 3), rows, "
+                "left(regexp_replace(query, '\\s+', ' ', 'g'), 160) "
+                f"{scope} ORDER BY calls DESC, query LIMIT 25",
+            ]
+        if database and next_phase:
+            sql.append(
+                "SELECT 'reset', pg_stat_statements_reset(0, "
+                f"(SELECT oid FROM pg_database WHERE datname = '{database}'), 0)"
+            )
+        marker = next_phase or "end"
+        sql.append(
+            f"DO $$BEGIN RAISE LOG 'pg62-boundary row={row['id']} next={marker}'; END$$"
+        )
+        argv = [*observer["admin_argv"], *[part for text in sql for part in ("-c", text)]]
+        result = measure.run_command(argv, deadline, env=self.env, output_limit=262144)
+        row["control_overhead_ns"] = row.get("control_overhead_ns", 0) + (
+            result.get("elapsed_ns") or 0
+        )
+        row.setdefault("boundaries", []).append(
+            {
+                "next": marker,
+                "elapsed_ns": result.get("elapsed_ns"),
+                "process_exit": result.get("process_exit"),
+            }
+        )
+        if previous and database:
+            stats = row.setdefault("pg_phases", {}).setdefault(previous, {})
+            if result.get("process_exit") != 0 or result.get("output_truncated"):
+                stats["statements_status"] = "UNAVAILABLE"
+                stats["observer_error"] = self.redact(result.get("stderr", ""))[:2000]
+            else:
+                top = []
+                for line in result.get("stdout", "").splitlines():
+                    fields = line.split("\x1f")
+                    if fields[0] == "total" and len(fields) == 5:
+                        stats.update(
+                            statements=int(fields[1]),
+                            distinct_statements=int(fields[2]),
+                            statement_exec_ms=float(fields[3]),
+                            statement_rows=int(fields[4]),
+                        )
+                    elif fields[0] == "top" and len(fields) == 5:
+                        top.append(
+                            {
+                                "calls": int(fields[1]),
+                                "exec_ms": float(fields[2]),
+                                "rows": int(fields[3]),
+                                "query": fields[4],
+                            }
+                        )
+                stats["top"] = top
+                stats["statements_status"] = (
+                    "OBSERVED" if "statements" in stats else "UNAVAILABLE"
+                )
+        row["observed_phase"] = next_phase
+        self.persist()
+
+    def collect_connections(self, row, since_s):
+        observer = self.config.get("postgresql", {}).get("observer")
+        database = observer and self.observer_database(row)
+        if not database:
+            return
+        argv = [
+            str(since_s) if part == "{since}" else part
+            for part in observer["log_argv"]
+        ]
+        result = measure.run_command(
+            argv, measure.Deadline.after(10), env=self.env, output_limit=4194304
+        )
+        row["control_overhead_ns"] = row.get("control_overhead_ns", 0) + (
+            result.get("elapsed_ns") or 0
+        )
+        if result.get("process_exit") != 0 or result.get("output_truncated"):
+            row["connections_status"] = "UNAVAILABLE"
+            self.persist()
+            return
+        counts = connection_counts(
+            result.get("stdout", "") + "\n" + result.get("stderr", ""),
+            row["id"],
+            database,
+        )
+        phases = row.setdefault("pg_phases", {})
+        for phase in phases:
+            phases[phase].update(counts.get(phase, {"connections": 0, "sources": {}}))
+        for phase, value in counts.items():
+            phases.setdefault(phase, {}).update(value)
+        row["connections_status"] = "OBSERVED"
+        self.persist()
+
+    def guarded(self, row, action, *args):
+        """Observation after measurement must not block case cleanup."""
+        try:
+            action(*args)
+        except (Failure, measure.BudgetExceeded, OSError, ValueError) as error:
+            row.setdefault("observer_failures", []).append(str(error))
+            self.persist()
 
     def mount(self, row, name, deadline):
         result = self.call(
@@ -568,8 +773,12 @@ class Campaign:
         self.persist()
         self.event("attempt", row=row["id"], verify=verify)
         started = time.monotonic_ns()
+        since_s = int(time.time()) - 1
+        row["load_1m"] = os.getloadavg()[0]
         proof_started = None
-        budget = self.config.get("performance_budget_s", 15)
+        budget = case.get(
+            "performance_budget_s", self.config.get("performance_budget_s", 15)
+        )
         # An owner-approved exception may raise one machine's budget past 25 s,
         # never past the 2-minute command ceiling. Record it on the row.
         exception = self.config.get("budget_exceptions", {}).get(row["machine"])
@@ -585,6 +794,7 @@ class Campaign:
         row["performance_budget_s"] = budget
         deadline = measure.Deadline.after(budget)
         try:
+            self.boundary(row, "sandbox_create", deadline)
             self.call(
                 row,
                 "sandbox_create",
@@ -599,8 +809,10 @@ class Campaign:
             )
             row["sandbox_live"] = True
             self.persist()
+            self.boundary(row, "measured_mount", deadline)
             self.cache_boundary(row, "mount", deadline)
             self.mount(row, "measured", deadline)
+            self.boundary(row, "exec", deadline)
             self.cache_boundary(row, "exec", deadline)
             command = workspace_command(
                 case["exec_argv"], self.tool_environment(row, case)
@@ -618,6 +830,7 @@ class Campaign:
                     )
                 except ValueError as error:
                     raise Failure(f"tool result: {error}") from error
+            self.boundary(row, "commit", deadline)
             self.cache_boundary(row, "commit", deadline)
             commit = self.call(
                 row, "commit", ["workspace", "commit", row["workspace"]], deadline
@@ -625,6 +838,26 @@ class Campaign:
             if commit.get("kind") not in ("Committed", "UpToDate"):
                 raise Failure("unexpected Commit result", True)
             row["commit"] = commit
+            if case.get("followup_argv"):
+                # A small second change and Commit on the same Workspace.
+                self.boundary(row, "followup_exec", deadline)
+                followup = workspace_command(
+                    case["followup_argv"], self.tool_environment(row, case)
+                )
+                self.call(
+                    row,
+                    "followup_exec",
+                    ["workspace", "exec", row["workspace"], followup],
+                    deadline,
+                )
+                self.boundary(row, "commit_2", deadline)
+                second = self.call(
+                    row, "commit_2", ["workspace", "commit", row["workspace"]], deadline
+                )
+                if second.get("kind") not in ("Committed", "UpToDate"):
+                    raise Failure("unexpected second Commit result", True)
+                row["commit_2"] = second
+            self.boundary(row, "unmount", deadline)
             self.call(
                 row, "unmount", ["workspace", "unmount", row["workspace"]], deadline
             )
@@ -681,7 +914,15 @@ class Campaign:
             proof_ns = row.get("verification_elapsed_ns", 0)
             # Pause only the performance budget for the separately bounded proof.
             cleanup_deadline = measure.Deadline(deadline.end_ns + proof_ns)
+            observed = self.config.get("postgresql", {}).get("observer")
+            if observed:
+                self.guarded(
+                    row, self.boundary, row, "cleanup", measure.Deadline.after(10)
+                )
             self.cleanup(row, deadline=cleanup_deadline)
+            if observed:
+                self.guarded(row, self.boundary, row, None, measure.Deadline.after(10))
+                self.guarded(row, self.collect_connections, row, since_s)
             row["harness_elapsed_ns"] = time.monotonic_ns() - started
             row["performance_invocation_elapsed_ns"] = (
                 row["harness_elapsed_ns"] - proof_ns
@@ -756,7 +997,7 @@ class Campaign:
                 row["store_live"] = False
                 self.persist()
             row["cleanup"] = "COMPLETE"
-            if row["backend"] == "postgresql" and row.get("database_allocation"):
+            if kind(row["backend"]) == "postgresql" and row.get("database_allocation"):
                 row["postgresql_data"] = "RETAINED_UNTIL_INFRASTRUCTURE_FINISH"
         except (Failure, measure.BudgetExceeded) as error:
             row["cleanup"] = (
@@ -907,7 +1148,7 @@ def main(argv=None):
     parser.add_argument("--cache", required=True)
     parser.add_argument("--case", choices=CELLS, action="append")
     parser.add_argument("--machine", choices=MACHINES, action="append")
-    parser.add_argument("--backend", choices=BACKENDS, action="append")
+    parser.add_argument("--backend", choices=ARMS, action="append")
     parser.add_argument("--matrix", action="store_true")
     parser.add_argument("--verify", action="store_true")
     parser.add_argument("--output")
@@ -924,7 +1165,10 @@ def main(argv=None):
         if not Path(config["home"]).is_absolute():
             raise Failure("LayerFS home must be absolute")
         selected = selections(
-            args.case or CELLS, args.machine or MACHINES, args.backend or BACKENDS
+            args.case or CELLS,
+            args.machine or MACHINES,
+            args.backend or ARMS,
+            **matrix_options(config),
         )
         if args.action != "finish" and not args.matrix and len(selected) != 1:
             raise Failure("select one --case/--machine/--backend or use --matrix")

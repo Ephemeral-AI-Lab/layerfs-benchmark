@@ -14,9 +14,12 @@ to the workload; the explicit LayerFS Commit remains a separate operation.
 
 ## Workloads and implementation
 
-The macOS suite covers twelve cases on native, Docker, Lima and Apple Container,
-with SQLite and PostgreSQL on each machine: 96 rows. Other platforms are outside
-this campaign. The suite originated from
+The macOS suite covers eighteen cases on native, Docker, Lima and Apple
+Container, with SQLite and PostgreSQL on each machine: 144 rows, plus one
+optional co-located PostgreSQL arm per declared machine (below). C01–C12 keep
+their original bodies and provenance; C13–C18 were added for
+[layerfs-project#62](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/62)
+under workload version `pg62-v1`. Other platforms are outside this campaign. The suite originated from
 [layerfs-project#15](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/15),
 with public CLI calls and optional independent verification.
 
@@ -34,6 +37,19 @@ with public CLI calls and optional independent verification.
 | C10 | Copy the committed 64 MiB file | Committed base |
 | C11 | Overwrite it with the defined zero-over-zero body | Committed base |
 | C12 | Git init, create 100 files, add and commit | Empty |
+| C13 | Write one small file, Commit; write a second, Commit again on the same Workspace | Empty |
+| C14 | File-count sweep: 0 files (`true`) | Empty |
+| C15 | File-count sweep: 100 numbered files | Empty |
+| C16 | File-count sweep: 10,000 numbered files (declared 25 s budget) | Empty |
+| C17 | Read a committed 64 MiB non-repeating file | Committed base |
+| C18 | `stat` 1,000 committed files in one process | Committed base |
+
+C01 is the sweep's 1,000-file point. C13's second Commit separates first-Commit
+setup (connections, lanes) from steady state; both Commits are timed. C17's base
+is AES-128-CTR keystream from `openssl enc` with a pinned key and IV, so it is
+identical on every machine and does not deduplicate; its SHA-256 is pinned in
+[cases.py](src/cases.py). C16 alone is prospectively declared at the 25-second
+exception; every other case keeps the 15-second default.
 
 Use the Python standard library: `src/run.py` loads the shared lifecycle in
 `../shared/src/runner.py`, `src/cases.py` owns workload/proof definitions, and
@@ -122,8 +138,37 @@ replace artifact placeholders and register exact infrastructure release commands
 An example `ready: false` or unowned disposal resource is not runnable setup.
 
 For incremental implementation/execution, prepare and run each current row before
-advancing: C01 through C12; within each cell native, Docker, Lima, Apple Container;
-within each machine SQLite, PostgreSQL. Checkpoint all eight outcomes per cell.
+advancing: C01 through C18; within each cell native, Docker, Lima, Apple Container;
+within each machine SQLite, PostgreSQL. Checkpoint all outcomes per cell.
+With `"order": "alternate"` in the configuration, every second cell (C02, C04,
+…) reverses the arm order within each machine, so first-touch effects do not
+always land on SQLite. Declare the choice before the first row; the runner
+enforces whichever matrix the configuration defines.
+
+## PostgreSQL route arms, observation and calibration
+
+`postgresql.colocated_machines` registers a `pg-colocated` arm on those
+machines, with databases keyed `C01/docker/pg-colocated`. It is for a server on
+the machine's own network (on Docker Desktop: the default bridge every Docker
+Sandbox joins), given by an IP literal that the host also reaches. Lima and
+Apple Container Sandboxes run in their own VMs, and the owner rule keeps
+PostgreSQL out of guests, so they have no co-located arm. Record each arm's
+actual route, `sslmode` and server resources/settings (`SHOW ALL`).
+
+`postgresql.observer` names an administrative `psql` argv on the dedicated
+server and a log command (`{since}` is replaced by the row's start time). The
+runner then calls it at every phase boundary: snapshot `pg_stat_statements` for
+the row's database, reset it, and log a marker; connections authorized for that
+database between markers (`log_connections=on`, `log_line_prefix` starting
+`%m [%p] db=%d `) are attributed to the phase. SQLite rows get the same
+marker-only call so both backends see equal gaps. These calls are control
+overhead (`control_overhead_ns`), never phase time; reports subtract them from
+End-to-end. A failed observation leaves that phase's counts UNAVAILABLE.
+
+`src/calibrate.py` measures round trips per route outside every row: `host`
+runs `src/pgrtt.py` on the host, `guest` runs it inside a Workspace of a fresh
+SQLite Store on the machine (one Exec per declared route). Guests use a
+trust-authenticated calibration role so no secret enters a command.
 Do not run all cells of one machine or database first. Keep benchmark attempts
 serial; builds, provisioning and cache resets must not overlap an attempt.
 
@@ -163,8 +208,9 @@ Display machines as **Docker, native, Lima, Apple Container**, with **SQLite the
 PostgreSQL** for each machine. Docker is the baseline. Display order is separate
 from execution order, which still starts with native.
 
-Use separate columns: **Machine**, **Database**, **Create ms**, **Exec ms**,
-**Commit ms**, **Cleanup ms**, **End-to-end ms**, **Exec / Docker**,
+Use separate columns: **Machine**, **Database**, **Create ms**, **Mount ms**,
+**Exec ms**, **Commit ms** (and **Commit 2 ms** for C13), **Unmount ms**,
+**Close ms**, **Store release ms**, **End-to-end ms**, **Exec / Docker**,
 **Commit / Docker**, **End-to-end / Docker**. Define Create as Sandbox creation
 and Commit as LayerFS Commit. Do not combine metrics into an unlabeled triplet.
 
@@ -221,6 +267,10 @@ After known successful unmount and Sandbox close, use:
   home for deletion.
 - PostgreSQL: `layerfs store disconnect <store>`. This removes the registration,
   not the server database data; keep that allocation recorded until disposal.
+
+The product has no common release: `store remove` deletes only sqlite Stores
+and `store disconnect` forgets only PostgreSQL ones. Reports therefore show
+Sandbox close (the same call on both) and Store release as separate columns.
 
 For a known failed case, use `workspace unmount <ws> --discard` only when custody
 is known and discarding is the declared cleanup action. Do not force-close,
