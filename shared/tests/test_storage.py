@@ -340,6 +340,20 @@ class ReportTests(unittest.TestCase):
         header = storage_report.reference_table(rows, {}).splitlines()[0]
         self.assertIn("tar\\|zstd-3", header)  # a pipe in a header never splits the column
 
+    def test_reduction_table_factors_multiply_to_the_reduction(self):
+        text = storage_report.reduction_table([
+            {"case": "B", "backend": "postgresql", "raw": 1_000_000_000, "stored": 50_000_000},
+            {"case": "B", "backend": "sqlite", "raw": 1_000_000_000, "stored": 40_000_000,
+             "canonical": 400_000_000, "packs": 32_000_000},
+            {"case": "A", "backend": "sqlite", "raw": 2_000_000, "stored": 0},
+        ], order=["B", "A"])
+        lines = text.splitlines()
+        self.assertEqual(
+            lines[2], "| B | SQLite | 1,000.0 | 40.0 | 25.00 | 2.50 | 12.50 | 1.25 |"
+        )  # 2.50 × 12.50 ÷ 1.25 = 25.00
+        self.assertEqual(lines[3], "| B | PostgreSQL | 1,000.0 | 50.0 | 20.00 | — | — | — |")
+        self.assertEqual(lines[4], "| A | SQLite | 2.0 | 0.0 | — | — | — | — |")  # no division by zero
+
 
 if __name__ == "__main__":
     unittest.main()

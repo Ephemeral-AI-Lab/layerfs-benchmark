@@ -22,7 +22,9 @@ sys.path.insert(1, str(SRC.parents[1] / "shared" / "src"))
 import cases  # noqa: E402
 import model  # noqa: E402
 import storage  # noqa: E402
-from storage_report import UNITS_NOTE, b, mb, mib, ratio, signed, table  # noqa: E402
+from storage_report import (  # noqa: E402
+    REDUCTION_NOTE, UNITS_NOTE, b, mb, mib, ratio, reduction_table, signed, table,
+)
 
 BACKENDS = ("sqlite", "postgresql")
 NAMES = {"sqlite": "SQLite", "postgresql": "PostgreSQL"}
@@ -394,6 +396,15 @@ def main(argv=None):
     text = [
         "# fs-storage-history report", "",
         head, "",
+        "## Raw vs stored", "",
+        REDUCTION_NOTE + " Here the base tree is imported with `project init`, which the Commit list "
+        "does not cover, so only the overall reduction is shown. Raw counts every state, including the base.", "",
+        reduction_table([
+            {"case": c, "backend": backend, "raw": refs["cases"][c]["total"]["logical_bytes"],
+             "stored": r["totals"]["net"]}
+            for (c, backend), r in rows.items()
+            if c in refs.get("cases", {}) and isinstance(r.get("totals", {}).get("net"), int)
+        ], order=cases.CASE_IDS), "",
         "## Configuration", "",
         table(["Item", "Value"], [
             ["LayerFS source", f"`{config['source_sha']}` (`layerfs_v2_0_0`)"],

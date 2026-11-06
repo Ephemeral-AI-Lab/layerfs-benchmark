@@ -147,6 +147,21 @@ def render(state, config, notes="", cleanup="UNKNOWN"):
         "against each case's expected result, not gated by it. "
         + sr.UNITS_NOTE,
         "",
+        "## Raw vs stored",
+        "",
+        sr.REDUCTION_NOTE,
+        "",
+        sr.reduction_table([
+            {
+                "case": r["case"], "backend": r["backend"],
+                "raw": (r.get("summary") or {}).get("sum_logical"),
+                "stored": (r.get("summary") or {}).get("net_bytes"),
+                "canonical": (r.get("summary") or {}).get("sum_new_canonical"),
+                "packs": (r.get("summary") or {}).get("sum_new_stored"),
+            }
+            for r in primary if r.get("summary")
+        ], order=cases.CASE_IDS),
+        "",
         "## Configuration",
         "",
         "| Item | Value |",

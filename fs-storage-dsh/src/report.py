@@ -142,6 +142,21 @@ def main(argv=None):
         "(`store status`, `commit list`) or the Docker worker volume; wall times are "
         "INELIGIBLE diagnostics. " + sr.UNITS_NOTE,
         "",
+        "## Raw vs stored",
+        "",
+        sr.REDUCTION_NOTE,
+        "",
+        sr.reduction_table([
+            {
+                "case": r["case"], "backend": r["backend"],
+                "raw": r["summary"].get("sum_logical"),
+                "stored": r["summary"].get("net_bytes"),
+                "canonical": r["summary"].get("sum_new_canonical"),
+                "packs": r["summary"].get("sum_new_stored"),
+            }
+            for r in table_rows if r.get("summary")
+        ], order=cases.CASE_IDS),
+        "",
         "## Configuration",
         "",
     ]

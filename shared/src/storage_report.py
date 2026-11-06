@@ -153,8 +153,60 @@ def commit_curve_table(histories_by_backend, label="Commit"):
     return table(headers, body)
 
 
+REDUCTION_NOTE = (
+    "**Raw** is Σ logical: the bytes of every committed snapshot, as if each "
+    "were stored in full. **Stored** is the net Store bytes (SQLite: file + "
+    "WAL; PostgreSQL: schema). **Raw ÷ stored** is the overall reduction, "
+    "= exact dedup × delta + zstd ÷ Store overhead: **exact dedup** = raw ÷ "
+    "Σ new_canonical (identical files, chunks and trees stored once); "
+    "**delta + zstd** = Σ new_canonical ÷ Σ new_stored (delta encoding and "
+    "compression of the new objects); **Store overhead** = stored ÷ Σ "
+    "new_stored (database pages, indexes and free space around the packs; "
+    "1.35 means the Store is 35% larger than its packs)."
+)
+
+
+def _mb(value):
+    return f"{value / 1e6:,.1f}" if isinstance(value, (int, float)) else "—"
+
+
+def _div(a, b):
+    ok = isinstance(a, (int, float)) and isinstance(b, (int, float)) and b > 0
+    return a / b if ok else None
+
+
+def reduction_table(rows, order=None):
+    """Headline raw-vs-stored table.
+
+    ``rows``: dicts with ``case``, ``backend``, ``raw`` (Σ logical) and
+    ``stored`` (net Store bytes), plus optional ``canonical`` (Σ
+    new_canonical) and ``packs`` (Σ new_stored) for the three-factor split.
+    Leave those out when the Commit list does not cover everything stored,
+    e.g. when a base is imported with ``project init``. ``order`` lists case
+    IDs in display order (default: sorted).
+    """
+    if order:
+        rows = sorted(rows, key=lambda r: (list(order).index(r["case"]), BACKENDS.index(r["backend"])))
+    else:
+        rows = ordered(rows)
+    headers = [
+        "Case", "Database", "Raw (MB)", "Stored (MB)", "Raw ÷ stored (×)",
+        "Exact dedup (×)", "Delta + zstd (×)", "Store overhead (×)",
+    ]
+    body = []
+    for row in rows:
+        raw, stored = row.get("raw"), row.get("stored")
+        canonical, packs = row.get("canonical"), row.get("packs")
+        body.append([
+            row["case"], BACKEND_NAMES[row["backend"]], _mb(raw), _mb(stored),
+            ratio(_div(raw, stored), 2), ratio(_div(raw, canonical), 2),
+            ratio(_div(canonical, packs), 2), ratio(_div(stored, packs), 2),
+        ])
+    return table(headers, body)
+
+
 __all__ = [
-    "UNITS_NOTE", "b", "signed", "mb", "mib", "ratio", "table", "ordered",
-    "store_bytes_table", "attribution_table", "reference_table",
-    "references_bytes_table", "commit_curve_table",
+    "UNITS_NOTE", "REDUCTION_NOTE", "b", "signed", "mb", "mib", "ratio", "table",
+    "ordered", "store_bytes_table", "attribution_table", "reference_table",
+    "references_bytes_table", "commit_curve_table", "reduction_table",
 ]

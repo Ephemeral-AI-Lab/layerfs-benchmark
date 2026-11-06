@@ -2,6 +2,17 @@
 
 Storage only: every number is an exact byte count from the public CLI (`store status`, `commit list`) or the Docker worker volume; wall times are INELIGIBLE diagnostics. Bytes are exact integers. MB = 10⁶ B; MiB = 2²⁰ B = 1,048,576 B. Wall times are INELIGIBLE diagnostics, never speed claims.
 
+## Raw vs stored
+
+**Raw** is Σ logical: the bytes of every committed snapshot, as if each were stored in full. **Stored** is the net Store bytes (SQLite: file + WAL; PostgreSQL: schema). **Raw ÷ stored** is the overall reduction, = exact dedup × delta + zstd ÷ Store overhead: **exact dedup** = raw ÷ Σ new_canonical (identical files, chunks and trees stored once); **delta + zstd** = Σ new_canonical ÷ Σ new_stored (delta encoding and compression of the new objects); **Store overhead** = stored ÷ Σ new_stored (database pages, indexes and free space around the packs; 1.35 means the Store is 35% larger than its packs).
+
+| Case | Database | Raw (MB) | Stored (MB) | Raw ÷ stored (×) | Exact dedup (×) | Delta + zstd (×) | Store overhead (×) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| D10 | SQLite | 561.0 | 56.1 | 9.99 | 1.48 | 9.17 | 1.35 |
+| D10 | PostgreSQL | 561.0 | 70.0 | 8.02 | 1.48 | 9.17 | 1.69 |
+| D03 | SQLite | 1,676.8 | 73.0 | 22.96 | 2.84 | 11.37 | 1.41 |
+| D03 | PostgreSQL | 1,676.8 | 93.4 | 17.95 | 2.84 | 11.37 | 1.80 |
+
 ## Configuration
 
 | Item | Value |

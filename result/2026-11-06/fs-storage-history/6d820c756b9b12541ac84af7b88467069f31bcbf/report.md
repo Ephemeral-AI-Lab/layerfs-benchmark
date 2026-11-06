@@ -12,6 +12,27 @@ Harness: `fs-storage-history` at `5ba00b6` (driver, cases, model) with the share
 update was merged during the SQLite rows and does not change the Driver or the
 `commit list` collector). Report and accounting code were finished afterwards.
 
+## Raw vs stored
+
+**Raw** is Σ logical: the bytes of every committed snapshot, as if each were stored in full. **Stored** is the net Store bytes (SQLite: file + WAL; PostgreSQL: schema). **Raw ÷ stored** is the overall reduction, = exact dedup × delta + zstd ÷ Store overhead: **exact dedup** = raw ÷ Σ new_canonical (identical files, chunks and trees stored once); **delta + zstd** = Σ new_canonical ÷ Σ new_stored (delta encoding and compression of the new objects); **Store overhead** = stored ÷ Σ new_stored (database pages, indexes and free space around the packs; 1.35 means the Store is 35% larger than its packs). Here the base tree is imported with `project init`, which the Commit list does not cover, so only the overall reduction is shown. Raw counts every state, including the base.
+
+| Case | Database | Raw (MB) | Stored (MB) | Raw ÷ stored (×) | Exact dedup (×) | Delta + zstd (×) | Store overhead (×) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| H01 | SQLite | 32,477.4 | 32.3 | 1006.61 | — | — | — |
+| H01 | PostgreSQL | 32,477.4 | 36.7 | 883.76 | — | — | — |
+| H02 | SQLite | 16,319.9 | 30.2 | 540.25 | — | — | — |
+| H02 | PostgreSQL | 16,319.9 | 34.2 | 477.17 | — | — | — |
+| H03 | SQLite | 3,315.8 | 28.6 | 115.98 | — | — | — |
+| H03 | PostgreSQL | 3,315.8 | 31.6 | 104.94 | — | — | — |
+| H04 | SQLite | 3,315.3 | 28.6 | 115.84 | — | — | — |
+| H04 | PostgreSQL | 3,315.3 | 31.8 | 104.14 | — | — | — |
+| H05 | SQLite | 7,801.8 | 29.3 | 266.59 | — | — | — |
+| H05 | PostgreSQL | 7,801.8 | 67.1 | 116.27 | — | — | — |
+| H06 | SQLite | 7,801.8 | 500.1 | 15.60 | — | — | — |
+| H06 | PostgreSQL | 7,801.8 | 749.9 | 10.40 | — | — | — |
+| H07 | SQLite | 13,262.8 | 30.0 | 442.65 | — | — | — |
+| H07 | PostgreSQL | 13,262.8 | 40.7 | 325.56 | — | — | — |
+
 ## Configuration
 
 | Item | Value |

@@ -4,6 +4,29 @@
 
 Store bytes for eight single-mechanism workloads on LayerFS 2.0 (Docker machine, SQLite and PostgreSQL Stores), measured at a quiesced boundary through the public CLI. Bytes are reported against each case's expected result, not gated by it. Bytes are exact integers. MB = 10⁶ B; MiB = 2²⁰ B = 1,048,576 B. Wall times are INELIGIBLE diagnostics, never speed claims.
 
+## Raw vs stored
+
+**Raw** is Σ logical: the bytes of every committed snapshot, as if each were stored in full. **Stored** is the net Store bytes (SQLite: file + WAL; PostgreSQL: schema). **Raw ÷ stored** is the overall reduction, = exact dedup × delta + zstd ÷ Store overhead: **exact dedup** = raw ÷ Σ new_canonical (identical files, chunks and trees stored once); **delta + zstd** = Σ new_canonical ÷ Σ new_stored (delta encoding and compression of the new objects); **Store overhead** = stored ÷ Σ new_stored (database pages, indexes and free space around the packs; 1.35 means the Store is 35% larger than its packs).
+
+| Case | Database | Raw (MB) | Stored (MB) | Raw ÷ stored (×) | Exact dedup (×) | Delta + zstd (×) | Store overhead (×) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| M01 | SQLite | 20.6 | 27.7 | 0.75 | 0.94 | 1.05 | 1.33 |
+| M01 | PostgreSQL | 20.6 | 30.1 | 0.69 | 0.94 | 1.05 | 1.45 |
+| M02 | SQLite | 600.0 | 39.1 | 15.33 | 11.90 | 1.45 | 1.12 |
+| M02 | PostgreSQL | 600.0 | 37.7 | 15.92 | 11.90 | 1.45 | 1.08 |
+| M03 | SQLite | 85.7 | 6.8 | 12.55 | 1.00 | 21.17 | 1.68 |
+| M03 | PostgreSQL | 85.7 | 5.2 | 16.43 | 1.00 | 21.17 | 1.29 |
+| M04 | SQLite | 85.7 | 10.8 | 7.97 | 1.00 | 11.53 | 1.44 |
+| M04 | PostgreSQL | 85.7 | 9.5 | 9.04 | 1.00 | 11.53 | 1.27 |
+| M05 | SQLite | 85.7 | 10.8 | 7.95 | 1.00 | 11.53 | 1.44 |
+| M05 | PostgreSQL | 85.7 | 9.5 | 9.05 | 1.00 | 11.53 | 1.27 |
+| M06 | SQLite | 404.8 | 71.3 | 5.68 | 5.90 | 1.00 | 1.04 |
+| M06 | PostgreSQL | 404.8 | 72.0 | 5.62 | 5.90 | 1.00 | 1.05 |
+| M07 | SQLite | 402.7 | 98.0 | 4.11 | 2.99 | 1.45 | 1.05 |
+| M07 | PostgreSQL | 402.7 | 98.2 | 4.10 | 2.99 | 1.45 | 1.06 |
+| M08 | SQLite | 402.5 | 34.1 | 11.80 | 3.21 | 4.35 | 1.18 |
+| M08 | PostgreSQL | 402.5 | 33.1 | 12.15 | 3.21 | 4.35 | 1.15 |
+
 ## Configuration
 
 | Item | Value |

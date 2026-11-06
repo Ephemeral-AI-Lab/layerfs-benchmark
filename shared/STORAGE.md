@@ -165,4 +165,14 @@ a full file list.
 `commit_curve_table`, `UNITS_NOTE`. Input rows are
 `{case, backend, outcome, summary}`.
 
+`reduction_table(rows, order=None)` with `REDUCTION_NOTE` is the headline
+"Raw vs stored" table each report opens with. Its rows are `{case, backend,
+raw, stored[, canonical, packs]}`:
+- raw = Σ logical, stored = net Store bytes;
+- reduction = raw ÷ stored = exact dedup (raw ÷ Σ new_canonical) × delta +
+  zstd (Σ new_canonical ÷ Σ new_stored) ÷ Store overhead (stored ÷ Σ
+  new_stored);
+- leave out `canonical` and `packs` when the Commit list doesn't cover
+  everything stored (a base imported with `project init`).
+
 Tests: `python3 -m unittest discover -s shared/tests` (no LayerFS execution).
