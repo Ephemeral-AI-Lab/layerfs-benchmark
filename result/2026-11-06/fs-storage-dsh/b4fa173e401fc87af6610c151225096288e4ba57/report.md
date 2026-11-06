@@ -1,4 +1,4 @@
-**3 of 4 rows PASS (applied, committed, measured and verified at state 157); net Store bytes D10 57,081,856 B SQLite / 70,008,832 B PostgreSQL, D03 72,966,144 B / — B, against a Git pack + idx of 41,805,317 / 48,166,223 B; final cleanup INCOMPLETE.**
+**3 of 4 rows PASS (applied, committed, measured and verified at state 157); net Store bytes D10 57,081,856 B SQLite / 70,008,832 B PostgreSQL, D03 72,966,144 B / — B, against a Git pack + idx of 41,805,317 / 48,166,223 B; final cleanup COMPLETE.**
 
 Storage only: every number is an exact byte count from the public CLI (`store status`, `commit list`) or the Docker worker volume; wall times are INELIGIBLE diagnostics. Bytes are exact integers. MB = 10⁶ B; MiB = 2²⁰ B = 1,048,576 B. Wall times are INELIGIBLE diagnostics, never speed claims.
 
@@ -260,12 +260,12 @@ Wall times (INELIGIBLE diagnostics, not speed claims): the earlier Commits of th
 
 ## Cleanup
 
-Final cleanup: **INCOMPLETE**.
+Final cleanup: **COMPLETE**.
 - D10 SQLite, D03 SQLite and the D10 SQLite repeat Stores: `store remove` by the driver; D10 PostgreSQL Store: `store disconnect` by the driver, then its database `fsr_d10_docker` dropped (`dropdb`)
 - Failed row D03 PostgreSQL: Workspace `unmount` and Sandbox `close` through the CLI after a read-only inspection showed the killed Commit had landed (no Store bytes changed: 41,664,512 B before and after)
 - docker-worker: `machine stop docker` exit 0
 - docker-worker-container: `docker rm lfs-263153b4-docker` exit 0
 - docker-data: `docker volume rm lfs-263153b4-docker-data` exit 0
 - suite-image: `docker image rm fs-storage-dsh:v1-b4fa173e` exit 0
-- Retained: failed-row evidence: Store `q-fsd-ref-b4fa-d03-docker-postgresql` (PostgreSQL database `fsr_d03_docker`, 33 Commits through state 97, schema 41,664,512 B) and its record in the private home
-- Retained: PostgreSQL server `fsopt-ref-pg` and data volume `fsopt-ref-pg-data`, which hold that database (`run.py finish` retained every resource for retained row custody; the non-evidence ones were then released as listed above)
+- Failed-row evidence released on the lead's decision after the history suite: `store status` (41,664,512 B) and the inspection saved locally, then `store disconnect q-fsd-ref-b4fa-d03-docker-postgresql` exit 0
+- postgres-stop / postgres-container / postgres-data: `docker stop -t 5 fsopt-ref-pg`, `docker rm fsopt-ref-pg`, `docker volume rm fsopt-ref-pg-data` (database `fsr_d03_docker` with it), each exit 0
