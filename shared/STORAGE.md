@@ -41,13 +41,24 @@ time anything: wall time is an INELIGIBLE diagnostic. Three modules serve them;
 - **Per Commit**: `commit list <project> <branch> --page-size N --page-pos P`
   followed until `has_more` is false. `logical` is the Commit's whole-tree
   logical size (not a delta); `new_canonical`, `new_stored`, `new_metadata`
-  are that Commit's new bytes. The collector fails on a broken first-parent
+  are that Commit's new bytes. Per the 2.0 source (`CommitStatistics`),
+  `new_stored` is **all** new pack bytes and `new_metadata` is the
+  metadata-domain **subset** (fs-storage-micro M02's copy Commit has
+  `new_stored == new_metadata`), so payload = `new_stored − new_metadata`. The collector fails on a broken first-parent
   chain, a repeated id or paging that does not advance.
 - **Summary** (`storage.summarize`): net, net file/WAL/allocated parts,
   Σ logical (sum of per-Commit tree sizes), Σ new_canonical, Σ new_stored,
-  Σ new_metadata, unattributed = net − (Σ new_stored + Σ new_metadata),
+  Σ new_metadata, Σ payload (`sum_new_payload`), unattributed after packs =
+  net − Σ new_stored (`unattributed_after_packs_bytes`; report this), the
+  spec's unattributed = net − (Σ new_stored + Σ new_metadata)
+  (`unattributed_bytes`; counts metadata twice, kept for comparability),
   logical ÷ net, net ÷ each reference, net ÷ ideal unique. A Commit listed on
   several branches counts once.
+- **Determinism (observed on 2.0, fs-storage-micro M03 repeats).** Page-
+  granular totals (SQLite `file.bytes`, PostgreSQL schema bytes) repeated
+  exactly, but per-Commit `new_stored`/`new_metadata` varied by a few bytes
+  and SQLite `wal_bytes` by whole WAL frames; `new_canonical` and `logical`
+  were identical. Report variance; do not expect byte-identical counters.
 - **One fresh Store per row.** A failed or uncertain Commit marks the row FAIL
   and keeps its Store (`cleanup: INCOMPLETE`, `retained_reason`).
 
@@ -109,6 +120,7 @@ never retried. Campaign state keeps the first 2,000 characters of each
 command's output; `ledger.jsonl` keeps the full output.
 
 Pure helpers: `parse_status`, `parse_allocated`, `allocated_argv`,
+`server_wal_bytes(row)` (PostgreSQL LSN delta floor→final),
 `docker_volume_for`, `collect_commits(list_page, project, branch)`,
 `commit_record`, `total`, `summarize`, `pg_lsn_bytes`, `safe_database_url`,
 `POLICY` (the fixed 2.0 storage policy to record in reports).

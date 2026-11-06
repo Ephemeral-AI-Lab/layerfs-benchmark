@@ -148,6 +148,16 @@ def pg_lsn_bytes(text):
     return (int(high, 16) << 32) + int(low, 16)
 
 
+def server_wal_bytes(row, start="floor", end="final"):
+    """PostgreSQL server WAL generated between two probes (server-wide), or None."""
+    try:
+        a = sum(pg_lsn_bytes(p["server_wal_lsn"]) for p in row["probes"][start].values())
+        b = sum(pg_lsn_bytes(p["server_wal_lsn"]) for p in row["probes"][end].values())
+    except (KeyError, ValueError, TypeError, AttributeError):
+        return None
+    return b - a
+
+
 COMMIT_FIELDS = ("logical", "new_canonical", "new_stored", "new_metadata")
 
 
@@ -257,7 +267,13 @@ def summarize(final, floor, histories, references=None, ideal_unique=None):
         "sum_new_canonical": sum(c["new_canonical"] for c in commits),
         "sum_new_stored": stored,
         "sum_new_metadata": metadata,
+        # LayerFS 2.0 CommitStatistics: new_stored is ALL new pack bytes and
+        # new_metadata is the metadata-domain subset, so payload = the difference.
+        "sum_new_payload": stored - metadata,
+        # Spec formula, kept for comparability; it counts metadata twice.
         "unattributed_bytes": net - (stored + metadata) if net is not None else None,
+        # Store bytes no Commit's packs account for (database overhead, WAL, free pages).
+        "unattributed_after_packs_bytes": net - stored if net is not None else None,
         "logical_per_net": per(logical_sum, net),
         "net_per_reference": {
             name: per(net, value) for name, value in (references or {}).items()
@@ -620,7 +636,7 @@ def row_summary(row, references=None, ideal_unique=None):
 
 __all__ = [
     "POLICY", "StorageFailure", "Driver", "load_runner", "docker_volume_for",
-    "allocated_argv", "parse_allocated", "parse_status", "pg_lsn_bytes",
+    "allocated_argv", "parse_allocated", "parse_status", "pg_lsn_bytes", "server_wal_bytes",
     "collect_commits", "commit_record", "total", "summarize", "safe_database_url",
     "run_row", "run_step", "row_summary",
 ]
