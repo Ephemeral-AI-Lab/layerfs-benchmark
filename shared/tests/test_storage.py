@@ -335,6 +335,8 @@ class ReportTests(unittest.TestCase):
         )
         self.assertIn("SQLite new_stored (B)", curve)
         self.assertIn("PostgreSQL new_metadata (B)", curve)
+        header = storage_report.reference_table(rows, {}).splitlines()[0]
+        self.assertIn("tar\\|zstd-3", header)  # a pipe in a header never splits the column
 
 
 if __name__ == "__main__":

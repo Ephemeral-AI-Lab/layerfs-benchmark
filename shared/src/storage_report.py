@@ -43,7 +43,7 @@ def ratio(value, digits=3):
 
 
 def table(headers, rows):
-    lines = ["| " + " | ".join(headers) + " |", "| " + " | ".join(
+    lines = ["| " + " | ".join(safe(h) for h in headers) + " |", "| " + " | ".join(
         "---:" if h.endswith(")") or h.startswith("Σ") or h[:1].isdigit() else "---"
         for h in headers
     ) + " |"]
