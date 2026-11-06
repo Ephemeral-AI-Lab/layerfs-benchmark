@@ -1,6 +1,6 @@
 # fs-storage-micro — 6d820c756b
 
-**16 of 16 fs-storage-micro rows PASS with verified final state; repeat M03/docker/postgresql/r2: page-granular Store bytes identical, total +0 B, per-Commit new_stored ±25 B; repeat M03/docker/sqlite/r2: page-granular Store bytes identical, total -8,240 B, per-Commit new_stored ±15 B; final cleanup COMPLETE.**
+**16 of 16 fs-storage-micro rows PASS with verified final state; repeat M03/docker/postgresql/r2: page-granular Store bytes identical in this repeat, total +0 B, per-Commit new_stored ±25 B; repeat M03/docker/sqlite/r2: page-granular Store bytes identical in this repeat, total -8,240 B, per-Commit new_stored ±15 B; final cleanup COMPLETE.**
 
 Store bytes for eight single-mechanism workloads on LayerFS 2.0 (Docker machine, SQLite and PostgreSQL Stores), measured at a quiesced boundary through the public CLI. Bytes are reported against each case's expected result, not gated by it. Bytes are exact integers. MB = 10⁶ B; MiB = 2²⁰ B = 1,048,576 B. Wall times are INELIGIBLE diagnostics, never speed claims.
 
@@ -317,14 +317,14 @@ Server-wide `pg_current_wal_lsn()` advance between the floor and final probes (o
 
 | Repeat | Pages first (B) | Pages repeat (B) | Final first (B) | Final repeat (B) | Max per-Commit Δ new_stored (B) | Max per-Commit Δ new_metadata (B) | new_canonical and logical identical | Per-Commit payload identical | Verdict |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| M03/docker/postgresql/r2 | 5,971,968 | 5,971,968 | 5,971,968 | 5,971,968 | 25 | 25 | yes | yes | page-granular Store bytes identical, total +0 B, per-Commit new_stored ±25 B |
-| M03/docker/sqlite/r2 | 2,904,064 | 2,904,064 | 7,044,696 | 7,036,456 | 15 | 15 | yes | yes | page-granular Store bytes identical, total -8,240 B, per-Commit new_stored ±15 B |
+| M03/docker/postgresql/r2 | 5,971,968 | 5,971,968 | 5,971,968 | 5,971,968 | 25 | 25 | yes | yes | page-granular Store bytes identical in this repeat, total +0 B, per-Commit new_stored ±25 B |
+| M03/docker/sqlite/r2 | 2,904,064 | 2,904,064 | 7,044,696 | 7,036,456 | 15 | 15 | yes | yes | page-granular Store bytes identical in this repeat, total -8,240 B, per-Commit new_stored ±15 B |
 
 Pages = SQLite `file.bytes` or PostgreSQL schema bytes; Final = Store bytes as defined above (SQLite adds `wal_bytes`).
 
 ## Observations
 
-- **Payload is deterministic; metadata is not.** Per-Commit payload (`new_stored − new_metadata`) and `new_canonical` were identical between SQLite and PostgreSQL rows and between both M03 repeats. Only `new_metadata` (and so `new_stored`) moved, by up to 25 B per Commit. Page-granular totals (SQLite `file.bytes`, PostgreSQL schema bytes) repeated exactly. The SQLite WAL differed by 8,240 B (2 frames). The likely source of the metadata variance is Commit time and file mtimes inside metadata objects; this was not verified in source.
+- **Payload is deterministic; metadata is not.** Per-Commit payload (`new_stored − new_metadata`) and `new_canonical` were identical between SQLite and PostgreSQL rows and between both M03 repeats. Only `new_metadata` (and so `new_stored`) moved, by up to 25 B per Commit. For M03, page-granular totals (SQLite `file.bytes`, PostgreSQL schema bytes) happened to repeat exactly, and the SQLite WAL differed by 8,240 B (2 frames). This is not a general determinism claim. The sibling fs-storage-dsh D10 SQLite repeat gave `file.bytes` +28,672 B (7 pages) with the WAL unchanged, and `new_metadata` drifted up to 101 B per Commit. The likely source of the metadata variance is Commit time and file mtimes inside metadata objects; this was not verified in source.
 - **`new_stored` includes `new_metadata`.** The 2.0 source (`CommitStatistics`) defines `new_stored` as all new pack bytes and `new_metadata` as the metadata-domain packs. M02's copy Commit confirms it: `new_stored == new_metadata` = 16,279 B. The spec's unattributed formula therefore counts metadata twice. The tables show net − Σ new_stored next to it.
 - **M01 tiny files.** Payload is 20,703,003 B for 20,647,445 B of random content (+0.27%). Metadata is 82,320 B, or 8.2 B per file. Store overhead beyond packs is 6,915,925 B (SQLite, of which 4,194,304 B is the WAL) and 9,279,322 B (PostgreSQL). That is about 692 and 928 B per file, so database row/page overhead dominates per-file cost, not LayerFS metadata.
 - **M02 duplicates: as expected.** The 500,000,000 B of copies stored 0 B of payload and 16,279 B of metadata. Commit 1 stored 34,720,013 B of payload for 50,000,000 B (the text half compresses).

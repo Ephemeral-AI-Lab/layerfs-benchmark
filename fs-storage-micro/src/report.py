@@ -115,10 +115,10 @@ def compare(a, b):
         "canonical_equal": delta("new_canonical") == 0 and delta("logical") == 0,
     }
     if out["page_equal"] and out["total_delta"] == 0 and out["stored_delta"] == 0 and out["metadata_delta"] == 0:
-        out["verdict"] = "byte-identical"
+        out["verdict"] = "byte-identical in this repeat"
     else:
         out["verdict"] = (
-            ("page-granular Store bytes identical" if out["page_equal"] else "Store pages DIFFER")
+            ("page-granular Store bytes identical in this repeat" if out["page_equal"] else "Store pages DIFFER")
             + f", total {out['total_delta']:+,} B, per-Commit new_stored ±{out['stored_delta']:,} B"
         )
     return out
