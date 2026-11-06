@@ -75,7 +75,7 @@ Median over cells of (PostgreSQL row − SQLite row) for cells where both arms P
 
 Commit counts are the same on every route (C16 685–699). Every non-UpToDate Commit now opens 2 connections (was 1).
 
-**Regression to check:** write-heavy Exec and 64 MiB Commit are slower at `ddd1bc83cd` on both backends (median after/before: write Exec SQLite ×1.33, PostgreSQL ×1.18; 64 MiB Commit SQLite ×1.35, PostgreSQL ×1.24), with lower host load than the baseline. Read Exec is unchanged. Suspect `7a625d855d` (digest window/overlay page 1,024, #69); not isolated.
+**Regression to check:** write-heavy Exec and 64 MiB Commit are slower at `ddd1bc83cd` on both backends (median after/before: write Exec SQLite ×1.33, PostgreSQL ×1.18; 64 MiB Commit SQLite ×1.35, PostgreSQL ×1.24), with lower host load than the baseline. Read Exec is unchanged. Suspect `7a625d855d` (digest window/overlay page 1,024, #69); not isolated. **Resolved by the bisect below: not a code regression.**
 
 Storage: only Commit results are recorded; `new_stored`/`new_metadata` match the baseline within 0.5% on both backends. No database file sizes.
 
@@ -161,6 +161,26 @@ Confounds: the published run used fresh machines, no co-located arm and no obser
 | pjdfstest | lima | +177 → +28 | -4 → -16 | +25 → +22 |
 | pjdfstest | apple-container | +262 → +65 | -4 → -5 | +68 → +54 |
 
+
+## Bisect follow-up: the write-path slowdown is not in the code
+
+Campaign `pg71-bisect-1106` re-measured selected rows at five identities with the same harness and machines: the published baseline artifacts (`p919`), our own build of the base `6d820c756b` (`a6d8`), `f45fef94bd` (`bf45`), `7a625d855d` (`c7a6`) and `ddd1bc83cd` (`dddd`). It ran 2–3 rounds per row, and every pair was checked with the paired-delta rule. Exec / Commit ms, median:
+
+| Row | a6d8 | bf45 | c7a6 | dddd |
+|---|---|---|---|---|
+| C06 Docker SQLite | 185 / 241 | 161 / 237 | — | 158 / 242 |
+| C05 Docker SQLite (`find`) | 668 / 86 | 651 / 83 | — | 638 / 96 |
+| C01 Docker SQLite | 263 / 80 | 264 / 81 | 218 / 77 | 275 / 80 |
+| C04 native SQLite | 3,174 / 132 | 3,251 / 128 | 3,337 / 134 | 3,008 / 132 |
+| C01 Docker PostgreSQL | 273 / 185 | 252 / 146 | 273 / 122 | 278 / 125 |
+| C04 native PostgreSQL | 3,131 / 271 | 2,794 / 170 | 2,877 / 170 | 2,972 / 168 |
+
+- **No product step is flagged.** The single flag is C01 native SQLite Exec between `p919` and `a6d8`, whose product source is identical, so it is a build or run artifact.
+- **The slowdown is not reproduced.** The final run's C06 SQLite Commit of 332 ms is 242 ms at the same artifacts. The ×1.2–1.37 above is attributed to the final campaign's conditions: it reused the baseline home and worker after the outage restart.
+- **#69's readdir change has no cost.** C05 shows none from the 1,024-entry kernel directory pages.
+- **Not re-measured:** PostgreSQL Commit on C06–C08, and C07, C10 and C16.
+
+Receipts (local, untracked): `fs-bench-quick/results/pg71-bisect-1106/` (`infra/summary.md`, `infra/ledger.jsonl`, `g2/<identity>/r<n>/rows/`).
 
 ## Resources kept (owner=pg-perf-62) and release commands
 
