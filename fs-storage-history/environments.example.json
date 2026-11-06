@@ -1,0 +1,49 @@
+{
+  "campaign_id": "fsh-example",
+  "campaign_tag": "a",
+  "source_sha": "RESOLVE_LAYERFS_V2_0_0_SHA",
+  "cli": "/absolute/pinned-release/layerfs",
+  "home": "/absolute/owned-private-home",
+  "empty_source": "/absolute/owned-empty-folder",
+  "base_dir": "/absolute/private-cache/base-157",
+  "environment": {
+    "XDG_CACHE_HOME": "/absolute/campaign-xdg"
+  },
+  "artifacts": {
+    "cli_sha256": "REPLACE",
+    "daemon_sha256": "REPLACE",
+    "linux_bundle_sha256": "REPLACE",
+    "profile": "release",
+    "sandbox_image": "REPLACE (docker image id of fs-storage-history:<short-sha>)",
+    "sandbox_image_tag": "fs-storage-history:REPLACE",
+    "base_image": "sha256:afa1ef9c27294f9c7298820c06483e6fb1ddafc43a7cc7d6dec8cd2e67abf38e",
+    "model_sha256": "REPLACE (sha256 of src/model.py printed by the image build)"
+  },
+  "machines": {
+    "docker": {"name": "docker", "ready": true, "platform": "linux"}
+  },
+  "postgresql": {
+    "password_env": "BENCH_PG_PASSWORD",
+    "server_container": "REPLACE",
+    "server_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652 (postgres:17-bookworm)",
+    "disposal_resource": "postgres-data",
+    "databases": {
+      "H01": "postgresql://bench@127.0.0.1:55483/fsh_h01",
+      "H02": "postgresql://bench@127.0.0.1:55483/fsh_h02",
+      "H03": "postgresql://bench@127.0.0.1:55483/fsh_h03",
+      "H04": "postgresql://bench@127.0.0.1:55483/fsh_h04",
+      "H05": "postgresql://bench@127.0.0.1:55483/fsh_h05",
+      "H06-s01": "postgresql://bench@127.0.0.1:55483/fsh_h06_s01",
+      "H06-s20": "postgresql://bench@127.0.0.1:55483/fsh_h06_s20 (one per Store, s01–s20)",
+      "H07": "postgresql://bench@127.0.0.1:55483/fsh_h07"
+    }
+  },
+  "storage": {
+    "server_wal_argv": ["docker", "exec", "REPLACE", "psql", "-U", "bench", "-d", "postgres", "-Atc", "select pg_current_wal_lsn()"]
+  },
+  "shared_infrastructure": true,
+  "resources": [
+    {"id": "postgres-data", "owned": true, "release_argv": ["docker", "volume", "rm", "REPLACE"],
+     "note": "Register the exact owned docker worker, image and PostgreSQL server/data before running."}
+  ]
+}

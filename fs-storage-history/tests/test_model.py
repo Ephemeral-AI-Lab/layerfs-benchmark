@@ -80,7 +80,9 @@ class Planning(unittest.TestCase):
     def test_pinned_plan_digest(self):
         ops, state = self.plan("pinned", steps=30)
         digest = model.ops_digest(ops)
-        self.assertEqual(digest, model.ops_digest(self.plan("pinned", steps=30)[0]))
+        self.assertEqual(digest, "0fb18cad2dec22992c8d45d4ed5d7ce49e062bd8e91317bb36bdb0228330573b")
+        self.assertEqual(state.summary()["sha256"],
+                         "7ff7f7fcdefb3396ea001a493d2c202b497286b4dc9ff6c49712844a992814bf")
         self.assertEqual(len(ops), 30)
         self.assertTrue(all(len(step) == model.OPS_PER_COMMIT for step in ops))
         self.assertEqual(state.summary()["empty_dirs"], 0)

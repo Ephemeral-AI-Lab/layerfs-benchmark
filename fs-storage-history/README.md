@@ -1,0 +1,81 @@
+# fs-storage-history — Store bytes by history shape: long history, branches, forks and projects
+> group: filesystem · measures: storage
+
+## Basic info
+
+| Item | Value |
+| --- | --- |
+| Measures | Bytes a LayerFS Store holds after a seeded edit history; never speed |
+| Runs on | Docker only, SQLite then PostgreSQL: 7 cases, 14 rows |
+| Base tree | DSH checkpoint 157 (9,404 files + 11 symlinks, 65,020,822 B) from the local seed `git-snapshots-157-v1/snapshots.git`; never published |
+| Status | Implemented; workload `fs-storage-history-v1` frozen after a SQLite probe |
+| Frozen rules | [AGENTS.md](AGENTS.md); shapes and pins in [src/cases.py](src/cases.py); edit model in [src/model.py](src/model.py); image in [TOOL.md](TOOL.md) |
+| Measurement | [shared/STORAGE.md](../shared/STORAGE.md) (`storage.Driver` on the shared `runner.Campaign` custody) |
+
+## Overview
+
+Every project imports the same base tree with `project init`. Each Commit
+then applies five operations drawn deterministically from `(seed, step)`:
+
+| Share | Operation | Write method |
+| ---: | --- | --- |
+| 70% | Edit 1–5 lines of a text file (replace, insert or delete) | In place: same inode, `O_WRONLY\|O_TRUNC` |
+| 10% | New 256–4,096 B synthetic text file | New path, `O_CREAT\|O_EXCL`, 0644 |
+| 5% | Delete a file | `unlink(2)` |
+| 10% | Rename a file (80% same directory) | `rename(2)` to a new path |
+| 5% | Append one 80–240 B line to a `*.jsonl`/`*.log` file | In place, `O_APPEND` |
+
+| Case | Shape | Commits | What it shows |
+| --- | --- | ---: | --- |
+| H01 long history | 1 project, 1 Branch × 500 Commits | 500 | Delta chains past the depth cap; growth per Commit |
+| H02 many branches | 50 Branches from the base, 5 Commits each, distinct seeds | 250 | Extra bytes per Branch |
+| H03 identical branches | 50 Branches from the base, the same single Commit | 50 | ≈ metadata only per Branch |
+| H04 nested forks | Fork chain 10 deep, 5 Commits per level | 50 | Branches of Branches |
+| H05 projects in one Store | 20 projects from the base, 5 Commits each, distinct seeds | 100 | Cross-project sharing |
+| H06 projects in separate Stores | The same 20 projects, one Store each | 100 | Baseline: Σ H06 ÷ H05 = cross-project gain |
+| H07 combined | 4 projects × 5 Branches × 10 Commits in one Store | 200 | Everything at once |
+
+A row reports the empty-Store floor, the Init floor (after every base
+import), final and net Store bytes, per-Commit `new_stored`/`new_metadata`
+from the paged `commit list`, per-Branch and per-project marginal bytes, and
+offline references (whole-file unique, Σ `tar | zstd -3`, Git pack + idx,
+approximate CDC). Each Branch head is verified once against the host oracle.
+
+## Setup
+
+Prerequisites ([TOOL.md](TOOL.md)): the pinned release CLI and matched
+Linux bundle, the suite image on the Docker machine, a dedicated PostgreSQL
+server with one empty database per Store (26: H06 needs 20), and the base
+tree extracted from the seed:
+
+```bash
+python3 fs-storage-history/src/base.py --seed <seed>/snapshots.git --dest ~/.cache/fs-storage-history/base-157
+python3 fs-storage-history/src/refs.py --base ~/.cache/fs-storage-history/base-157 --output <private>/references.json
+```
+
+Copy [environments.example.json](environments.example.json), replace the
+placeholders, export the PostgreSQL password variable, then run one row at
+a time, SQLite rows first:
+
+```bash
+python3 fs-storage-history/src/run.py row --environment E --case H01 --backend sqlite --output <private>/results/H01-sqlite
+```
+
+Publish from the local results:
+
+```bash
+python3 fs-storage-history/src/report.py --results <private>/results --references <private>/references.json \
+  --environment E --notes <private>/notes.md --output result/YYYY-MM-DD/fs-storage-history/FULL_LAYERFS_SHA/report.md
+python3 shared/src/readme_index.py
+```
+
+Harness checks (no LayerFS execution):
+
+```bash
+python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "discover", "-s", "fs-storage-history/tests", "-v"], check=True, timeout=120)'
+```
+
+## Past runs
+
+<!-- runs:begin -->
+<!-- runs:end -->
