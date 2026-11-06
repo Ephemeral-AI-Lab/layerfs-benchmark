@@ -152,6 +152,18 @@ its per-row harness hashes, exact CLI commands and workload provenance; the
 report describes that limitation. Reports suppress comparisons for ineligible
 or mismatched pairs.
 
+### Docker subset regression gate
+
+[gate.py](src/gate.py) (layerfs-project#98) compares a control and a treatment
+build on Docker only: C01, C04, C09, C13, C14, C16, C17 and C18 on SQLite,
+PostgreSQL over the published port and co-located PostgreSQL, in two paired
+rounds (96 rows) under the regression-screen exception. Each identity gets a
+fresh home, XDG cache and Docker worker per gate. `setup` creates them and the
+row databases, `next` prepares and runs exactly one row through `run.py`,
+`verdict` writes the paired-delta summary (median paired delta, pairs slower,
+flag; 5 ms floor) and `finish` releases the gate's workers and databases. Its
+docstring has the exact commands.
+
 ### Publishing
 
 Publish only the report using the [result directory convention](../result/README.md).

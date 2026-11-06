@@ -28,6 +28,10 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 BUILD_IMAGE = "sha256:378b799ef43343fc64008b6a5ef456dd6bf0cb8f6ea4cec72e7b42dfc17d2cd6"
+# Docker Desktop may inject an HTTP proxy into every container and override
+# env-file values for it; a MinIO on a Docker network is reached directly, so
+# MinIO containers clear the proxy with explicit -e flags.
+NO_PROXY_FLAGS = ["-e", "HTTP_PROXY=", "-e", "http_proxy=", "-e", "HTTPS_PROXY=", "-e", "https_proxy="]
 MINIO_IMAGE = "cgr.dev/chainguard/minio@sha256:4692462f35d97d7e82c30371d82f057703c5d9489bcae726010594c812f2d285"
 
 
@@ -56,6 +60,7 @@ class Case:
         self.prefix = f"bv-{args.run_id}/{self.tag}"
         if self.provider == "minio":
             self.network = self.env["MINIO_NETWORK"]
+            self.proxy_flags = NO_PROXY_FLAGS
             self.url = f"{self.env['LAYERFS_REMOTE_ENDPOINT']}/{self.env['LAYERFS_REMOTE_BUCKET']}/{self.prefix}"
             self.key = "env:LAYERFS_REMOTE"
             self.bucket = self.env["LAYERFS_REMOTE_BUCKET"]
@@ -63,6 +68,7 @@ class Case:
             mc_host = f"http://{self.env['LAYERFS_REMOTE_ACCESS_KEY']}:{self.env['LAYERFS_REMOTE_SECRET_KEY']}@{{ip}}:9000"
         else:
             self.network = "bridge"
+            self.proxy_flags = []
             self.url = f"r2://{self.env['R2_ACCOUNT']}/{self.env['R2_BUCKET']}/{self.prefix}"
             self.key = "env:LAYERFS_R2"
             self.bucket = self.env["R2_BUCKET"]
@@ -103,7 +109,7 @@ class Case:
         return [
             "docker", "run", "--pull", "never", *([] if detach else ["--rm"]), *(["-d"] if detach else []),
             "--network", network or self.network,
-            "--env-file", self.cli_env,
+            "--env-file", self.cli_env, *self.proxy_flags,
             "-e", f"LAYERFS_HOME=/scratch/{self.tag}/{home}",
             "-e", "LAYERFS_CONSTRUCTION_WORKERS=1",
             "--mount", f"type=volume,src={self.volume},dst=/scratch",
@@ -160,7 +166,7 @@ class Case:
         with open(self.mc_env, "w") as f:
             f.write(f"MC_HOST_t={host}\n")
         os.umask(old)
-        base = ["docker", "run", "--rm", "--pull", "never", "--user", "0:0", "--network", self.network, "--env-file", self.mc_env,
+        base = ["docker", "run", "--rm", "--pull", "never", "--user", "0:0", "--network", self.network, "--env-file", self.mc_env, *self.proxy_flags,
                 "--mount", f"type=volume,src={self.volume},dst=/scratch"]
         if script:
             command = base + ["--entrypoint", "sh", MINIO_IMAGE, "-c", script]
