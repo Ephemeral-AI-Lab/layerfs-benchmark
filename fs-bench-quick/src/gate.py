@@ -22,6 +22,9 @@ Commands (from the benchmark repository root), each its own invocation:
     gate.py verdict --gate ID     # markdown summary (paired-delta rule, counts)
     gate.py finish --gate ID      # run.py finish per campaign, stop workers, drop databases
 
+A separately labelled extra gate may declare a subset at setup (`--cells C17
+--arms pg-colocated`); it runs the same paired order over that subset only.
+
 An artifact DIR holds `layerfs`, `layerfs-daemon`, `manifest.json` (with
 `source_sha`) and `xdg/layerfs/bundle/...`. `next` marks a row attempted before
 it starts and never replays it; a failed or timed-out row stays failed.
@@ -105,15 +108,26 @@ def ledger(gate, event, **fields):
         stream.write(json.dumps({"event": event, "at_utc": now(), **fields}) + "\n")
 
 
-def arm_order(cell):
+def arm_order(cell, arms=None):
     """The runner's matrix order with `order: alternate` (odd CASE_IDS index reversed)."""
-    return ARMS[::-1] if ALL_CELLS.index(cell) % 2 else ARMS
+    ordered = ARMS[::-1] if ALL_CELLS.index(cell) % 2 else ARMS
+    return tuple(a for a in ordered if a in (arms or SELECTED_ARMS))
 
 
-def plan():
+SELECTED_ARMS = ARMS
+
+
+def scope(record):
+    """Restrict reporting to a gate's declared cells and arms (an extra subset gate)."""
+    global CELLS, SELECTED_ARMS
+    CELLS = tuple(record.get("cells", CELLS))
+    SELECTED_ARMS = tuple(record.get("arms", ARMS))
+
+
+def plan(cells=CELLS, arms=ARMS):
     rows = []
-    for cell in CELLS:
-        for arm in arm_order(cell):
+    for cell in cells:
+        for arm in arm_order(cell, arms):
             for rnd, idents in ((1, "ab"), (2, "ba")):
                 rows.extend({"cell": cell, "arm": arm, "round": rnd, "ident": i} for i in idents)
     return rows
@@ -167,6 +181,10 @@ def setup(args):
     if any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in gate) or len(gate) > 12:
         raise SystemExit("gate id: up to 12 lowercase letters, digits or hyphens")
     idents = {"a": artifact(args.control), "b": artifact(args.treatment)}
+    cells = tuple(args.cells.split(",")) if args.cells else CELLS
+    arms = tuple(args.arms.split(",")) if args.arms else ARMS
+    if not set(cells) <= set(ALL_CELLS) or not set(arms) <= set(ARMS):
+        raise SystemExit("unknown --cells or --arms")
     root.mkdir(parents=True, mode=0o700)
     colocated_ip = subprocess.run(
         ["docker", "inspect", SERVER, "--format", "{{.NetworkSettings.Networks.bridge.IPAddress}}"],
@@ -186,12 +204,12 @@ def setup(args):
         "created_utc": now(),
         "harness_commit": harness,
         "rule": RULE,
-        "cells": CELLS,
-        "arms": ARMS,
+        "cells": cells,
+        "arms": arms,
         "server": {"container": SERVER, "published": f"127.0.0.1:{PORT}", "colocated": f"{colocated_ip}:5432"},
         "identities": idents,
         "label": args.label or "",
-        "plan": plan(),
+        "plan": plan(cells, arms),
         "cursor": 0,
         "workers": {},
         "databases": [],
@@ -206,8 +224,8 @@ def setup(args):
         subprocess.run(["cp", "-cR", str(Path(art["dir"]) / "xdg"), str(d / "xdg")], check=True)
         for rnd in (1, 2):
             dbs = {}
-            for cell in CELLS:
-                for arm in ("postgresql", "pg-colocated"):
+            for cell in cells:
+                for arm in [a for a in ("postgresql", "pg-colocated") if a in arms]:
                     name = database(gate, ident, rnd, cell, arm)
                     names.append(name)
                     host = f"127.0.0.1:{PORT}" if arm == "postgresql" else f"{colocated_ip}:5432"
@@ -434,7 +452,7 @@ def flagged(rows):
     """The (cell, arm, phase) metrics the per-row 2-pair rule flags."""
     found = set()
     for cell in CELLS:
-        for arm in ARMS:
+        for arm in SELECTED_ARMS:
             for name, key in (*PHASES, ("e2e", None)):
                 a = [row_value(rows.get((cell, arm, "a", n)), key) for n in (1, 2)]
                 b = [row_value(rows.get((cell, arm, "b", n)), key) for n in (1, 2)]
@@ -445,8 +463,13 @@ def flagged(rows):
 
 def verdict(args):
     gate = args.gate
+    reference = None
+    if args.reference:
+        ref_record, ref_rows = collect(args.reference)
+        scope(ref_record)
+        reference = flagged(ref_rows)
     record, rows = collect(gate)
-    reference = flagged(collect(args.reference)[1]) if args.reference else None
+    scope(record)
     lines = [f"# Gate `{gate}` summary", ""]
     ids = record["identities"]
     lines += [
@@ -484,7 +507,7 @@ def verdict(args):
         "|---|---|---|---|---|---|---|---|",
     ]
     for cell in CELLS:
-        for arm in ("postgresql", "pg-colocated"):
+        for arm in [a for a in ("postgresql", "pg-colocated") if a in SELECTED_ARMS]:
             cells = []
             for name, key in PHASES:
                 values = [counts(rows.get((cell, arm, i, n)), key) for i in "ab" for n in (1, 2)]
@@ -533,7 +556,7 @@ def verdict(args):
         "| arm | phase | pairs | median paired delta ms | median relative delta | pairs slower | verdict |",
         "|---|---|---:|---:|---:|---:|---|",
     ]
-    for arm in ARMS:
+    for arm in SELECTED_ARMS:
         for name, key in PHASES:
             pairs = []
             for cell in CELLS:
@@ -647,6 +670,8 @@ def main(argv=None):
     parser.add_argument("--control")
     parser.add_argument("--treatment")
     parser.add_argument("--label")
+    parser.add_argument("--cells", help="setup: a declared subset of cells, e.g. C17 (extra gate)")
+    parser.add_argument("--arms", help="setup: a declared subset of arms, e.g. pg-colocated")
     parser.add_argument("--reference", help="verdict: an A/A gate whose per-row flags are cross-checked")
     args = parser.parse_args(argv)
     if args.action == "setup":

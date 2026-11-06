@@ -23,6 +23,11 @@ class Plan(unittest.TestCase):
         c04 = [r["arm"] for r in rows if r["cell"] == "C04"][::4]
         self.assertEqual(c04, ["pg-colocated", "postgresql", "sqlite"])
 
+    def test_subset_plan(self):
+        rows = gate.plan(("C17",), ("pg-colocated",))
+        self.assertEqual([(r["round"], r["ident"]) for r in rows], [(1, "a"), (1, "b"), (2, "b"), (2, "a")])
+        self.assertEqual({(r["cell"], r["arm"]) for r in rows}, {("C17", "pg-colocated")})
+
     def test_each_campaign_follows_matrix_order(self):
         for ident in "ab":
             for rnd in (1, 2):
