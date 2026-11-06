@@ -31,6 +31,10 @@ Verdict rule (declared before any row): for each cell/arm/phase, paired delta
 exceeds max(15% of the control median, 5 ms) AND both pairs are slower. This is
 the #118 material-regression rule with two pairs instead of three and the
 owner's 5 ms floor (under 5 ms per call is not a regression) in place of 3 ms.
+The A/A reference gate (`gate-ref`, control as both identities) flagged 22 of
+147 per-row metrics, so per-row flags are diagnostic; the timing verdict
+is the aggregate rule (AGG_RULE) per arm and phase over all cells' pairs, and
+counts stay the primary evidence.
 """
 
 import argparse
@@ -66,6 +70,10 @@ PASSWORD_FILE = STATE / "pg" / "password"
 PREPARE_TIMEOUT_S = 45
 RUN_TIMEOUT_S = 65
 RULE = "FLAG if median(T-C) > max(15% of control median, 5 ms) AND 2/2 pairs slower"
+AGG_RULE = (
+    "per arm and phase over all cells' pairs: FLAG if median relative delta > 15% AND "
+    "median delta > 5 ms AND >= 3/4 of pairs slower (12/16)"
+)
 
 
 def sha(path):
@@ -374,6 +382,22 @@ def flag(control, treatment, threshold_ms=5.0, share=0.15):
     return median_delta, f"{slower}/{len(pairs)}", verdict
 
 
+def aggregate(pairs, share=0.15, threshold_ms=5.0):
+    """All pairs of one arm/phase across cells: (delta ms, relative delta) tuples.
+
+    FLAG when the median relative delta exceeds 15%, the median absolute delta
+    exceeds 5 ms and at least three quarters of the pairs are slower (12 of 16
+    is a one-sided sign test at about p = 0.04). Declared after the A/A
+    reference gate, which showed the per-row 2-pair rule alone false-alarms.
+    """
+    deltas = [d for d, _ in pairs]
+    rel = statistics.median(r for _, r in pairs)
+    delta = statistics.median(deltas)
+    slower = sum(1 for d in deltas if d > 0)
+    hit = rel > share and delta > threshold_ms and 4 * slower >= 3 * len(pairs) and len(pairs) >= 4
+    return delta, rel, slower, "FLAG" if hit else "ok"
+
+
 def counts(receipt, phase):
     if receipt is None:
         return "—"
@@ -466,8 +490,34 @@ def verdict(args):
                 if verdict_ == "FLAG":
                     flags.append(f"{cell}/{arm}/{name}: a {[fmt(x) for x in a]} b {[fmt(x) for x in b]} median delta {delta:+.0f} ms")
             lines.append(f"| {cell} | {arm} | " + " | ".join(cells) + " |")
-    lines += ["", "## Flags", ""]
+    lines += ["", "## Per-row flags (2-pair rule; diagnostic, high false-alarm rate)", ""]
     lines += [f"- {f}" for f in flags] or ["- none"]
+    lines += [
+        "",
+        "## Aggregate per arm and phase (all cells' pairs)",
+        "",
+        f"Rule: {AGG_RULE}.",
+        "",
+        "| arm | phase | pairs | median paired delta ms | median relative delta | pairs slower | verdict |",
+        "|---|---|---:|---:|---:|---:|---|",
+    ]
+    for arm in ARMS:
+        for name, key in PHASES:
+            pairs = []
+            for cell in CELLS:
+                for n in (1, 2):
+                    ra, rb = rows.get((cell, arm, "a", n)), rows.get((cell, arm, "b", n))
+                    if not ra or not rb or ra.get("execution") != "PASS" or rb.get("execution") != "PASS":
+                        continue
+                    a, b = ms(ra, key), ms(rb, key)
+                    if a is not None and b is not None and a > 0:
+                        pairs.append((b - a, (b - a) / a))
+            if not pairs:
+                continue
+            delta, rel, slower, verdict_ = aggregate(pairs)
+            lines.append(
+                f"| {arm} | {name} | {len(pairs)} | {delta:+.1f} | {100 * rel:+.1f}% | {slower}/{len(pairs)} | {verdict_} |"
+            )
     lines += [
         "",
         "## new_stored per Commit (a r1, a r2 → b r1, b r2)",

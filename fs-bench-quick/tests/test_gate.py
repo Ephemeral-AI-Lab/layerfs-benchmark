@@ -41,6 +41,12 @@ class Rule(unittest.TestCase):
         self.assertEqual(gate.flag([10, 10], [14, 14])[2], "ok")  # +4 ms, 40%
         self.assertEqual(gate.flag([10, 10], [16, 16])[2], "FLAG")
 
+    def test_aggregate_rule(self):
+        slow = [(20.0, 0.2)] * 12 + [(-1.0, -0.01)] * 4
+        self.assertEqual(gate.aggregate(slow)[3], "FLAG")
+        self.assertEqual(gate.aggregate([(20.0, 0.2)] * 11 + [(-1.0, -0.01)] * 5)[3], "ok")  # 11/16
+        self.assertEqual(gate.aggregate([(4.0, 0.4)] * 16)[3], "ok")  # under 5 ms
+
     def test_missing_pair_is_incomplete(self):
         self.assertEqual(gate.flag([10, None], [16, 16])[2], "INCOMPLETE")
 
