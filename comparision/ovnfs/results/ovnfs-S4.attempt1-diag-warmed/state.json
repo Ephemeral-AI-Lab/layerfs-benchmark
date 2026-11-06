@@ -1,0 +1,233 @@
+{
+ "arm": "ovnfs",
+ "branches": {
+  "b01": {
+   "fork_ns": 499396708,
+   "head_sha256": "89848fce1d505af14318c147027f3613fbca01776a1999807db65c5c4faaf5a2",
+   "mount_ns": 0,
+   "steps": [
+    {
+     "apply_ns": 451250625,
+     "commit_ns": 203584209,
+     "snapshot": "s1"
+    }
+   ],
+   "unmount_ns": 0,
+   "verification": "PASS",
+   "verify_open_ns": 121070166,
+   "verify_read_ns": 47075827541
+  }
+ },
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 1220832792
+  },
+  {
+   "exit": 0,
+   "label": "mkdir_src",
+   "seq": 2,
+   "wall_ns": 160177917
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 3,
+   "wall_ns": 2871933791
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 4,
+   "wall_ns": 286753458
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 5,
+   "wall_ns": 102544084
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 848085541
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 7,
+   "wall_ns": 213977750
+  },
+  {
+   "exit": 0,
+   "label": "new_b01",
+   "seq": 8,
+   "wall_ns": 499396708
+  },
+  {
+   "exit": 0,
+   "label": "control_exec_true",
+   "seq": 9,
+   "wall_ns": 117515458
+  },
+  {
+   "exit": 0,
+   "label": "exec_b01_1",
+   "seq": 10,
+   "wall_ns": 451250625
+  },
+  {
+   "exit": 0,
+   "label": "commit_b01_1",
+   "seq": 11,
+   "wall_ns": 203584209
+  },
+  {
+   "exit": 0,
+   "label": "vnew_b01",
+   "seq": 12,
+   "wall_ns": 121070166
+  },
+  {
+   "exit": 0,
+   "label": "manifest_b01",
+   "seq": 13,
+   "wall_ns": 47075827541
+  },
+  {
+   "exit": 0,
+   "label": "vrm_b01",
+   "seq": 14,
+   "wall_ns": 184709208
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_b01",
+   "seq": 15,
+   "wall_ns": 393228125
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 16,
+   "wall_ns": 290769875
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 17,
+   "wall_ns": 208372375
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 18,
+   "wall_ns": 200409334
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 19,
+   "wall_ns": 454297083
+  }
+ ],
+ "case": "S4",
+ "control_ns": 117515458,
+ "daemon_start_ns": 286753458,
+ "import_ns": 848085541,
+ "import_reply": {
+  "capture": {
+   "bytes": 65020822,
+   "cache": 0,
+   "files": 9415,
+   "hashed": 9404,
+   "hashed_bytes": 65020523,
+   "hidden": 0,
+   "local": 0,
+   "repos": null,
+   "root": "/data/src",
+   "seconds": 0.60487075
+  },
+  "checkout": {
+   "base": "b_b3d09f26deb8",
+   "created": "2026-11-06T05:25:55.644713632Z",
+   "dirty": false,
+   "git": false,
+   "name": "main",
+   "path": "/root/checkouts/main",
+   "source": "/data/src"
+  },
+  "warnings": []
+ },
+ "owned": {
+  "container": "fsh-cmp-ov-s4",
+  "volume": "fsh-cmp-ov-s4"
+ },
+ "owned_released": true,
+ "probes": [
+  {
+   "allocated_bytes": 1122304,
+   "apparent_bytes": 1098315,
+   "label": "floor",
+   "parts": {
+    "bases": 4096,
+    "git": 4096,
+    "layers": 4096,
+    "snapshots": 4096,
+    "sources": 4096,
+    "store": 1064960,
+    "uppers": 4096
+   },
+   "total_bytes": 1122304
+  },
+  {
+   "allocated_bytes": 98168832,
+   "apparent_bytes": 69120491,
+   "label": "import",
+   "parts": {
+    "bases": 1052672,
+    "git": 4096,
+    "layers": 4096,
+    "snapshots": 4096,
+    "sources": 1777664,
+    "store": 95281152,
+    "uppers": 12288
+   },
+   "total_bytes": 98168832
+  },
+  {
+   "allocated_bytes": 100487168,
+   "apparent_bytes": 71366059,
+   "label": "after_b01",
+   "parts": {
+    "bases": 2101248,
+    "git": 4096,
+    "layers": 90112,
+    "snapshots": 4096,
+    "sources": 1777664,
+    "store": 95412224,
+    "uppers": 20480
+   },
+   "total_bytes": 100487168
+  },
+  {
+   "allocated_bytes": 102580224,
+   "apparent_bytes": 73457771,
+   "label": "final",
+   "parts": {
+    "bases": 2101248,
+    "git": 4096,
+    "layers": 90112,
+    "snapshots": 4096,
+    "sources": 1777664,
+    "store": 95412224,
+    "uppers": 20480
+   },
+   "total_bytes": 102580224
+  }
+ ],
+ "status": "closed"
+}

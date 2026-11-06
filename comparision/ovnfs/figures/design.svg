@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-labelledby="t d">
+<title id="t">Where LayerFS and ovnfs put a commit's bytes</title>
+<desc id="d">LayerFS writes into a per-mount SQLite overlay; Commit splits changed files into chunks, stores deltas and compressed packs in one SQLite Store. ovnfs copies whole files up into a checkout directory; a snapshot renames that directory into a frozen layer and hashes every changed file into an uncompressed whole-file object store; each new checkout also gets its own base index.</desc>
+<style>
+  .bg{fill:#fcfcfb} .box{fill:#f3f2ef} .s1{fill:#2a78d6} .s2{fill:#eb6834}
+  .arrow{stroke:#8a8983;stroke-width:1.5;fill:none} .head{fill:#8a8983}
+  .link{stroke:#b5b4ad;stroke-width:1.5;fill:none;stroke-dasharray:0}
+  .res{fill:none;stroke:#c3c2b7;stroke-width:1}
+  text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+  .h1{font-size:19px;font-weight:600;fill:#0b0b0b} .sub{font-size:13px;fill:#52514e}
+  .col{font-size:15px;font-weight:600;fill:#0b0b0b}
+  .bt{font-size:13.5px;font-weight:600;fill:#0b0b0b} .bd{font-size:12.5px;fill:#52514e}
+  .al{font-size:12px;fill:#52514e;font-style:italic} .rt{font-size:13px;fill:#0b0b0b}
+  .rv{font-size:13px;font-weight:600;fill:#0b0b0b} .foot{font-size:12px;fill:#7a7974}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#1a1a19} .box{fill:#252523} .s1{fill:#3987e5} .s2{fill:#d95926}
+    .arrow{stroke:#8a8983} .head{fill:#8a8983} .link{stroke:#55544f} .res{stroke:#55544f}
+    .h1,.col,.bt,.rt,.rv{fill:#f0efec} .sub,.bd,.al{fill:#c3c2b7} .foot{fill:#9c9b93}
+  }
+</style>
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path class="head" d="M0,0 L10,5 L0,10 Z"/>
+  </marker>
+</defs>
+<rect class="bg" x="0" y="0" width="960" height="600"/>
+<text class="h1" x="20" y="34">Where each system puts a commit's bytes</text>
+<text class="sub" x="20" y="56">Both call it copy-on-write. LayerFS shares sub-file content between versions; ovnfs copies whole files.</text>
+
+<!-- LayerFS column -->
+<rect class="s1" x="20" y="82" width="12" height="12" rx="3"/>
+<text class="col" x="40" y="93">LayerFS v2.0.0</text>
+
+<rect class="box" x="20" y="110" width="440" height="64" rx="6"/>
+<rect class="s1" x="20" y="110" width="4" height="64" rx="2"/>
+<text class="bt" x="38" y="134">Workspace overlay</text>
+<text class="bd" x="38" y="154">a per-mount SQLite file in the daemon; writes land here,</text>
+<text class="bd" x="38" y="168">never in committed history</text>
+
+<path class="arrow" d="M240,176 V204" marker-end="url(#ah)"/>
+<text class="al" x="252" y="195">Commit</text>
+
+<rect class="box" x="20" y="208" width="440" height="64" rx="6"/>
+<rect class="s1" x="20" y="208" width="4" height="64" rx="2"/>
+<text class="bt" x="38" y="232">Canonical objects</text>
+<text class="bd" x="38" y="252">unchanged files and directories are reused by hash;</text>
+<text class="bd" x="38" y="266">changed files are cut into content-defined chunks</text>
+
+<path class="arrow" d="M240,274 V302" marker-end="url(#ah)"/>
+
+<rect class="box" x="20" y="306" width="440" height="64" rx="6"/>
+<rect class="s1" x="20" y="306" width="4" height="64" rx="2"/>
+<text class="bt" x="38" y="330">Dedup + deltas</text>
+<text class="bd" x="38" y="350">only new chunks are kept, stored as deltas against</text>
+<text class="bd" x="38" y="364">the previous version of the file</text>
+
+<path class="arrow" d="M240,372 V400" marker-end="url(#ah)"/>
+
+<rect class="box" x="20" y="404" width="440" height="64" rx="6"/>
+<rect class="s1" x="20" y="404" width="4" height="64" rx="2"/>
+<text class="bt" x="38" y="428">One SQLite Store</text>
+<text class="bd" x="38" y="448">compressed packs; every Commit, Branch and fork in the</text>
+<text class="bd" x="38" y="462">Store shares the same objects</text>
+
+<rect class="res" x="20" y="492" width="440" height="60" rx="6"/>
+<text class="rt" x="38" y="515">Measured: the 65 MB base stores as <tspan class="rv">24.2 MB</tspan></text>
+<text class="rt" x="38" y="537">40 Commits add <tspan class="rv">144 KB</tspan> · a new Branch ≈ <tspan class="rv">6 KB</tspan></text>
+
+<!-- ovnfs column -->
+<rect class="s2" x="500" y="82" width="12" height="12" rx="3"/>
+<text class="col" x="520" y="93">ovnfs</text>
+
+<rect class="box" x="500" y="110" width="440" height="64" rx="6"/>
+<rect class="s2" x="500" y="110" width="4" height="64" rx="2"/>
+<text class="bt" x="518" y="134">Checkout upper directory</text>
+<text class="bd" x="518" y="154">the first write copies the whole file up (held in memory</text>
+<text class="bd" x="518" y="168">up to 1 MiB, then a host file); edits change that copy</text>
+
+<path class="arrow" d="M720,176 V204" marker-end="url(#ah)"/>
+<text class="al" x="732" y="195">snap</text>
+
+<rect class="box" x="500" y="208" width="440" height="64" rx="6"/>
+<rect class="s2" x="500" y="208" width="4" height="64" rx="2"/>
+<text class="bt" x="518" y="232">Frozen layer</text>
+<text class="bd" x="518" y="252">the upper is renamed into an immutable layer: a full</text>
+<text class="bd" x="518" y="266">copy of every file changed since the last snapshot</text>
+
+<path class="arrow" d="M720,274 V302" marker-end="url(#ah)"/>
+<text class="al" x="732" y="293">background hash</text>
+
+<rect class="box" x="500" y="306" width="440" height="64" rx="6"/>
+<rect class="s2" x="500" y="306" width="4" height="64" rx="2"/>
+<text class="bt" x="518" y="330">store/objects/&lt;sha1&gt;</text>
+<text class="bd" x="518" y="350">one uncompressed file per distinct file version;</text>
+<text class="bd" x="518" y="364">only byte-identical whole files are shared</text>
+
+<path class="arrow" d="M720,372 V400" marker-end="url(#ah)"/>
+<text class="al" x="732" y="391">plus, for every ovnfs new</text>
+
+<rect class="box" x="500" y="404" width="440" height="64" rx="6"/>
+<rect class="s2" x="500" y="404" width="4" height="64" rx="2"/>
+<text class="bt" x="518" y="428">Base per checkout</text>
+<text class="bd" x="518" y="448">reads fall through to the live source folder; each new</text>
+<text class="bd" x="518" y="462">checkout writes its own capture index (~1 MB here)</text>
+
+<rect class="res" x="500" y="492" width="440" height="60" rx="6"/>
+<text class="rt" x="518" y="515">Measured: the 65 MB base stores as <tspan class="rv">97.0 MB</tspan> on ext4</text>
+<text class="rt" x="518" y="537">40 snapshots add <tspan class="rv">8.5 MB</tspan> · a new checkout ≈ <tspan class="rv">2.1 MB</tspan></text>
+
+<text class="foot" x="20" y="580">Per-commit figures are logical bytes (LayerFS Σ new_stored; ovnfs apparent growth). On btrfs/XFS ovnfs clones only store files over 1 MiB.</text>
+</svg>
