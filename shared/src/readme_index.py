@@ -5,14 +5,18 @@ Each benchmark is a top-level folder whose README.md starts with
     # <name> — <what it checks>
     > group: <filesystem|transfer> · measures: <value>, <value>
 
-Reports are `result/<date>/<benchmark>/<full-layerfs-sha>/report.md`; a
-report's outcome is its first bold sentence. This script rewrites the
+Reports are `result/<date>/<benchmark>/<full-layerfs-sha>/report.md`, or
+`…/<full-layerfs-sha>/<campaign>/report.md` when one build has several
+campaigns; a report's outcome is its first bold sentence. This script rewrites the
 generated blocks only:
 
 - root README.md, between `<!-- index:begin -->` and `<!-- index:end -->`:
   one table per group, each benchmark with its latest run;
 - each benchmark README.md, between `<!-- runs:begin -->` and
   `<!-- runs:end -->`: every run, newest first.
+
+Runs of one date are ordered by the commit that added their report (a
+report not committed yet is newest); without git they keep path order.
 
 A report whose outcome starts with "Superseded" is listed but never latest.
 
@@ -22,6 +26,7 @@ A report whose outcome starts with "Superseded" is listed but never latest.
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -64,23 +69,61 @@ def benchmarks(root):
 
 
 def outcome(report):
-    """The report's first bold sentence, links reduced to their text."""
-    match = BOLD.search(report.read_text())
+    """The report's first bold sentence, links reduced to their text.
+
+    A runner's bare verdict ("Diagnostic terminal: …") keeps the rest of its
+    paragraph (row counts, execution outcomes, cleanup), so an INCOMPLETE
+    cleanup is not read as failed rows.
+    """
+    text = report.read_text()
+    match = BOLD.search(text)
     if not match:
         raise IndexProblem(f"{report}: no bold outcome sentence")
-    text = LINK.sub(r"\1", " ".join(match.group(1).split()))
-    return text.rstrip(".")
+    found = match.group(1)
+    if found.startswith("Diagnostic terminal:"):
+        rest = text[match.end():].split("\n\n", 1)[0].replace("**", "")
+        found = f"{found} {rest}"
+    return LINK.sub(r"\1", " ".join(found.split())).rstrip(".")
+
+
+def added(root):
+    """`{path: unix time}` of the commit that first added each report; empty without git."""
+    try:
+        log = subprocess.run(
+            ["git", "-C", str(root), "log", "--diff-filter=A", "--format=@%ct", "--name-only", "--", "result"],
+            capture_output=True, text=True, timeout=60, check=True,
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    times, when = {}, 0
+    for line in log.splitlines():
+        if line.startswith("@"):
+            when = int(line[1:])
+        elif line.strip():
+            times[line.strip()] = when  # newest first, so the last one seen is the first add
+    return times
 
 
 def runs(root):
-    """`{benchmark: [run, …]}` newest first; a run is `{date, sha, outcome, path}`."""
-    found = {}
-    for report in root.glob("result/*/*/*/report.md"):
-        date, name, sha = report.parts[-4:-1]
-        found.setdefault(name, []).append({"date": date, "sha": sha, "outcome": outcome(report), "path": report.relative_to(root)})
+    """`{benchmark: [run, …]}` newest first; a run is `{date, sha, campaign, outcome, path}`."""
+    found, times = {}, added(root)
+    reports = sorted([*root.glob("result/*/*/*/report.md"), *root.glob("result/*/*/*/*/report.md")])
+    for report in reports:
+        path = report.relative_to(root)
+        date, name, sha = path.parts[1:4]
+        campaign = path.parts[4] if len(path.parts) == 6 else None
+        found.setdefault(name, []).append({
+            "date": date, "sha": sha, "campaign": campaign, "outcome": outcome(report), "path": path,
+            "added": times.get(path.as_posix(), float("inf")) if times else 0,
+        })
     for items in found.values():
-        items.sort(key=lambda r: (r["date"], not r["outcome"].startswith("Superseded")), reverse=True)
+        items.sort(key=lambda r: (r["date"], not r["outcome"].startswith("Superseded"), r["added"]), reverse=True)
     return found
+
+
+def commit(run, width):
+    label = f"`{run['sha'][:width]}`"
+    return f"{label} ({run['campaign']})" if run["campaign"] else label
 
 
 def latest(items):
@@ -97,7 +140,7 @@ def root_block(found, all_runs):
         out += [f"## {title}", "", about, "", "| Benchmark | Measures | What it checks | Latest run |", "| --- | --- | --- | --- |"]
         for name in names:
             b, last = found[name], latest(all_runs.get(name, []))
-            run = f"{last['date']} · `{last['sha'][:8]}` · {last['outcome']} · [report]({last['path']})" if last else "none yet"
+            run = f"{last['date']} · {commit(last, 8)} · {last['outcome']} · [report]({last['path']})" if last else "none yet"
             out.append(f"| [{name}]({name}/) | {', '.join(b['measures'])} | {b['checks']} | {run} |")
         out.append("")
     return "\n".join(out).rstrip("\n")
@@ -108,7 +151,7 @@ def runs_block(items):
         return "No published runs yet."
     out = ["| Date | LayerFS commit | Outcome | Report |", "| --- | --- | --- | --- |"]
     for r in items:
-        out.append(f"| {r['date']} | `{r['sha'][:10]}` | {r['outcome']} | [report](../{r['path']}) |")
+        out.append(f"| {r['date']} | {commit(r, 10)} | {r['outcome']} | [report](../{r['path']}) |")
     return "\n".join(out)
 
 

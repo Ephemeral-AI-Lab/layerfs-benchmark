@@ -66,7 +66,9 @@ speed claims. The full upstream suite is not being qualified.
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS | [report](../result/2026-11-06/pjdfstest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+| 2026-11-06 | `76a32a9a10` (pgr2-six) | Diagnostic terminal: INCOMPLETE. 36 registered rows; execution {'PASS': 36}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/pjdfstest/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-six/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-six) | Diagnostic terminal: INCOMPLETE. 36 registered rows; execution {'PASS': 36}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/pjdfstest/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-six/report.md) |
+| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS. 32 registered rows; execution {'PASS': 32}. Final infrastructure cleanup: COMPLETE | [report](../result/2026-11-06/pjdfstest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->
 
 pjdfstest v1 (retired): 32 NOT_RUN; replaced by the unprivileged subset v2 run above.

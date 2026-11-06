@@ -34,6 +34,8 @@ scoping. Times and sizes in reports are diagnostic.
 | `cleanup` | objects, pieces, incomplete uploads, local staging | inventoried; MinIO incomplete uploads aborted |
 | `perms` | MinIO scoped users per policy; a revoked key | the calls each policy allows; revoked key refused, secret never shown; R2 NOT_RUN |
 | `usage` | bucket and run-prefix bytes, incomplete uploads | report only |
+| `v1-restore` (`schema_v2.py`) | a schema v1 CLI backs up a Store with history; a schema v2 CLI restores it into a fresh home | refused at the open check naming `tools/store_blocks.py migrate`; no Store, no staging; other Stores unchanged |
+| `v1-migrate` (`schema_v2.py`) | `store_blocks.py migrate` of that closed v1 Store, then roundtrip and isolated checks with the v2 CLI | equals the v1 source; writable |
 
 ## Setup
 
@@ -54,6 +56,15 @@ python3 run.py --provider minio|r2 --case NAME --run-id ID --env-file PRIVATE.en
   [--prefix P] [--mib N] [--phase upload|download] [--part-size 16M] [--timeout 110]
 ```
 
+The schema v2 cases (layerfs-project #91) take two CLIs and the v2 commit's
+`tools/` and `engine/crates/layerfs-persistence/sql/` (e.g. from `git archive`),
+MinIO only, `v1-restore` before `v1-migrate`:
+
+```bash
+python3 schema_v2.py --case v1-restore|v1-migrate --run-id ID --env-file PRIVATE.env \
+  --cli-v1 DIR --cli-v2 DIR --tree-v2 DIR
+```
+
 Objects go under `bv-<run-id>/<prefix>/`; `isolated` defaults to the
 `roundtrip` prefix. Each run gets its own Docker volume, and private key
 files are removed when a case ends. Receipts and verdicts go to
@@ -66,11 +77,15 @@ files are removed when a case ends. Receipts and verdicts go to
   incomplete uploads in `cleanup`.
 - **Tools:** `mc` comes from the pinned MinIO image and runs as root so it
   can write the scratch volume; `find` runs in the build image.
+- **Proxy:** Docker Desktop may inject an HTTP proxy into every container and
+  override env-file values for it; MinIO cases clear it with explicit `-e`
+  flags so `mc` and the CLI reach the MinIO container directly.
 
 ## Past runs
 
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-06 | `7691ac20b0` | Outcome: PASS on MinIO, 51 of 51 checks: schema v2 Stores round-trip, and a schema v1 backup is refused at open until migrated | [report](../result/2026-11-06/backup-verify/7691ac20b0a8c8b741dd2b701e7aa77b63aaa8a3/report.md) |
 | 2026-11-06 | `c51d04b942` | Outcome: PASS on both providers after three product fixes | [report](../result/2026-11-06/backup-verify/c51d04b9428c4d56df690223ced1e3fe20f73dc2/report.md) |
 <!-- runs:end -->
