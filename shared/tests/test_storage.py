@@ -235,6 +235,8 @@ class DriverTests(unittest.TestCase):
         self.assertEqual(summary["commits"], 2)
         self.assertEqual(summary["net_allocated_bytes"], 0)
         # Every command had a deadline of at most 120 s and a unique phase label.
+        self.assertEqual([r["stdout"] for r in self.row["exec_results"]], ["ok", "ok", "ok"])  # two steps + verify
+        self.assertEqual(self.row["exec_results"][0]["exit_code"], 0)
         phases = [c["phase"] for c in self.row["commands"]]
         self.assertEqual(len(phases), len(set(phases)))
 

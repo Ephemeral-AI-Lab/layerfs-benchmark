@@ -385,8 +385,21 @@ class Driver:
         self._own("workspaces", ws, {"live": True, "branch": branch, "sandbox": sandbox})
         return ws
 
-    def exec(self, ws, command, timeout_s=None, phase="exec"):
-        return self.call(phase, ["workspace", "exec", ws, command], timeout_s)
+    def exec(self, ws, command, timeout_s=None, phase="exec", label=None, keep_stdout=8000):
+        """One Exec; its result is also kept in ``row["exec_results"]``."""
+        value = self.call(phase, ["workspace", "exec", ws, command], timeout_s)
+        self.row.setdefault("exec_results", []).append(
+            {
+                "label": label,
+                "phase": f"{self.row['sequence']:05d}_{phase}",
+                "ws": ws,
+                "exit_code": value.get("exit_code"),
+                "stdout": (value.get("stdout") or "")[:keep_stdout],
+                "stderr": (value.get("stderr") or "")[:keep_stdout],
+            }
+        )
+        self.campaign.persist()
+        return value
 
     def commit(self, ws, timeout_s=None, allow_up_to_date=False, label=None):
         value = self.call("commit", ["workspace", "commit", ws], timeout_s)
@@ -609,7 +622,7 @@ def run_step(driver, step, workspaces, machine):
     elif op == "mount":
         workspaces[step["as"]] = driver.mount(step["sandbox"], step["branch"], step["name"], timeout)
     elif op == "exec":
-        driver.exec(workspaces[step["ws"]], step["command"], timeout)
+        driver.exec(workspaces[step["ws"]], step["command"], timeout, label=step.get("label"))
     elif op == "commit":
         driver.commit(workspaces[step["ws"]], timeout, step.get("allow_up_to_date", False), step.get("label"))
     elif op == "unmount":
