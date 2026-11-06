@@ -143,6 +143,13 @@ class Merge(unittest.TestCase):
         self.assertEqual(state["rows"]["B01/docker/sqlite"]["execution"], "PASS")
         self.assertEqual([c["rows"] for c in state["campaigns"]], [["Docker SQLite"], ["native SQLite"]])
         self.assertEqual(config["native_tools"], {"k": 1})
+        c = {"source_sha": "a" * 40, "rows": {"B01/native/sqlite": {"execution": "PASS", "budget_exception": {"max_s": 60, "approved_by": "owner", "reason": "r"}}}}
+        state, _ = report.merge([a, b, c], [{"campaign_id": "x"}, {"campaign_id": "y"}, {"campaign_id": "z"}])
+        self.assertEqual(state["rows"]["B01/native/sqlite"]["execution"], "PASS")
+        self.assertEqual([(o["id"], o["execution"], o["campaign_id"]) for o in state["superseded"]], [("B01/native/sqlite", "FAIL", "y")])
+        text = report.render(state, {"cleanup": "COMPLETE"}, {})
+        self.assertIn("Superseded attempt: native SQLite in `y` was FAIL", text)
+        self.assertIn("ran under a 60 s budget", text)
         with self.assertRaises(SystemExit):
             report.merge([a, {"source_sha": "b" * 40, "rows": {}}], [{"campaign_id": "x"}, {"campaign_id": "y"}])
 

@@ -570,8 +570,19 @@ class Campaign:
         started = time.monotonic_ns()
         proof_started = None
         budget = self.config.get("performance_budget_s", 15)
-        if not 0 < budget <= 25:
-            raise Failure("performance budget must be positive and at most 25 seconds")
+        # An owner-approved exception may raise one machine's budget past 25 s,
+        # never past the 2-minute command ceiling. Record it on the row.
+        exception = self.config.get("budget_exceptions", {}).get(row["machine"])
+        ceiling = 25
+        if exception:
+            if not exception.get("approved_by") or not exception.get("reason"):
+                raise Failure("budget exception needs approved_by and reason")
+            ceiling = min(exception.get("max_s", 25), 110)
+            budget = exception.get("max_s", budget)
+            row["budget_exception"] = exception
+        if not 0 < budget <= ceiling:
+            raise Failure(f"performance budget must be positive and at most {ceiling} seconds")
+        row["performance_budget_s"] = budget
         deadline = measure.Deadline.after(budget)
         try:
             self.call(

@@ -156,7 +156,21 @@ def render(state, cleanup, config):
             reasons.setdefault(reason, []).append(f"{TITLES[machine]} {DATABASES[backend]}")
     for reason, names in reasons.items():
         lines.append(f"- {', '.join(names)}: {safe(reason)}")
-    if reasons:
+    for (machine, backend), row in rows.items():
+        if row.get("budget_exception"):
+            exception = row["budget_exception"]
+            lines.append(
+                f"- {TITLES[machine]} {DATABASES[backend]} ran under a {exception['max_s']} s budget "
+                f"({safe(exception['approved_by'])}: {safe(exception['reason'])}); other rows use 25 s."
+            )
+    for old in state.get("superseded", []):
+        machine, backend = old["id"].split("/")[1:]
+        lines.append(
+            f"- Superseded attempt: {TITLES[machine]} {DATABASES[backend]} in `{old.get('campaign_id')}` "
+            f"was {old.get('execution')} (Exec {ms(old.get('timings_ns', {}).get('exec'))} ms, "
+            f"budget {old.get('performance_budget_s', 25)} s); it is retained, not relabeled."
+        )
+    if reasons or state.get("superseded") or any(r.get("budget_exception") for r in rows.values()):
         lines.append("")
     for backend in BACKENDS:
         times = {machine: scenario_ns(rows[(machine, backend)]) for machine in DISPLAY}
@@ -184,7 +198,10 @@ def render(state, cleanup, config):
                 "| " + " | ".join([label, cache, *(ms(v) for v in values), *ratios]) + " |"
             )
         lines.append("")
-    passing = [(m, b, r) for (m, b), r in rows.items() if r.get("execution") == "PASS"]
+    passing = [
+        (m, b, r) for (m, b), r in rows.items()
+        if r.get("execution") == "PASS" and r.get("tool_metrics")
+    ]
     if passing:
         sums = sorted((r["tool_metrics"]["sum_ns"], m, b) for m, b, r in passing)
         e2e = max(r.get("performance_invocation_elapsed_ns") or 0 for _, _, r in passing)
@@ -195,7 +212,7 @@ def render(state, cleanup, config):
             f"- Sum of scenario times ranged from {ms(sums[0][0])} ms ({TITLES[sums[0][1]]} "
             f"{DATABASES[sums[0][2]]}) to {ms(sums[-1][0])} ms ({TITLES[sums[-1][1]]} "
             f"{DATABASES[sums[-1][2]]}).",
-            f"- Longest complete row: {ms(e2e)} ms against the declared 25,000 ms budget.",
+            f"- Longest complete row: {ms(e2e)} ms.",
             "- LayerFS Commit results: "
             + ", ".join(f"{n} {k}" for k, n in sorted(kinds.items()))
             + "; the script removes every directory it creates, so nothing new is committed.",
@@ -207,7 +224,7 @@ def render(state, cleanup, config):
             stat = scenario_ns(r).get("stat 1000 files")
             base = scenario_ns(docker[b]).get("stat 1000 files")
             lines.append(
-                f"- Native macOS is the slowest machine and runs at the edge of the 25 s budget: "
+                f"- Native macOS is the slowest machine: "
                 f"`stat 1000 files` took {ms(stat)} ms against Docker's {ms(base)} ms on "
                 f"{DATABASES[b]}. The 1,000-step loops launch one macOS process per file on an NFS "
                 "mount; the 64 MiB rows are close to Docker."
@@ -236,12 +253,15 @@ def merge(states, configs):
     """Rows from several campaigns at one product commit; an executed row wins over NOT_RUN."""
     if len({s["source_sha"] for s in states}) != 1:
         raise SystemExit("campaigns measured different product commits")
-    merged = {"source_sha": states[0]["source_sha"], "rows": {}, "campaigns": []}
+    merged = {"source_sha": states[0]["source_sha"], "rows": {}, "campaigns": [], "superseded": []}
     for state, config in zip(states, configs):
         executed = []
         for key, row in state.get("rows", {}).items():
+            previous = merged["rows"].get(key)
+            if previous and previous.get("execution") not in (None, "NOT_RUN") and row.get("execution") != "NOT_RUN":
+                merged["superseded"].append({**previous, "id": key})
             if row.get("execution") != "NOT_RUN" or key not in merged["rows"]:
-                merged["rows"][key] = row
+                merged["rows"][key] = {**row, "campaign_id": config["campaign_id"]}
             if row.get("execution") != "NOT_RUN":
                 machine, backend = key.split("/")[1:]
                 executed.append(f"{TITLES[machine]} {DATABASES[backend]}")
