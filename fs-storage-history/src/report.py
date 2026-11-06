@@ -414,7 +414,7 @@ def main(argv=None):
             ["Edit model", f"`{model.MODEL_VERSION}`, `src/model.py` SHA-256 `{a['model_sha256']}`"],
             ["Workload", f"`{cases.WORKLOAD_VERSION}`"],
             ["Machine", "Docker only (built-in `docker` machine, private home, `LAYERFS_CONSTRUCTION_WORKERS=1`)"],
-            ["PostgreSQL", f"own container `fsh-pg`, {config['postgresql']['server_image']}, 1 CPU, 512 MiB, one pre-created empty database per Store, `synchronous_commit=off`"],
+            ["PostgreSQL", f"own container `{config['postgresql'].get('server_container', 'fsh-pg')}`, {config['postgresql']['server_image']}, 1 CPU, 512 MiB, one pre-created empty database per Store, `synchronous_commit=off`"],
             ["Base tree", f"DSH checkpoint {cases.BASE_CHECKPOINT}: commit `{cases.BASE_COMMIT}`, tree `{cases.BASE_TREE}`, "
                           f"{cases.BASE_FILES:,} files + {cases.BASE_LINKS} symlinks, {cases.BASE_BYTES:,} B; "
                           f"manifest `{cases.BASE_MANIFEST_SHA256}`; seed pack `{cases.SEED_PACK_SHA256}`"],

@@ -75,4 +75,5 @@ Tests (no LayerFS):
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
 | 2026-11-06 | `6d820c756b` | 16 of 16 fs-storage-micro rows PASS with verified final state; repeat M03/docker/postgresql/r2: page-granular Store bytes identical in this repeat, total +0 B, per-Commit new_stored ±25 B; repeat M03/docker/sqlite/r2: page-granular Store bytes identical in this repeat, total -8,240 B, per-Commit new_stored ±15 B; final cleanup COMPLETE | [report](../result/2026-11-06/fs-storage-micro/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
+| 2026-11-06 | `b4fa173e40` | 16 of 16 fs-storage-micro rows PASS with verified final state; repeat M03/docker/postgresql/r2: page-granular Store bytes identical in this repeat, total +0 B, per-Commit new_stored ±16 B; repeat M03/docker/sqlite/r2: Store pages DIFFER, total -98,800 B, per-Commit new_stored ±20 B; final cleanup COMPLETE | [report](../result/2026-11-06/fs-storage-micro/b4fa173e401fc87af6610c151225096288e4ba57/report.md) |
 <!-- runs:end -->

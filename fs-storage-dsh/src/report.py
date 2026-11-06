@@ -2,11 +2,14 @@
 """Publish the fs-storage-dsh report from retained campaign state.
 
     report.py --cache C [--cache C2 ...] [--repeat-cache R] [--superseded C:ROW ...]
-              --references <dir> --environment E --cleanup final-cleanup.json --output report.md
+              --references <dir> --environment E --cleanup final-cleanup.json [--notes notes.md]
+              --output report.md
 
 Rows are taken from every `--cache` campaign (the newest attempt of each row
 wins; earlier attempts listed with `--superseded` are reported as superseded).
-`--repeat-cache` holds the determinism repeat of D10 SQLite.
+`--repeat-cache` holds the determinism repeat of D10 SQLite. `--notes` is
+optional hand-written Markdown (e.g. a before/after against an earlier report),
+inserted after the generated observations.
 """
 
 import argparse
@@ -88,6 +91,7 @@ def main(argv=None):
     parser.add_argument("--references", required=True)
     parser.add_argument("--environment", required=True)
     parser.add_argument("--cleanup", required=True)
+    parser.add_argument("--notes", help="optional Markdown inserted after the generated observations")
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
 
@@ -278,6 +282,8 @@ def main(argv=None):
     ]
     lines += ["", "## Observations", ""]
     lines += observations(table_rows, refs)
+    if args.notes:
+        lines += ["", *Path(args.notes).read_text().strip().splitlines()]
     lines += ["", "## Limits", ""]
     lines += [
         "- One sample per row on Docker Desktop (arm64 Mac). Byte counts, not speed; no other machine is run.",
