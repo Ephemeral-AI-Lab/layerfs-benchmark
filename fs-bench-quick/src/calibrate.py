@@ -89,7 +89,7 @@ def host(settings, name):
     return {"location": "host", "route": name, "target": route, "results": results}
 
 
-def guest(run, config, cache, machine):
+def guest(run, config, cache, machine, attempt=1):
     settings = config["calibration"]
     routes = settings["guest_routes"][machine]
     campaign = run.Campaign(config, Path(cache) / "calibration")
@@ -98,7 +98,9 @@ def guest(run, config, cache, machine):
             "cell": "RTT",
             "machine": machine,
             "backend": "sqlite",
-            "id": f"RTT/{machine}/sqlite",
+            # A new attempt (after a known, effect-free failure) is a new row.
+            "id": f"RTT/{machine}/sqlite"
+            + (f"-attempt{attempt}" if attempt > 1 else ""),
         }
     )
     if row["preparation"] != "NOT_RUN":
@@ -181,6 +183,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--route")
     parser.add_argument("--machine")
+    parser.add_argument("--attempt", type=int, default=1)
     args = parser.parse_args(argv)
     config = json.loads(Path(args.environment).read_text())
     if args.output.exists():
@@ -191,7 +194,7 @@ def main(argv=None):
     else:
         run = load_runner()
         with run.campaign_lock(Path(args.cache) / "calibration"):
-            result = guest(run, config, args.cache, args.machine)
+            result = guest(run, config, args.cache, args.machine, args.attempt)
     result.update(
         started_unix_ns=started,
         finished_unix_ns=time.time_ns(),

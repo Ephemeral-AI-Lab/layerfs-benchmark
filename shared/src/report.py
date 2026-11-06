@@ -40,9 +40,33 @@ def ratio(row, baseline, phase):
     )
 
 
+MEASURED_CALLS = (
+    "sandbox_create",
+    "measured_mount",
+    "exec",
+    "commit",
+    "followup_exec",
+    "commit_2",
+    "unmount",
+    "sandbox_close",
+    "store_remove",
+    "store_disconnect",
+)
+
+
+def phase_sum(row):
+    """Sum of the measured lifecycle CLI calls of a passing row (no harness gaps)."""
+    timings = row.get("timings_ns", {})
+    if row.get("execution") != "PASS" or "sandbox_create" not in timings:
+        return None
+    return sum(timings[key] for key in MEASURED_CALLS if isinstance(timings.get(key), int))
+
+
 def elapsed(row, phase):
     """Phase wall ns; End-to-end excludes declared observer control overhead."""
     if phase == "end_to_end":
+        if "end_to_end_ns" in row:
+            return row["end_to_end_ns"]
         total = row.get("performance_invocation_elapsed_ns")
         if isinstance(total, int):
             return total - row.get("control_overhead_ns", 0)
@@ -306,6 +330,9 @@ def render(suite, state, cleanup, config):
         item["id"]: {**item, **state.get("rows", {}).get(item["id"], {})}
         for item in expected
     }
+    if config.get("end_to_end") == "phase_sum":
+        for row in rows.values():
+            row["end_to_end_ns"] = phase_sum(row)
     counts = Counter(row.get("execution", "NOT_RUN") for row in rows.values())
     complete = all(
         row.get("execution") == "PASS"

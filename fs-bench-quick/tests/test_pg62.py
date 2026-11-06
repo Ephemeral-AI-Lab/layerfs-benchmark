@@ -328,6 +328,11 @@ class ClientAndReportTests(unittest.TestCase):
         self.assertIn("| Machine | Database | Commit | Statements | Connections |", text)
         self.assertIn("| docker | pg-colocated | 50 / 1 | 50 | 1 | 0.0 |", text)
         self.assertIn("| 0.210 | 0.250 |", text)
+        summed = report.render(
+            "fs-bench-quick", state, {"cleanup": "COMPLETE"}, {"end_to_end": "phase_sum"}
+        )
+        # 300 + 50 + 10 + 20 + 15 + 30 + 40 + 5 ms of measured calls, no gaps.
+        self.assertIn("| 470.00 |", summed)
 
 
 if __name__ == "__main__":
