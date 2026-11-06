@@ -1,4 +1,4 @@
-# fs-bench-quick — CLI case times for twelve small file workloads
+# fs-bench-quick — CLI case times for eighteen small file workloads
 > group: filesystem · measures: speed
 
 ## Basic info
@@ -9,7 +9,7 @@
 | Product | LayerFS 2.0 (`layerfs_v2_0_0`), pinned per campaign |
 | Machines | macOS host: native, Docker, Lima, Apple Container |
 | Store backends | SQLite, then PostgreSQL, on each machine |
-| Status | Current general guide. All twelve cells are implemented; the complete matrix has 96 rows. |
+| Status | Current general guide. Eighteen cells are implemented (C13–C18 added for layerfs-project#62); the matrix has 144 rows plus any declared co-located PostgreSQL arm. |
 | Frozen rules | [AGENTS.md](AGENTS.md) (workloads, measurement, cleanup); root [CLI and cache rules](../AGENTS.md) |
 
 Agents must read the root [CLI and cache rules](../AGENTS.md) and the
@@ -50,8 +50,18 @@ content correctness and performance qualification remain unproven.
 | C10 | Copy the committed `big` to `big2` | Committed base | As C07 |
 | C11 | Overwrite `big` with 64 MiB of zeros (`dd conv=notrunc`) | Committed base | As C06 |
 | C12 | `git init`, create 100 numbered files, `git add -A`, `git commit` | Empty | Exit 0; with `--verify`, the 100 files, one Git commit `init` tracking them, clean status |
+| C13 | `echo 1 > a`, Commit; then `echo 2 > b`, second Commit on the same Workspace | Empty | Exit 0; with `--verify`, `a` and `b` only |
+| C14 | File-count sweep, 0 files (`true`) | Empty | Exit 0; with `--verify`, an empty root |
+| C15 | File-count sweep, 100 numbered files | Empty | As C01 for 100 files |
+| C16 | File-count sweep, 10,000 numbered files; declared 25 s budget | Empty | As C01 for 10,000 files |
+| C17 | `cat rand > /dev/null` of a committed 64 MiB non-repeating file | Committed base | Exit 0; with `--verify`, `rand` only, with the pinned SHA-256 |
+| C18 | `stat f{1..1000}` over 1,000 committed numbered files | Committed base | As C01 |
 
 C12's Git commit belongs to the workload; the LayerFS Commit is a separate call.
+C01 is the sweep's 1,000-file point. C17's base is AES-128-CTR keystream with a
+pinned key, identical on every machine and not deduplicable, unlike C09's zeros.
+The PostgreSQL route arms, per-phase server counts and round-trip calibration
+are described in [AGENTS.md](AGENTS.md#postgresql-route-arms-observation-and-calibration).
 
 Reports name the full run metric **End-to-end case time**, including Sandbox
 creation, mount, Exec, LayerFS Commit, unmount and case cleanup. Preparation and
@@ -118,7 +128,7 @@ strictly under 10 seconds.
 
 ### Ordered matrix and finish
 
-The matrix order is C01-C12, then native/Docker/Lima/Apple Container within each
+The matrix order is C01-C18 (or alternating arms per cell, when configured), then native/Docker/Lima/Apple Container within each
 cell, then SQLite/PostgreSQL within each machine. `--matrix` selects that order.
 Each cell has eight outcomes before the next cell begins. Missing prerequisites
 remain registered NOT_RUN and unsuccessful attempts retain their dispositions.

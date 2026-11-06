@@ -7,7 +7,20 @@ from collections import Counter
 from pathlib import Path
 
 DISPLAY = ("docker", "native", "lima", "apple-container")
-DATABASES = ("sqlite", "postgresql")
+DATABASES = ("sqlite", "postgresql", "pg-colocated")
+PHASE_KEYS = {"create": "sandbox_create", "mount": "measured_mount", "close": "sandbox_close"}
+# Server-side observation phases, in lifecycle order, with report labels.
+OBSERVED = (
+    ("sandbox_create", "Create"),
+    ("measured_mount", "Mount"),
+    ("exec", "Exec"),
+    ("commit", "Commit"),
+    ("followup_exec", "Exec 2"),
+    ("commit_2", "Commit 2"),
+    ("unmount", "Unmount"),
+    ("cleanup", "Cleanup"),
+)
+DELTA_PHASES = ("create", "mount", "exec", "commit", "unmount", "close", "release", "end_to_end")
 
 
 def ms(value):
@@ -28,9 +41,148 @@ def ratio(row, baseline, phase):
 
 
 def elapsed(row, phase):
+    """Phase wall ns; End-to-end excludes declared observer control overhead."""
     if phase == "end_to_end":
-        return row.get("performance_invocation_elapsed_ns")
-    return row.get("timings_ns", {}).get(phase)
+        total = row.get("performance_invocation_elapsed_ns")
+        if isinstance(total, int):
+            return total - row.get("control_overhead_ns", 0)
+        return total
+    timings = row.get("timings_ns", {})
+    if phase == "release":
+        return timings.get("store_remove", timings.get("store_disconnect"))
+    return timings.get(PHASE_KEYS.get(phase, phase))
+
+
+def median(values):
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    return (
+        ordered[middle]
+        if len(ordered) % 2
+        else (ordered[middle - 1] + ordered[middle]) / 2
+    )
+
+
+def backend_deltas(rows):
+    """Median PostgreSQL arm minus SQLite per machine/phase over PASS cell pairs."""
+    lines = []
+    for machine in DISPLAY:
+        for arm in DATABASES[1:]:
+            values, cells = {}, set()
+            for row in rows.values():
+                if row["machine"] != machine or row["backend"] != arm:
+                    continue
+                base = rows.get(f"{row['cell']}/{machine}/sqlite", {})
+                if row.get("execution") != "PASS" or base.get("execution") != "PASS":
+                    continue
+                cells.add(row["cell"])
+                for phase in DELTA_PHASES:
+                    a, b = elapsed(row, phase), elapsed(base, phase)
+                    if isinstance(a, int) and isinstance(b, int):
+                        values.setdefault(phase, []).append(a - b)
+            if cells:
+                lines.append(
+                    f"| {machine} | {arm} | {len(cells)} | "
+                    + " | ".join(
+                        f"{median(values[p]) / 1e6:+.1f}" if values.get(p) else "—"
+                        for p in DELTA_PHASES
+                    )
+                    + " |"
+                )
+    if not lines:
+        return []
+    return [
+        "## PostgreSQL minus SQLite",
+        "",
+        "Median over cells of (PostgreSQL arm − SQLite) per machine, milliseconds, using only cells where both rows passed. "
+        "Close is Sandbox close; Store release is `store disconnect` (PostgreSQL) versus `store remove` (SQLite), which the product does not unify.",
+        "",
+        "| Machine | Arm | Cells | Create | Mount | Exec | Commit | Unmount | Close | Store release | End-to-end |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        *lines,
+        "",
+    ]
+
+
+def observed_counts(selected):
+    """Per-phase pg_stat_statements calls and logged connections for one cell."""
+    observed = [r for r in selected if r.get("pg_phases")]
+    if not observed:
+        return []
+    phases = [
+        (key, label)
+        for key, label in OBSERVED
+        if any(key in r["pg_phases"] for r in observed)
+    ]
+    lines = [
+        "",
+        "Server-side counts per phase as statements / connections: `pg_stat_statements` calls for the row's database "
+        "(reset before each phase), and connections authorized for that database while the phase ran (`log_connections`).",
+        "",
+        "| Machine | Database | " + " | ".join(label for _, label in phases) + " | Statements | Connections | Statement exec ms |",
+        "| --- | --- | " + " | ".join("---:" for _ in phases) + " | ---: | ---: | ---: |",
+    ]
+    for machine in DISPLAY:
+        for backend in DATABASES:
+            for row in observed:
+                if row["machine"] != machine or row["backend"] != backend:
+                    continue
+                cells, statements, connections, exec_ms = [], 0, 0, 0.0
+                for key, _ in phases:
+                    value = row["pg_phases"].get(key, {})
+                    count = value.get("statements")
+                    opened = value.get("connections")
+                    statements += count or 0
+                    connections += opened or 0
+                    exec_ms += value.get("statement_exec_ms") or 0.0
+                    cells.append(
+                        f"{'—' if count is None else count} / {'—' if opened is None else opened}"
+                    )
+                lines.append(
+                    f"| {machine} | {backend} | "
+                    + " | ".join(cells)
+                    + f" | {statements} | {connections} | {exec_ms:.1f} |"
+                )
+    return lines
+
+
+def calibration_lines(calibration):
+    if not calibration:
+        return []
+    lines = [
+        "## Round-trip calibration",
+        "",
+        "`pgrtt.py` from each client location: address resolution, then 20 fresh connections (TCP connect; one SSLRequest "
+        "probe, which a plaintext server answers `N` and which an unset `sslmode` (`prefer`) adds to every connection; startup to "
+        "ReadyForQuery), then 200 simple-protocol `SELECT 1` on one connection. Milliseconds, medians unless marked p90. "
+        "Guests and the trust rows use a trust-authenticated calibration role; the SCRAM rows add the Store user's SCRAM-SHA-256 exchange.",
+        "",
+        "| Client | Route | Target | Peer | Auth | Resolve | TCP connect | SSL probe | Startup | SELECT 1 | SELECT 1 p90 |",
+        "| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
+
+    def cell(value, key="median_ns"):
+        return f"{value[key] / 1e6:.3f}" if isinstance(value, dict) else "—"
+
+    for item in calibration:
+        if item.get("location") == "host":
+            entries = [(f"host ({item['route']})", item["route"], item["target"], label, result)
+                       for label, result in item.get("results", {}).items()]
+        else:
+            entries = [(item["machine"], arm, value["target"], "trust", value["measurement"])
+                       for arm, value in item.get("results", {}).items()]
+            if item.get("execution") != "PASS":
+                lines.append(f"| {item.get('machine')} | — | — | — | — | {safe(item.get('reason'))} | | | | | |")
+        for client, route, target, auth, result in entries:
+            if "error" in result:
+                lines.append(f"| {client} | {route} | {target['host']}:{target['port']} | — | {auth} | {safe(result['error'][-200:])} | | | | | |")
+                continue
+            lines.append(
+                f"| {client} | {route} | {target['host']}:{target['port']} | {result.get('peer')} | {auth} | "
+                f"{result['resolve_ns'] / 1e6:.3f} | {cell(result.get('tcp_connect'))} | {cell(result.get('ssl_probe'))} | "
+                f"{cell(result.get('startup_to_ready'))} | {cell(result.get('select1'))} | {cell(result.get('select1'), 'p90_ns')} |"
+            )
+    return lines + [""]
 
 
 def number(value, scale=1):
@@ -199,8 +351,9 @@ def render(suite, state, cleanup, config):
         "",
         (
             "Times are milliseconds of CLI calls including launch/routing. Create means Sandbox creation. "
-            "Cleanup includes Sandbox close and Store remove/disconnect; End-to-end also includes mount/unmount "
-            "and intervening harness work, excludes preparation, Python startup and optional proof. "
+            "Close is Sandbox close; Store release is Store remove (SQLite) or disconnect (PostgreSQL). End-to-end covers "
+            "create through Store release and intervening harness work, minus any declared observer control calls; it "
+            "excludes preparation, Python startup and optional proof. "
             "Ratios divide the machine's time by Docker's time for the same cell/backend; Docker = 1.00, "
             "below 1 means less elapsed time. One sample per row, no median or repeatability claim."
         ),
@@ -212,6 +365,10 @@ def render(suite, state, cleanup, config):
         ),
         "",
     ]
+    for section in config.get("report_sections", []):
+        lines += [f"## {section['title']}", "", *section["lines"], ""]
+    lines += backend_deltas(rows)
+    lines += calibration_lines(config.get("calibration_results", []))
     artifacts = config.get("artifacts", {})
     if artifacts:
         lines += ["| Build input | SHA-256 / identity |", "| --- | --- |"]
@@ -230,33 +387,47 @@ def render(suite, state, cleanup, config):
             (r.get("workload", {}) for r in selected if r.get("workload")),
             config.get("tool_identity", {}).get("workload_profiles", {}).get(cell, {}),
         )
+        second = any(elapsed(r, "commit_2") is not None for r in selected)
+        load = any("load_1m" in r for r in selected)
+        headers = ["Create ms", "Mount ms", "Exec ms", "Commit ms"]
+        headers += ["Commit 2 ms"] if second else []
+        headers += ["Unmount ms", "Close ms", "Store release ms", "End-to-end ms"]
         lines += [
             f"## {cell}",
             "",
-            safe(workload_summary(workload)),
+            safe(config.get("case_summaries", {}).get(cell) or workload_summary(workload)),
             "",
-            "| Machine | Database | Execution | Cleanup | Create ms | Exec ms | Commit ms | Cleanup ms | End-to-end ms | Exec / Docker | Commit / Docker | End-to-end / Docker |",
-            "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "| Machine | Database | Execution | Cleanup | "
+            + ("Load 1m | " if load else "")
+            + " | ".join(headers)
+            + " | Exec / Docker | Commit / Docker | End-to-end / Docker |",
+            "| --- | --- | --- | --- | "
+            + ("---: | " if load else "")
+            + " | ".join("---:" for _ in headers)
+            + " | ---: | ---: | ---: |",
         ]
         for machine in DISPLAY:
             for backend in DATABASES:
-                row = rows[f"{cell}/{machine}/{backend}"]
-                base = rows[f"{cell}/docker/{backend}"]
+                row = rows.get(f"{cell}/{machine}/{backend}")
+                if row is None:
+                    continue
+                base = rows.get(f"{cell}/docker/{backend}", {})
+                phases = ["create", "mount", "exec", "commit"]
+                phases += ["commit_2"] if second else []
+                phases += ["unmount", "close", "release", "end_to_end"]
                 values = [
                     machine,
                     backend,
                     row.get("execution", "NOT_RUN"),
                     row.get("cleanup", "NOT_RUN"),
-                    ms(elapsed(row, "sandbox_create")),
-                    ms(elapsed(row, "exec")),
-                    ms(elapsed(row, "commit")),
-                    ms(row.get("cleanup_elapsed_ns")),
-                    ms(elapsed(row, "end_to_end")),
+                    *([number(row.get("load_1m"))] if load else []),
+                    *[ms(elapsed(row, phase)) for phase in phases],
                     ratio(row, base, "exec"),
                     ratio(row, base, "commit"),
                     ratio(row, base, "end_to_end"),
                 ]
                 lines.append("| " + " | ".join(values) + " |")
+        lines += observed_counts(selected)
         metrics = [r for r in selected if r.get("tool_metrics")]
         if metrics:
             headers, _ = metric_cells(suite, metrics[0]["tool_metrics"])
@@ -365,14 +536,18 @@ def main():
     parser.add_argument("--cleanup", type=Path, required=True)
     parser.add_argument("--environment", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--calibration", type=Path, help="directory of calibration receipts"
+    )
     args = parser.parse_args()
     state = json.loads((args.input / "campaign.json").read_text())
-    text = render(
-        args.suite,
-        state,
-        json.loads(args.cleanup.read_text()),
-        json.loads(args.environment.read_text()),
-    )
+    config = json.loads(args.environment.read_text())
+    if args.calibration:
+        config["calibration_results"] = [
+            json.loads(path.read_text())
+            for path in sorted(args.calibration.glob("*.json"))
+        ]
+    text = render(args.suite, state, json.loads(args.cleanup.read_text()), config)
     if args.output.exists():
         parser.error(
             "report already exists; select a new report rather than overwriting released results"

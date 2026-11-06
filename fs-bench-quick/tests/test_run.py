@@ -155,7 +155,8 @@ class LifecycleTests(unittest.TestCase):
 
     def test_exact_matrix_order(self):
         rows = run.selections()
-        self.assertEqual(len(rows), 96)
+        # C01-C12 keep their order; C13-C18 (layerfs-project#62) follow.
+        self.assertEqual(len(rows), 144)
         self.assertEqual(
             [row["id"] for row in rows[:4]],
             [

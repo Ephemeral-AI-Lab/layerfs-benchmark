@@ -5,8 +5,22 @@ import hashlib
 SOURCE_COMMIT = "b919f50eaf9cce79671f8501a580279d23cc5f3c"
 SOURCE_PATH = "api/node/test/verify/cells/workloads.mjs"
 SOURCE_BLOB = "f3a65cc9aec02af2d772edd929daa8b2b446638d"
-CASE_IDS = tuple(f"C{number:02d}" for number in range(1, 13))
+ORIGINAL_CASES = tuple(f"C{number:02d}" for number in range(1, 13))
+# layerfs-project#62 additions: separate fixed from per-entry Commit cost and
+# read non-repeating committed data. C01 is the sweep's 1,000-file point.
+PG62_CASES = ("C13", "C14", "C15", "C16", "C17", "C18")
+CASE_IDS = ORIGINAL_CASES + PG62_CASES
 IMPLEMENTED_CASES = CASE_IDS
+PG62_VERSION = "pg62-v1"
+SWEEP = {"C14": 0, "C15": 100, "C16": 10_000}
+# 64 MiB of AES-128-CTR keystream: deterministic, non-repeating, and identical
+# from OpenSSL 3 (guest images) and LibreSSL/OpenSSL on macOS.
+RANDOM_KEY = "6c617965726673706733322d70657266"
+RANDOM_SHA256 = "bf1dda74febef555d66fdc9f19d3869b3fa50d6f64c94c01d66fc854052e9643"
+RANDOM_SETUP = (
+    "head -c 67108864 /dev/zero | openssl enc -aes-128-ctr -nosalt "
+    f"-K {RANDOM_KEY} -iv 00000000000000000000000000000000 > rand"
+)
 ENVIRONMENT = {
     "LANG": "C",
     "LC_ALL": "C",
@@ -119,6 +133,93 @@ entries=(*)
     return script + "".join(comparisons) + 'echo "VERIFY OK"\n'
 
 
+def _files_body(count):
+    return f"for i in $(seq 1 {count}); do echo $i > f$i; done" if count else "true"
+
+
+def _random_verifier():
+    return f"""export LANG=C LC_ALL=C
+fail() {{ echo "VERIFY FAIL $*"; exit 1; }}
+shopt -s nullglob dotglob
+entries=(*)
+[ "${{#entries[@]}}" -eq 1 ] && [ -f rand ] && [ ! -L rand ] || fail "rand only"
+sum=$(openssl dgst -sha256 < rand | awk '{{print $NF}}') || fail "digest"
+[ "$sum" = {RANDOM_SHA256} ] || fail "rand contents"
+echo "VERIFY OK"
+"""
+
+
+def _pg62_case(case_id, verify):
+    """Cases added for layerfs-project#62; their bodies are this suite's own."""
+    setup = followup = ""
+    budget = None
+    if case_id == "C13":
+        body, followup = "echo 1 > a", "echo 2 > b"
+        verifier = """export LANG=C LC_ALL=C
+shopt -s nullglob dotglob
+entries=(*)
+[ "${#entries[@]}" -eq 2 ] && [ "$(cat a)" = 1 ] && [ "$(cat b)" = 2 ] || { echo "VERIFY FAIL a/b"; exit 1; }
+echo "VERIFY OK"
+"""
+    elif case_id in SWEEP:
+        body = _files_body(SWEEP[case_id])
+        verifier = (
+            _numbered_verifier(SWEEP[case_id]) if SWEEP[case_id] else _empty_verifier()
+        )
+        # Declared before execution: 10,000 files take the 25 s exception.
+        budget = 25 if SWEEP[case_id] >= 10_000 else None
+    elif case_id == "C17":
+        setup, body = RANDOM_SETUP, "cat rand > /dev/null"
+        verifier = _random_verifier()
+    else:  # C18
+        setup, body = _files_body(1000), "stat f{1..1000} > /dev/null"
+        verifier = _numbered_verifier(1000)
+    command = f"{{ {body}; }} >/dev/null"
+    result = {
+        "id": case_id,
+        "body": body,
+        "setup": setup,
+        "command": command,
+        "exec_argv": ["/bin/bash", "-o", "pipefail", "-c", command],
+        "environment": dict(ENVIRONMENT),
+        "starting_view": "committed-base" if setup else "empty",
+        "verifier": verifier if verify else None,
+        "provenance": {
+            "origin": "https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/62",
+            "source_definition": f"fs-bench-quick {case_id}",
+            "workload_version": PG62_VERSION,
+            "body_sha256": sha256(body),
+            "setup_sha256": sha256(setup),
+            "command_sha256": sha256(command),
+        },
+    }
+    if followup:
+        result["followup_command"] = f"{{ {followup}; }} >/dev/null"
+        result["followup_argv"] = [
+            "/bin/bash",
+            "-o",
+            "pipefail",
+            "-c",
+            result["followup_command"],
+        ]
+        result["provenance"]["followup_command_sha256"] = sha256(
+            result["followup_command"]
+        )
+    if budget:
+        result["performance_budget_s"] = budget
+        result["provenance"]["performance_budget_s"] = budget
+    if setup:
+        result["setup_command"] = f"{{ {setup}; }} >/dev/null"
+        result["setup_argv"] = ["/bin/bash", "-o", "pipefail", "-c", result["setup_command"]]
+        result["provenance"]["setup_command_sha256"] = sha256(result["setup_command"])
+    if verify:
+        result["provenance"]["verification"] = {
+            "version": f"{case_id.lower()}-exact-v1",
+            "sha256": sha256(verifier),
+        }
+    return result
+
+
 def get_case(case_id, verify=False):
     """Return fresh JSON-serializable data for the current implemented cell.
 
@@ -129,6 +230,8 @@ def get_case(case_id, verify=False):
         raise ValueError(f"Unknown cell: {case_id}")
     if case_id not in IMPLEMENTED_CASES:
         raise NotImplementedError(f"{case_id} is registered but not implemented yet")
+    if case_id in PG62_CASES:
+        return _pg62_case(case_id, verify)
     setup = ""
     body = "for i in $(seq 1 1000); do echo $i > f$i; done"
     if case_id == "C02":
