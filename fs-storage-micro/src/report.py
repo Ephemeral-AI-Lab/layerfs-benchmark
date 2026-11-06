@@ -44,8 +44,8 @@ def actual(case, commits, summary, refs):
         )
     if case == "M02":
         return (
-            f"Commit 1 new_stored {s[0]:,} B; Commit 2 (500,000,000 B of copies) new_stored "
-            f"{s[1]:,} B, new_metadata {m[1]:,} B"
+            f"Commit 1 new_stored {s[0]:,} B (payload {s[0] - m[0]:,} B); Commit 2 (500,000,000 B of copies) "
+            f"new_stored {s[1]:,} B, new_metadata {m[1]:,} B, payload {s[1] - m[1]:,} B"
         )
     if case in ("M03", "M04", "M05"):
         edits = s[1:]
@@ -57,12 +57,16 @@ def actual(case, commits, summary, refs):
         )
     if case == "M06":
         names = ["base", "insert start", "insert middle", "overwrite 4 KiB", "append 1 MiB", "delete first"]
-        return "; ".join(f"{n} {v:,} B ({v / KiB:,.1f} KiB)" for n, v in zip(names, s))
+        return "new_stored (payload = stored − metadata): " + "; ".join(
+            f"{n} {v:,} B ({v - w:,} B)" for n, v, w in zip(names, s, m)
+        )
     if case == "M07":
         text = refs.get("zstd3_text.txt")
+        p = [a - b for a, b in zip(s, m)]
         return (
-            f"random {s[0]:,} B ({s[0] / 67108864:.4f} of 64 MiB); zeros {s[1]:,} B; text {s[2]:,} B"
-            + (f" vs zstd -3 of the file {text:,} B ({s[2] / text:.3f}×)" if text else "")
+            f"payload (stored − metadata): random {p[0]:,} B ({p[0] / 67108864:.4f} × 64 MiB); zeros {p[1]:,} B; "
+            f"text {p[2]:,} B" + (f" vs whole-file zstd -3 {text:,} B ({p[2] / text:.3f}×)" if text else "")
+            + f"; metadata {m[0]:,} / {m[1]:,} / {m[2]:,} B"
         )
     if case == "M08":
         churn = s[1:11]
@@ -107,6 +111,7 @@ def compare(a, b):
         "total_delta": (b["summary"]["final_bytes"] - a["summary"]["final_bytes"]),
         "stored_delta": delta("new_stored"),
         "metadata_delta": delta("new_metadata"),
+        "payload_equal": [x["new_stored"] - x["new_metadata"] for x in ha] == [y["new_stored"] - y["new_metadata"] for y in hb],
         "canonical_equal": delta("new_canonical") == 0 and delta("logical") == 0,
     }
     if out["page_equal"] and out["total_delta"] == 0 and out["stored_delta"] == 0 and out["metadata_delta"] == 0:
@@ -201,11 +206,11 @@ def render(state, config, notes="", cleanup="UNKNOWN"):
         lines += [f"### {case} {cases.TITLES[case]}", ""]
         lines += [
             f"- **Workload:** {cases.WORKLOADS[case]}.",
-            f"- **Write method:** {cases.gen.WRITE_METHOD[case]}; {len(cases.gen.PLAN[case])} Commits.",
+            f"- **Write method:** {cases.gen.WRITE_METHOD[case]}; Commits: {len(cases.gen.PLAN[case])}.",
             f"- **Expected:** {cases.EXPECTED[case]}.",
         ]
         by_backend = {}
-        for row in primary:
+        for row in sr.ordered(primary):
             if row["case"] == case:
                 by_backend[row["backend"]] = history(row)
                 lines.append(
@@ -241,11 +246,11 @@ def render(state, config, notes="", cleanup="UNKNOWN"):
                 repeat["id"], sr.b(page_bytes(base)), sr.b(page_bytes(repeat)),
                 sr.b(a.get("final_bytes")), sr.b(b.get("final_bytes")),
                 sr.b(c.get("stored_delta")), sr.b(c.get("metadata_delta")),
-                "yes" if c.get("canonical_equal") else "no", c["verdict"],
+                "yes" if c.get("canonical_equal") else "no", "yes" if c.get("payload_equal") else "no", c["verdict"],
             ])
         lines += [sr.table(["Repeat", "Pages first (B)", "Pages repeat (B)", "Final first (B)", "Final repeat (B)",
                             "Max per-Commit Δ new_stored (B)", "Max per-Commit Δ new_metadata (B)",
-                            "new_canonical and logical identical", "Verdict"], body),
+                            "new_canonical and logical identical", "Per-Commit payload identical", "Verdict"], body),
                   "",
                   "Pages = SQLite `file.bytes` or PostgreSQL schema bytes; Final = Store bytes as defined above "
                   "(SQLite adds `wal_bytes`).",
