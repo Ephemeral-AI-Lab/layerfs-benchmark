@@ -585,6 +585,11 @@ def verdict(args):
 
 
 def finish(args):
+    """Release the gate's resources, except those holding uncertain custody.
+
+    A row whose cleanup is not COMPLETE keeps its database and its identity's
+    worker (which runs its Sandbox) for inspection; nothing is force-closed.
+    """
     gate = args.gate
     record = load(gate)
     if record.get("finished"):
@@ -593,7 +598,7 @@ def finish(args):
     record["finished"] = now()
     save(gate, record)
     env = dict(os.environ, BENCH_PG_PASSWORD=PASSWORD_FILE.read_text().strip())
-    results = {}
+    results, kept_db, kept_ident = {}, set(), set()
     for ident, art in record["identities"].items():
         for rnd in (1, 2):
             campaign = gate_dir(gate) / ident / f"r{rnd}"
@@ -606,21 +611,33 @@ def finish(args):
                 env=env, capture_output=True, text=True, timeout=100, cwd=ROOT,
             )
             results[f"{ident}-r{rnd}"] = out.stdout.strip()[-400:]
+            state = json.loads((campaign / "prepared" / "campaign.json").read_text())
+            for row in state["rows"].values():
+                if row.get("cleanup") != "COMPLETE":
+                    kept_ident.add(ident)
+                    if row["backend"] != "sqlite":
+                        kept_db.add(database(gate, ident, rnd, row["cell"], row["backend"]))
+        if ident in kept_ident:
+            results[f"worker-{ident}"] = {"exit": None, "retained": "uncertain row custody; inspect first"}
+            continue
         stop = subprocess.run([str(Path(art["dir"]) / "layerfs"), "machine", "stop", "docker"],
                               env=cli_env(gate_dir(gate) / ident), capture_output=True, text=True, timeout=100)
         results[f"worker-{ident}"] = {"exit": stop.returncode, "stderr": stop.stderr[-500:]}
-    retained = [k for k, v in results.items() if k.startswith("worker") and v["exit"] != 0]
+    failed = [k for k, v in results.items() if k.startswith("worker") and v["exit"] not in (0, None)]
     dropped = []
-    if not retained:
+    if not failed:
         for name in record["databases"]:
+            if name in kept_db:
+                continue
             psql(f"DROP DATABASE IF EXISTS {name} WITH (FORCE)")
             dropped.append(name)
     results["databases_dropped"] = len(dropped)
+    results["databases_retained"] = sorted(kept_db)
     record["finish_results"] = results
     save(gate, record)
     ledger(gate, "finish", **results)
     print(json.dumps(results, indent=1))
-    return 0 if not retained else 1
+    return 0 if not (failed or kept_ident) else 1
 
 
 def main(argv=None):
