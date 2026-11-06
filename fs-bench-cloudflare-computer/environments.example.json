@@ -1,0 +1,84 @@
+{
+  "campaign_id": "fbcc-example",
+  "source_sha": "RESOLVE_LATEST_LAYERFS_2_0_BRANCH_SHA",
+  "cli": "/absolute/pinned-release/layerfs",
+  "home": "/absolute/owned-private-home",
+  "empty_source": "/absolute/owned-empty-source",
+  "environment": {
+    "XDG_CACHE_HOME": "/absolute/campaign-xdg"
+  },
+  "compact_sources": true,
+  "artifacts": {
+    "cli_sha256": "REPLACE",
+    "daemon_sha256": "REPLACE",
+    "linux_bundle_sha256": "REPLACE",
+    "profile": "release",
+    "sandbox_image": "REPLACE",
+    "sandbox_archive_config": "REPLACE"
+  },
+  "machines": {
+    "native": {
+      "name": "native",
+      "ready": false,
+      "platform": "darwin",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/absolute/native-tools",
+        "PATH": "/absolute/native-tools/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
+    },
+    "docker": {
+      "name": "docker",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-bench-cloudflare-computer"
+      }
+    },
+    "lima": {
+      "name": "fbcc-lima",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-bench-cloudflare-computer"
+      }
+    },
+    "apple-container": {
+      "name": "fbcc-apple",
+      "ready": false,
+      "platform": "linux",
+      "tool_environment": {
+        "BENCH_TOOL_ROOT": "/opt/fs-bench-cloudflare-computer"
+      }
+    }
+  },
+  "postgresql": {
+    "password_env": "BENCH_PG_PASSWORD",
+    "databases": {
+      "B01/docker": "postgresql://bench@db-host:5432/fbcc_b01_docker",
+      "B01/lima": "postgresql://bench@db-host:5432/fbcc_b01_lima",
+      "B01/apple-container": "postgresql://bench@db-host:5432/fbcc_b01_apple_container"
+    },
+    "disposal_resource": "postgres-data",
+    "server_container": "REPLACE",
+    "server_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652 (postgres:17-bookworm)"
+  },
+  "resources": [
+    {
+      "id": "postgres-data",
+      "owned": false,
+      "release_argv": [],
+      "note": "Register exact owned infrastructure (machines, PostgreSQL server and data, Apple image) before running."
+    }
+  ],
+  "prepare_budget_s": 25,
+  "performance_budget_s": 25,
+  "cleanup_budget_s": 10,
+  "shared_infrastructure": true,
+  "budget_exceptions": {
+    "native": {
+      "max_s": 60,
+      "approved_by": "owner, 2026-11-06",
+      "reason": "native macOS launches one process per file on an NFS mount; the frozen script needs more than 25 s there"
+    }
+  }
+}

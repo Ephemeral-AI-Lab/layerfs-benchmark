@@ -10,3 +10,5 @@ capabilities live in machine configuration; canonical workload hashes do not
 embed private host paths. Shared infrastructure has one campaign owner.
 `src/readme_index.py` builds the root index and each benchmark's past runs
 from `result/`; it changes only the marked blocks in those READMEs.
+Storage suites use `src/storage.py`, `src/references.py` and
+`src/storage_report.py`; see [STORAGE.md](STORAGE.md). Speed-suite modules stay unchanged.
