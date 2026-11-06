@@ -1,0 +1,129 @@
+{
+  "campaign_id": "fsd-example",
+  "source_sha": "RESOLVE_LATEST_LAYERFS_2_0_BRANCH_SHA",
+  "cli": "/absolute/owned-campaign/artifacts/macos/layerfs",
+  "home": "/absolute/owned-campaign/home",
+  "empty_source": "/absolute/owned-campaign/empty",
+  "environment": {
+    "XDG_CACHE_HOME": "/absolute/owned-campaign/xdg"
+  },
+  "artifacts": {
+    "cli_sha256": "REPLACE",
+    "daemon_sha256": "REPLACE",
+    "linux_bundle_sha256": "REPLACE",
+    "profile": "release",
+    "sandbox_image": "REPLACE",
+    "sandbox_image_tag": "fs-storage-dsh:v1-6d820c75",
+    "base_image": "sha256:afa1ef9c27294f9c7298820c06483e6fb1ddafc43a7cc7d6dec8cd2e67abf38e",
+    "seed_manifest_sha256": "898134b8a7b5fbc3f5aeb9366347c427fce35629e82dcef671e4a787eda5ba2b",
+    "seed_pack_sha256": "27c7598c04404730200654a1a4ad8f000d63d41da87531cc6e8f206a4e8133bc"
+  },
+  "machines": {
+    "docker": {
+      "name": "docker",
+      "ready": true,
+      "platform": "linux"
+    }
+  },
+  "storage": {
+    "docker_volume": "lfs-HOMEID8-docker-data",
+    "probe_image": "REPLACE (suite image id)",
+    "server_wal_argv": [
+      "docker",
+      "exec",
+      "fsd-pg",
+      "psql",
+      "-U",
+      "bench",
+      "-d",
+      "postgres",
+      "-Atc",
+      "select pg_current_wal_lsn()"
+    ]
+  },
+  "command_timeout_s": 110,
+  "postgresql": {
+    "password_env": "BENCH_PG_PASSWORD",
+    "databases": {
+      "D10/docker": "postgresql://bench@127.0.0.1:55482/fsd_d10_docker",
+      "D03/docker": "postgresql://bench@127.0.0.1:55482/fsd_d03_docker"
+    },
+    "disposal_resource": "postgres-data",
+    "server_container": "fsd-pg",
+    "server_image": "sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652 (postgres:17-bookworm)",
+    "host_port": "55482"
+  },
+  "resources": [
+    {
+      "id": "docker-worker",
+      "owned": true,
+      "release_argv": [
+        "/absolute/owned-campaign/artifacts/macos/layerfs",
+        "machine",
+        "stop",
+        "docker"
+      ]
+    },
+    {
+      "id": "docker-worker-container",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "rm",
+        "lfs-HOMEID8-docker"
+      ]
+    },
+    {
+      "id": "docker-data",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "volume",
+        "rm",
+        "lfs-HOMEID8-docker-data"
+      ]
+    },
+    {
+      "id": "postgres-stop",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "stop",
+        "-t",
+        "5",
+        "fsd-pg"
+      ]
+    },
+    {
+      "id": "postgres-container",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "rm",
+        "fsd-pg"
+      ]
+    },
+    {
+      "id": "postgres-data",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "volume",
+        "rm",
+        "fsd-pg-data"
+      ]
+    },
+    {
+      "id": "suite-image",
+      "owned": true,
+      "release_argv": [
+        "docker",
+        "image",
+        "rm",
+        "fs-storage-dsh:v1-6d820c75"
+      ]
+    }
+  ],
+  "shared_infrastructure": true,
+  "environment_description": "REPLACE: host, Docker resources, PostgreSQL server"
+}
