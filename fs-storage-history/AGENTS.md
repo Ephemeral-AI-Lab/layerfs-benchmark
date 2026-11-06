@@ -28,9 +28,11 @@ diagnostic.
 - **Seeds:** `H01/p01/b01`, `H02/p01/bNN`, `H04/p01/lNN`, `H05/pNN/b01`
   (H06 reuses H05's, so both hold identical content), `H07/pNN/bNN`; every
   H03 Branch uses `H03/shared`, so all 50 apply the same Commit.
-- **Counts:** the SQLite probe (H04, 50 s) confirmed the initial counts fit
-  the 30-minute-per-backend target, so they were frozen unchanged. Changing a
-  count, the model or the base is a new `WORKLOAD_VERSION`.
+- **Counts:** the initial counts were frozen unchanged after a SQLite probe
+  (H04, 50 s). The 2026-11-06 run took 24 min on SQLite and 41 min on
+  PostgreSQL (INELIGIBLE wall), mostly per-Branch Sandbox lifecycle and
+  verification; a smaller set needs a new `WORKLOAD_VERSION`, as does any
+  change to a count, the model or the base.
 
 `main` cannot be mounted, so every case forks Branches from `main` (H04
 forks each level from the previous level's head). Each Branch gets one

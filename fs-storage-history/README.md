@@ -78,4 +78,7 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 ## Past runs
 
 <!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-06 | `6d820c756b` | All 14 rows (7 cases × Docker × SQLite, PostgreSQL) PASS with every Branch head verified (171 heads per backend); 50 identical Branches cost ≈ 5.3 KB of metadata each, 20 projects in separate Stores need 17.1× (SQLite) / 11.2× (PostgreSQL) the net bytes of one shared Store, and 500 Commits add a flat ≈ 3.4 KB of packs each; final cleanup COMPLETE | [report](../result/2026-11-06/fs-storage-history/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
 <!-- runs:end -->
