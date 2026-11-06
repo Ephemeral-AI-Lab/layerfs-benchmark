@@ -145,7 +145,8 @@ def parse_result(case_id, stdout, stderr="", exit_code=0):
             or item.get("samples") != 1
             or any(isinstance(v, bool) or not isinstance(v, int) for v in values)
             or len(set(values)) != 1
-            or not 0 < values[0] < SATURATED_NS
+            or values[0] <= 0
+            or values[0] == SATURATED_NS  # mawk's capped value, not a time
         ):
             raise ValueError(f"invalid single sample for {item.get('scenario')}")
         scenarios.append({"scenario": item["scenario"], "ns": values[0]})

@@ -91,6 +91,13 @@ class Parse(unittest.TestCase):
         with self.assertRaises(ValueError):
             cases.parse_result("B01", json.dumps(value))
 
+    def test_accepts_times_above_two_seconds(self):
+        value = payload()
+        for key in ("meanNs", "medianNs", "p95Ns", "minNs", "maxNs"):
+            value["results"][1][key] = 6_878_539_000
+        result = cases.parse_result("B01", json.dumps(value))
+        self.assertEqual(result["scenarios"][1]["ns"], 6_878_539_000)
+
     def test_rejects_warmup_exit_and_garbage(self):
         value = payload()
         value["config"]["warmup"] = 1
