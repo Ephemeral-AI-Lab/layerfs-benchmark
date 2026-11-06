@@ -249,6 +249,16 @@ class CompareTests(unittest.TestCase):
         self.assertEqual(len(out["regressions"]), 2)  # new_stored and new_metadata beyond 160 B
         self.assertIn("Σ payload", [m["metric"] for m in out["rows"][0]["metrics"]])
 
+    def test_repeat_widens_bands(self):
+        base = export_of([summary("Q1", "sqlite")])
+        repeat = export_of([summary("Q1", "sqlite", meta=10_028, stored=500_028)])
+        results.add_repeat(base, repeat)
+        self.assertEqual(base["rows"]["Q1/sqlite"]["repeat_abs_delta"]["sum_new_metadata"], 28)
+        cand = export_of([summary("Q1", "sqlite", meta=10_020, stored=500_020, commits=1)])
+        base["rows"]["Q1/sqlite"]["commits"] = 1
+        cand["rows"]["Q1/sqlite"]["commits"] = 1
+        self.assertEqual(results.compare(base, cand)["regressions"], [])
+
     def test_workload_mismatch_is_not_comparable(self):
         base = export_of([summary("Q1", "sqlite")])
         cand = export_of([summary("Q1", "sqlite", raw=1)])

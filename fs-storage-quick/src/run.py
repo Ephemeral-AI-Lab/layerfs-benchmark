@@ -9,6 +9,7 @@
   run.py createdb   --environment E --cache C
   run.py export     --cache C --output rows.json
   run.py compare    --baseline B.json --candidate (C | rows.json) [--output md|json] [--out FILE]
+  run.py add-repeat --baseline B.json --candidate (C | rows.json)   # pin same-build repeat |Δ| into B
 
 Rows run serially, all SQLite rows then all PostgreSQL rows (so each backend's
 matrix wall is one interval), one fresh Store per row, one attempt per row:
@@ -192,7 +193,8 @@ def createdb(config, cache):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("action", choices=("run", "late-probe", "release", "finish", "createdb", "export", "compare"))
+    parser.add_argument("action", choices=("run", "late-probe", "release", "finish", "createdb", "export", "compare",
+                                           "add-repeat"))
     parser.add_argument("--environment")
     parser.add_argument("--cache")
     parser.add_argument("--case", choices=cases.CASE_IDS, action="append")
@@ -211,6 +213,12 @@ def main(argv=None):
     parser.add_argument("--candidate")
     args = parser.parse_args(argv)
 
+    if args.action == "add-repeat":
+        baseline = json.loads(Path(args.baseline).read_text())
+        results.add_repeat(baseline, load_rows_json(args.candidate))
+        Path(args.baseline).write_text(json.dumps(baseline, indent=1) + "\n")
+        print(args.baseline)
+        return 0
     if args.action == "compare":
         baseline = json.loads(Path(args.baseline).read_text())
         candidate = load_rows_json(args.candidate)

@@ -19,6 +19,12 @@ Noise rule (owner rule "±1 page per table; new_metadata ±16 B per Commit"):
   Commit count: exact; any difference is outside noise. A raw or Commit-count
   difference means the workload differs and the row is not comparable.
 
+A baseline may also carry, per row, ``repeat_abs_delta``: the |Δ| a second
+campaign of the same build measured for each metric (``add_repeat``). The band
+of a metric is then max(rule band, that repeat |Δ|): the base repeat showed
+Q1's single Commit of 2,000 files drifting +28 B in ``new_metadata``, beyond
+16 B per Commit. Workload metrics stay exact.
+
 A Δ inside its band is ``same``; below it ``lower`` (smaller is better for
 every metric here), above it ``HIGHER`` (a regression).
 """
@@ -242,6 +248,7 @@ def compare(baseline, candidate, tables=None):
             "exact": 0,
             "workload": 0,
         }
+        repeat = base.get("repeat_abs_delta") or {}
         row = {"key": key, "case": base["case"], "backend": backend,
                "baseline_outcome": f"{base.get('execution')}/{base.get('verification')}",
                "candidate_outcome": f"{cand.get('execution')}/{cand.get('verification')}", "metrics": []}
@@ -249,19 +256,37 @@ def compare(baseline, candidate, tables=None):
             a, b = base.get(field), cand.get(field)
             delta = b - a if isinstance(a, int) and isinstance(b, int) else None
             pct = (delta / a * 100.0) if delta is not None and a else None
-            mark = verdict(delta, bands[kind])
+            band = bands[kind] if kind == "workload" else max(bands[kind], repeat.get(field) or 0)
+            mark = verdict(delta, band)
             row["metrics"].append({"metric": name, "field": field, "baseline": a, "candidate": b,
-                                   "delta": delta, "delta_pct": pct, "band": bands[kind], "verdict": mark})
+                                   "delta": delta, "delta_pct": pct, "band": band, "verdict": mark})
             if kind == "workload" and mark not in ("same", "n/a"):
                 out["not_comparable"].append(f"{key}: {name} differs ({a} → {b})")
             elif mark == "HIGHER":
-                out["regressions"].append(f"{key}: {name} {delta:+,} B ({pct:+.2f}%), band ±{bands[kind]:,}")
+                out["regressions"].append(f"{key}: {name} {delta:+,} B ({pct:+.2f}%), band ±{band:,}")
             elif mark == "lower":
                 out["improvements"].append(f"{key}: {name} {delta:+,} B ({pct:+.2f}%)")
         if cand.get("verification") != "PASS":
             out["not_comparable"].append(f"{key}: candidate verification {cand.get('verification')}")
         out["rows"].append(row)
     return out
+
+
+def add_repeat(baseline, repeat):
+    """Record, per row and metric, |Δ| between the baseline and a same-build repeat."""
+    for key, base in baseline["rows"].items():
+        other = repeat["rows"].get(key)
+        if other is None:
+            continue
+        deltas = {}
+        for _, field, kind in metrics(base["backend"]):
+            a, b = base.get(field), other.get(field)
+            if kind != "workload" and isinstance(a, int) and isinstance(b, int):
+                deltas[field] = abs(b - a)
+        base["repeat_abs_delta"] = deltas
+    baseline["repeat"] = {"campaign_id": repeat.get("campaign_id"), "source_sha": repeat.get("source_sha"),
+                          "harness": repeat.get("harness"), "wall_ineligible": repeat.get("wall_ineligible")}
+    return baseline
 
 
 def _n(value):
@@ -278,7 +303,8 @@ def compare_markdown(result, baseline, candidate):
         "",
         "Noise: Store bytes ±1 page per Store table (SQLite "
         f"{SQLITE_TABLES} × 4,096 B = {SQLITE_TABLES * SQLITE_PAGE:,} B; PostgreSQL {PG_TABLES} × 8,192 B = "
-        f"{PG_TABLES * PG_PAGE:,} B); new_stored/new_metadata ±16 B per Commit; payload, canonical, raw exact. "
+        f"{PG_TABLES * PG_PAGE:,} B); new_stored/new_metadata ±16 B per Commit; payload, canonical, raw exact; "
+        "each band widened to the baseline's same-build repeat |Δ| where pinned. "
         "`lower` = smaller beyond noise, `HIGHER` = larger beyond noise (regression). Bytes are exact integers.",
         "",
     ]

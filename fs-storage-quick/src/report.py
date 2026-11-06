@@ -290,7 +290,7 @@ def render(data, notes="", outcome_text=None):
         "",
         "In LayerFS 2.0 `new_stored` counts all new pack bytes and `new_metadata` is its metadata-domain subset, "
         "so payload = stored − metadata; **net − Σ new_stored** is what no Commit's packs account for (database "
-        "pages, indexes, free space, the SQLite WAL, and for Q6 both Inits).",
+        "pages, indexes, free space, the SQLite WAL, and for Q6 the base Init).",
         "",
         attribution(data),
         "",

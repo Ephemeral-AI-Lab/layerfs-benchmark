@@ -9,7 +9,7 @@
 | Runs on | Docker machine only: 6 cases × SQLite, PostgreSQL = 12 rows, all SQLite rows then all PostgreSQL rows |
 | Budget | ≤ 120 s matrix wall per backend is the target (INELIGIBLE diagnostic; measured values are in the past runs) |
 | Measures | Store bytes at a quiesced boundary (SQLite file and WAL separately, PostgreSQL schema), per-Commit `new_canonical`/`new_stored`/`new_metadata`, optional late re-probe; no timing claims |
-| Gate | `run.py compare` of a candidate against the pinned [baseline](baseline/) with a documented noise rule |
+| Gate | `run.py compare` of a candidate against the pinned [baseline](baseline/): ±1 page per Store table, ±16 B per Commit for `new_stored`/`new_metadata`, widened to a pinned same-build repeat difference |
 | Rules | [AGENTS.md](AGENTS.md); shared measurement in [shared/STORAGE.md](../shared/STORAGE.md) |
 
 ## Overview
@@ -88,4 +88,7 @@ Tests (no LayerFS):
 ## Past runs
 
 <!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-06 | `b4fa173e40` | 12 of 12 fs-storage-quick rows PASS with verified final state on the base build, pinned as the #84 baseline; matrix wall SQLite 52.9 s and PostgreSQL 117.4 s (INELIGIBLE, target ≤ 120 s per backend); after the late probe every SQLite Store had 0 B of WAL (Q1 8,798,208 → 4,796,416 B net) and Q6 PostgreSQL shrank 38,158,336 → 31,358,976 B; a same-build repeat stayed within noise; cleanup COMPLETE | [report](../result/2026-11-06/fs-storage-quick/b4fa173e401fc87af6610c151225096288e4ba57/report.md) |
 <!-- runs:end -->

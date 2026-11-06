@@ -66,7 +66,10 @@ suites stay the release check.
   as `baseline/<full-sha>.json`. `run.py compare --baseline … --candidate …`
   prints Δ bytes, Δ% and a verdict per metric; the noise rule is in
   [src/results.py](src/results.py) (±1 page per Store table for Store bytes,
-  ±16 B per Commit for `new_stored`/`new_metadata`, exact otherwise).
+  ±16 B per Commit for `new_stored`/`new_metadata`, exact otherwise; each band
+  widened to the |Δ| of a same-build repeat pinned into the baseline with
+  `run.py add-repeat`). A new baseline (new workload version or new base
+  build) is pinned with its own repeat campaign.
 - [src/report.py](src/report.py) renders one report from an export; publish it
   under `result/` and run `python3 shared/src/readme_index.py`. Ledgers,
   campaign caches and exports other than the pinned baseline stay local.

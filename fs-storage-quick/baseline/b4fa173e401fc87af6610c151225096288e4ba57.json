@@ -120,6 +120,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 28,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 28,
+    "sum_new_canonical": 0
    }
   },
   "Q1/postgresql": {
@@ -199,6 +211,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 6,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 6,
+    "sum_new_canonical": 0
    }
   },
   "Q2/sqlite": {
@@ -395,6 +415,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 4,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 4,
+    "sum_new_canonical": 0
    }
   },
   "Q2/postgresql": {
@@ -594,6 +626,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 7,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 7,
+    "sum_new_canonical": 0
    }
   },
   "Q3/sqlite": {
@@ -790,6 +830,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 5,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 5,
+    "sum_new_canonical": 0
    }
   },
   "Q3/postgresql": {
@@ -989,6 +1041,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 18,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 18,
+    "sum_new_canonical": 0
    }
   },
   "Q4/sqlite": {
@@ -1185,6 +1245,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4120,
+    "net_file_bytes": 0,
+    "net_wal_bytes": 4120,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 6,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 6,
+    "sum_new_canonical": 0
    }
   },
   "Q4/postgresql": {
@@ -1384,6 +1456,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 0,
+    "late_net_bytes": 0,
+    "sum_new_stored": 0,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 0,
+    "sum_new_canonical": 0
    }
   },
   "Q5/sqlite": {
@@ -1510,6 +1590,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 4096,
+    "net_file_bytes": 4096,
+    "net_wal_bytes": 0,
+    "late_net_bytes": 0,
+    "late_net_file_bytes": 0,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 1,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 1,
+    "sum_new_canonical": 0
    }
   },
   "Q5/postgresql": {
@@ -1639,6 +1731,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 8192,
+    "late_net_bytes": 8192,
+    "sum_new_stored": 1,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 1,
+    "sum_new_canonical": 0
    }
   },
   "Q6/sqlite": {
@@ -1949,6 +2049,18 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 49056,
+    "net_file_bytes": 65536,
+    "net_wal_bytes": 16480,
+    "late_net_bytes": 49152,
+    "late_net_file_bytes": 49152,
+    "late_net_wal_bytes": 0,
+    "sum_new_stored": 7,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 7,
+    "sum_new_canonical": 0
    }
   },
   "Q6/postgresql": {
@@ -2263,6 +2375,14 @@
     ],
     "commit_cpu_worker": "UNAVAILABLE (public CLI reports none)",
     "read_amplification": "UNAVAILABLE (value_lookups/value_rows, decode and delta-depth counters are not in Commit output)"
+   },
+   "repeat_abs_delta": {
+    "net_bytes": 139264,
+    "late_net_bytes": 155648,
+    "sum_new_stored": 25,
+    "sum_new_payload": 0,
+    "sum_new_metadata": 25,
+    "sum_new_canonical": 0
    }
   }
  },
@@ -2270,5 +2390,26 @@
   "git_head": "275e024a19aaea3f9d268a123774bbdd4e5da9e0",
   "sources_sha256": "9dbce5c8a4565a9ae18c14aeb3202b0f0cfe21ead657de41dbe2ba442b288f0a",
   "suite_dirty": false
+ },
+ "repeat": {
+  "campaign_id": "q85-base3",
+  "source_sha": "b4fa173e401fc87af6610c151225096288e4ba57",
+  "harness": {
+   "git_head": "275e024a19aaea3f9d268a123774bbdd4e5da9e0",
+   "sources_sha256": "9dbce5c8a4565a9ae18c14aeb3202b0f0cfe21ead657de41dbe2ba442b288f0a",
+   "suite_dirty": true
+  },
+  "wall_ineligible": {
+   "sqlite": {
+    "matrix_wall_s": 56.4,
+    "sum_row_wall_s": 56.2,
+    "rows": 6
+   },
+   "postgresql": {
+    "matrix_wall_s": 119.8,
+    "sum_row_wall_s": 119.3,
+    "rows": 6
+   }
+  }
  }
 }
