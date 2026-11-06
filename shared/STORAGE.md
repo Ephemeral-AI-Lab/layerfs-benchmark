@@ -54,11 +54,14 @@ time anything: wall time is an INELIGIBLE diagnostic. Three modules serve them;
   (`unattributed_bytes`; counts metadata twice, kept for comparability),
   logical ÷ net, net ÷ each reference, net ÷ ideal unique. A Commit listed on
   several branches counts once.
-- **Determinism (observed on 2.0, fs-storage-micro M03 repeats).** Page-
-  granular totals (SQLite `file.bytes`, PostgreSQL schema bytes) repeated
-  exactly, but per-Commit `new_stored`/`new_metadata` varied by a few bytes
-  and SQLite `wal_bytes` by whole WAL frames; `new_canonical` and `logical`
-  were identical. Report variance; do not expect byte-identical counters.
+- **Determinism (observed on 2.0).** Store bytes are not byte-identical in
+  general. fs-storage-micro M03 repeats: SQLite `file.bytes` and PostgreSQL
+  schema bytes happened to repeat exactly, SQLite `wal_bytes` moved by whole
+  WAL frames, per-Commit `new_metadata` (and so `new_stored`) by up to 25 B,
+  while payload (`new_stored − new_metadata`), `new_canonical` and `logical`
+  were identical. Counterexample: fs-storage-dsh D10 SQLite repeated with
+  `file.bytes` +28,672 B (7 pages), WAL unchanged, `new_metadata` drifting up
+  to 101 B per Commit. Report the variance; do not claim determinism.
 - **One fresh Store per row.** A failed or uncertain Commit marks the row FAIL
   and keeps its Store (`cleanup: INCOMPLETE`, `retained_reason`).
 
@@ -113,6 +116,8 @@ For shapes `run_row` does not cover, use `storage.Driver(campaign, row)`
 directly: `store_create`, `store_connect`, `project_init`, `store_push`,
 `fork`, `sandbox_create`, `mount` (returns `ws`), `exec`, `commit`,
 `unmount`, `sandbox_close`, `store_release`, `probe(store, label, allocated)`,
+(`exec` also appends `{label, phase, ws, exit_code, stdout, stderr}` to
+`row["exec_results"]`, first 8,000 characters each),
 `commits(project, branch)`, `quiesced()`, `cleanup()`. Each call is one
 bounded `Campaign.call` with a unique phase label; Exec `exit_code` ≠ 0, a
 truncated Exec, a non-`Committed` Commit, or any CLI refusal raises and is
