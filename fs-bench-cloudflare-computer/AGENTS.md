@@ -57,6 +57,34 @@ Set `"shared_infrastructure": true` in the campaign config. The runner calls
 without that flag it releases every registered machine and server mid-campaign.
 Release shared infrastructure yourself after the last row.
 
+## Host baseline
+
+[src/host.py](src/host.py) records native macOS cost without LayerFS in it: the
+same `cases.py` body, the same pinned bash, `sha256sum` wrapper and PATH as the
+native rows, run on an ordinary APFS directory that no Store or Workspace owns.
+It is **host cost, not a LayerFS row**: no create, mount, Exec, Commit, unmount
+or close, no `shared/src/runner.py` lifecycle, and never a ninth row.
+
+- **One sample per campaign.** The host does not depend on SQLite or
+  PostgreSQL, so both scenario tables share the one sample. `host.py` writes
+  `<cache>/host-baseline.json` and refuses to replace it (`--force` is for a
+  campaign that has not run).
+- **Prove the directory first.** `host.py` reads `mount` itself and runs nothing
+  unless the target is `apfs` on a local device. A directory inside the
+  campaign's `home`, `XDG_CACHE_HOME` or cache is refused, and so is any
+  NFS/afpfs/smbfs mount, including a LayerFS Workspace mounted from
+  `127.0.0.1:`. A refused directory is NOT_RUN with a reason and no numbers;
+  nothing is estimated, extrapolated or copied from another machine.
+- **Same host as the native rows.** `native − host` is only LayerFS-attributable
+  on the machine the native rows ran on, so the record carries the platform and
+  the report prints it.
+- **Cache state.** The target is plain APFS with no LayerFS volume behind it:
+  the nine self-contained scenarios are self-contained, and the three
+  own-write-warm scenarios are warm the same way the native rows are.
+- **Settings.** `REPS=1 WARMUP=0 RANDOMIZE_TARGETS=0`, no `BASE`, the twelve
+  offline scenarios, `cases.parse_result` as the check. `image/fs-bench.sh`,
+  `src/cases.py` and `shared/src/runner.py` are untouched by this.
+
 ## Budgets, results and limits
 
 The whole script runs in one Exec, so each row has a declared 25 s performance
@@ -68,10 +96,19 @@ retried; a later attempt under a changed budget is a new campaign, and the
 report keeps the earlier attempt as superseded. No command runs longer than two
 minutes.
 
+The host baseline is the evidence behind that exception: it shows how much of
+native time is macOS and APFS alone (`stat`, `mkdir` and `echo >` launch one
+process per file) and how much is LayerFS. Whether the native budget stays at
+60 s is the owner's call; changing it is a new campaign with the earlier
+attempts kept as superseded.
+
 Report a lifecycle table for the eight rows, then one scenario table per
-database with Docker as the baseline column and `machine / Docker` ratios.
-`pure read`, `pure copy` and `overwrite` are own-write warm; the 64 MiB rows
-write zeros. No cache is proven cold: every time and ratio is an INELIGIBLE
-diagnostic. There is no independent verifier (each scenario deletes its
-output), so `--verify` is refused. Publish one report with
-[src/report.py](src/report.py); raw receipts stay local.
+database with Docker as the baseline column and `machine / Docker` ratios, plus
+`host ms`, `host / Docker` and `native − host ms` (LayerFS-attributable) from
+the campaign's one host sample. Without a sample those three columns read
+`UNAVAILABLE` and nothing is inferred in their place. `pure read`, `pure copy`
+and `overwrite` are own-write warm; the 64 MiB rows write zeros. No cache is
+proven cold: every time and ratio is an INELIGIBLE diagnostic. There is no
+independent verifier (each scenario deletes its output), so `--verify` is
+refused. Publish one report with [src/report.py](src/report.py); raw receipts
+stay local.
