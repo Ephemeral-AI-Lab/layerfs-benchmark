@@ -2,6 +2,17 @@
 
 > group: comparison · measures: storage, speed (diagnostic) · run 2026-11-06
 
+> **Update 2026-11-07:** rerun with ovnfs `5d54cb0` (now packs, compresses and
+> delta-encodes its store) and LayerFS `layerfs_v2_0_0` @ `751b6b83`, same day and load.
+> ovnfs now needs 7–10% more space than LayerFS (not 3.8–4.4×) and adds 11–35× more bytes
+> per commit; ovnfs reads the full tree about 2× faster and imports about 14× faster. The
+> rerun's commit timings mostly measured the `docker exec` route into ovnfs (an ovnfs commit
+> takes 8–12 ms inside its container), so it doesn't show which system commits faster; the
+> 11-06 commit ratios below include the same route cost (84–93 ms per call then). See
+> [rerun-2026-11-07/report.md](rerun-2026-11-07/report.md). The tables below are the
+> 2026-11-06 run, and the design summary below describes ovnfs before that change; see
+> [rerun-2026-11-07/design.md](rerun-2026-11-07/design.md) for the current design comparison.
+
 **LayerFS v2.0.0 (Docker machine, SQLite Store) held the same histories in 3.8–4.4× less
 space than ovnfs. It added about 3.6 KB per commit against ovnfs's 212 KB to 2.2 MB per
 commit, and committed 2.6–7.3× faster (median 27–51 ms vs 131–212 ms). ovnfs imported the
