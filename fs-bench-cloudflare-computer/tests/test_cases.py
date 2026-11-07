@@ -127,7 +127,12 @@ class Report(unittest.TestCase):
         }
         text = report.render(state, {"cleanup": "COMPLETE"}, {})
         self.assertIn("**2 of 8 rows ran all twelve scenarios", text)
-        self.assertIn("| create 1000 files | self-contained | 0.0 | — | 0.0 | — | — | 2.00 | — |", text)
+        self.assertIn(
+            "| create 1000 files | self-contained | UNAVAILABLE | 0.0 | — | 0.0 | — "
+            "| UNAVAILABLE | UNAVAILABLE | — | 2.00 | — |",
+            text,
+        )
+        self.assertIn("Host baseline: UNAVAILABLE", text)
         self.assertIn("needs bash 4", text)
         self.assertIn("UpToDate", text)
         self.assertLess(text.index("Scenario times, SQLite"), text.index("Scenario times, PostgreSQL"))
