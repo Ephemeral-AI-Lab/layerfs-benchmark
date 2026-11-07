@@ -71,5 +71,7 @@ reporting rules.
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS | [report](../result/2026-11-06/smallfile/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+| 2026-11-06 | `76a32a9a10` (pgr2-six) | Diagnostic terminal: INCOMPLETE. 45 registered rows; execution {'PASS': 45}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/smallfile/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-six/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-six) | Diagnostic terminal: INCOMPLETE. 45 registered rows; execution {'PASS': 45}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/smallfile/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-six/report.md) |
+| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS. 40 registered rows; execution {'PASS': 40}. Final infrastructure cleanup: COMPLETE | [report](../result/2026-11-06/smallfile/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->

@@ -68,7 +68,9 @@ summary generation, or released with the owning Sandbox.
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS | [report](../result/2026-11-06/fsx/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+| 2026-11-06 | `76a32a9a10` (pgr2-six) | Diagnostic terminal: INCOMPLETE. 9 registered rows; execution {'PASS': 9}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fsx/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-six/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-six) | Diagnostic terminal: INCOMPLETE. 9 registered rows; execution {'PASS': 9}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fsx/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-six/report.md) |
+| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS. 8 registered rows; execution {'PASS': 8}. Final infrastructure cleanup: COMPLETE | [report](../result/2026-11-06/fsx/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->
 
 fsx v1 (retired): 6 PASS, 0 FAIL, 2 NOT_RUN; replaced by portable v2 above.
