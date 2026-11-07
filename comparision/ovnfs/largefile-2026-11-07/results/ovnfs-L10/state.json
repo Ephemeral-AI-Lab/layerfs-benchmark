@@ -1,0 +1,1557 @@
+{
+ "arm": "ovnfs",
+ "branch_open_ns": 79101583,
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 166428958
+  },
+  {
+   "exit": 0,
+   "label": "mkdir",
+   "seq": 2,
+   "wall_ns": 73735209
+  },
+  {
+   "exit": 0,
+   "label": "copy_script",
+   "seq": 3,
+   "wall_ns": 35363917
+  },
+  {
+   "exit": 0,
+   "label": "gen",
+   "seq": 4,
+   "wall_ns": 117348375
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 5,
+   "wall_ns": 166346125
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 6,
+   "wall_ns": 81488834
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 7,
+   "wall_ns": 85836542
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 8,
+   "wall_ns": 83105041
+  },
+  {
+   "exit": 0,
+   "label": "new_b01",
+   "seq": 9,
+   "wall_ns": 79101583
+  },
+  {
+   "exit": 0,
+   "label": "probe_branch",
+   "seq": 10,
+   "wall_ns": 75593375
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 11,
+   "wall_ns": 88865958
+  },
+  {
+   "exit": 0,
+   "label": "snap_1",
+   "seq": 12,
+   "wall_ns": 191249000
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_1",
+   "seq": 13,
+   "wall_ns": 83426209
+  },
+  {
+   "exit": 0,
+   "label": "apply_2",
+   "seq": 14,
+   "wall_ns": 80673750
+  },
+  {
+   "exit": 0,
+   "label": "snap_2",
+   "seq": 15,
+   "wall_ns": 166359333
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_2",
+   "seq": 16,
+   "wall_ns": 75574541
+  },
+  {
+   "exit": 0,
+   "label": "apply_3",
+   "seq": 17,
+   "wall_ns": 82565833
+  },
+  {
+   "exit": 0,
+   "label": "snap_3",
+   "seq": 18,
+   "wall_ns": 165981667
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_3",
+   "seq": 19,
+   "wall_ns": 79643083
+  },
+  {
+   "exit": 0,
+   "label": "apply_4",
+   "seq": 20,
+   "wall_ns": 90329042
+  },
+  {
+   "exit": 0,
+   "label": "snap_4",
+   "seq": 21,
+   "wall_ns": 198341042
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_4",
+   "seq": 22,
+   "wall_ns": 79241166
+  },
+  {
+   "exit": 0,
+   "label": "apply_5",
+   "seq": 23,
+   "wall_ns": 94186250
+  },
+  {
+   "exit": 0,
+   "label": "snap_5",
+   "seq": 24,
+   "wall_ns": 166931625
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_5",
+   "seq": 25,
+   "wall_ns": 81130125
+  },
+  {
+   "exit": 0,
+   "label": "apply_6",
+   "seq": 26,
+   "wall_ns": 83460167
+  },
+  {
+   "exit": 0,
+   "label": "snap_6",
+   "seq": 27,
+   "wall_ns": 156627583
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_6",
+   "seq": 28,
+   "wall_ns": 72175333
+  },
+  {
+   "exit": 0,
+   "label": "apply_7",
+   "seq": 29,
+   "wall_ns": 82618417
+  },
+  {
+   "exit": 0,
+   "label": "snap_7",
+   "seq": 30,
+   "wall_ns": 167492333
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_7",
+   "seq": 31,
+   "wall_ns": 94415125
+  },
+  {
+   "exit": 0,
+   "label": "apply_8",
+   "seq": 32,
+   "wall_ns": 107179750
+  },
+  {
+   "exit": 0,
+   "label": "snap_8",
+   "seq": 33,
+   "wall_ns": 190380542
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_8",
+   "seq": 34,
+   "wall_ns": 88227000
+  },
+  {
+   "exit": 0,
+   "label": "apply_9",
+   "seq": 35,
+   "wall_ns": 101478667
+  },
+  {
+   "exit": 0,
+   "label": "snap_9",
+   "seq": 36,
+   "wall_ns": 176893125
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_9",
+   "seq": 37,
+   "wall_ns": 89042541
+  },
+  {
+   "exit": 0,
+   "label": "apply_10",
+   "seq": 38,
+   "wall_ns": 93970375
+  },
+  {
+   "exit": 0,
+   "label": "snap_10",
+   "seq": 39,
+   "wall_ns": 189531750
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_10",
+   "seq": 40,
+   "wall_ns": 81738209
+  },
+  {
+   "exit": 0,
+   "label": "apply_11",
+   "seq": 41,
+   "wall_ns": 103411208
+  },
+  {
+   "exit": 0,
+   "label": "snap_11",
+   "seq": 42,
+   "wall_ns": 183529833
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_11",
+   "seq": 43,
+   "wall_ns": 85510875
+  },
+  {
+   "exit": 0,
+   "label": "apply_12",
+   "seq": 44,
+   "wall_ns": 102035167
+  },
+  {
+   "exit": 0,
+   "label": "snap_12",
+   "seq": 45,
+   "wall_ns": 200838292
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_12",
+   "seq": 46,
+   "wall_ns": 98409500
+  },
+  {
+   "exit": 0,
+   "label": "apply_13",
+   "seq": 47,
+   "wall_ns": 100043375
+  },
+  {
+   "exit": 0,
+   "label": "snap_13",
+   "seq": 48,
+   "wall_ns": 205925875
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_13",
+   "seq": 49,
+   "wall_ns": 88695708
+  },
+  {
+   "exit": 0,
+   "label": "apply_14",
+   "seq": 50,
+   "wall_ns": 102678667
+  },
+  {
+   "exit": 0,
+   "label": "snap_14",
+   "seq": 51,
+   "wall_ns": 165340083
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_14",
+   "seq": 52,
+   "wall_ns": 90696792
+  },
+  {
+   "exit": 0,
+   "label": "apply_15",
+   "seq": 53,
+   "wall_ns": 97914750
+  },
+  {
+   "exit": 0,
+   "label": "snap_15",
+   "seq": 54,
+   "wall_ns": 195577625
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_15",
+   "seq": 55,
+   "wall_ns": 86313292
+  },
+  {
+   "exit": 0,
+   "label": "apply_16",
+   "seq": 56,
+   "wall_ns": 100746333
+  },
+  {
+   "exit": 0,
+   "label": "snap_16",
+   "seq": 57,
+   "wall_ns": 173758125
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_16",
+   "seq": 58,
+   "wall_ns": 82924833
+  },
+  {
+   "exit": 0,
+   "label": "apply_17",
+   "seq": 59,
+   "wall_ns": 90452750
+  },
+  {
+   "exit": 0,
+   "label": "snap_17",
+   "seq": 60,
+   "wall_ns": 152633917
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_17",
+   "seq": 61,
+   "wall_ns": 72298916
+  },
+  {
+   "exit": 0,
+   "label": "apply_18",
+   "seq": 62,
+   "wall_ns": 88612708
+  },
+  {
+   "exit": 0,
+   "label": "snap_18",
+   "seq": 63,
+   "wall_ns": 144936125
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_18",
+   "seq": 64,
+   "wall_ns": 89312709
+  },
+  {
+   "exit": 0,
+   "label": "apply_19",
+   "seq": 65,
+   "wall_ns": 83069416
+  },
+  {
+   "exit": 0,
+   "label": "snap_19",
+   "seq": 66,
+   "wall_ns": 175659584
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_19",
+   "seq": 67,
+   "wall_ns": 82480666
+  },
+  {
+   "exit": 0,
+   "label": "apply_20",
+   "seq": 68,
+   "wall_ns": 89152833
+  },
+  {
+   "exit": 0,
+   "label": "snap_20",
+   "seq": 69,
+   "wall_ns": 160219542
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_20",
+   "seq": 70,
+   "wall_ns": 78471458
+  },
+  {
+   "exit": 0,
+   "label": "vnew",
+   "seq": 71,
+   "wall_ns": 79342375
+  },
+  {
+   "exit": 0,
+   "label": "vsha",
+   "seq": 72,
+   "wall_ns": 95924208
+  },
+  {
+   "exit": 0,
+   "label": "vrm",
+   "seq": 73,
+   "wall_ns": 67571833
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 74,
+   "wall_ns": 281923333
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 75,
+   "wall_ns": 82977125
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 76,
+   "wall_ns": 376875542
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 77,
+   "wall_ns": 47644916
+  }
+ ],
+ "case": "L10",
+ "gen_ns": 117348375,
+ "image": "fsh-cmp-ovnfs:5d54cb0",
+ "import_ns": 85836542,
+ "import_reply": {
+  "capture": {
+   "bytes": 10485760,
+   "cache": 0,
+   "files": 1,
+   "hashed": 1,
+   "hashed_bytes": 10485760,
+   "hidden": 0,
+   "local": 0,
+   "repos": null,
+   "root": "/data/src",
+   "seconds": 0.024389541
+  },
+  "checkout": {
+   "base": "b_84a601c85c57",
+   "created": "2026-11-07T07:07:08.413890083Z",
+   "dirty": false,
+   "git": false,
+   "name": "main",
+   "path": "/root/checkouts/main",
+   "source": "/data/src"
+  },
+  "warnings": []
+ },
+ "load_1m": [
+  {
+   "load": 3.74,
+   "unit": "open"
+  },
+  {
+   "load": 3.74,
+   "unit": "steps 1 10"
+  },
+  {
+   "load": 4.16,
+   "unit": "steps 11 20"
+  },
+  {
+   "load": 4.07,
+   "unit": "verify"
+  },
+  {
+   "load": 4.07,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-lf-ov-l10",
+  "volume": "fsh-lf-ov-l10"
+ },
+ "owned_released": true,
+ "probes": [
+  {
+   "allocated_bytes": 1126400,
+   "apparent_bytes": 1102369,
+   "label": "floor",
+   "objects_apparent": 1052672,
+   "objects_files": 0,
+   "packs_apparent": 4096,
+   "parts": {
+    "bases": 4096,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 1069056,
+    "store/objects": 1052672,
+    "store/packs": 4096,
+    "uppers": 4096
+   }
+  },
+  {
+   "allocated_bytes": 11640832,
+   "apparent_bytes": 11601889,
+   "label": "import",
+   "objects_apparent": 11538432,
+   "objects_files": 1,
+   "packs_apparent": 4175,
+   "parts": {
+    "bases": 16384,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 11558912,
+    "store/objects": 11538432,
+    "store/packs": 8192,
+    "uppers": 12288
+   }
+  },
+  {
+   "allocated_bytes": 11661312,
+   "apparent_bytes": 11615470,
+   "label": "branch",
+   "objects_apparent": 11538432,
+   "objects_files": 1,
+   "packs_apparent": 4175,
+   "parts": {
+    "bases": 28672,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 11558912,
+    "store/objects": 11538432,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 32636928,
+   "apparent_bytes": 32591414,
+   "label": "after_1",
+   "objects_apparent": 22024192,
+   "objects_files": 2,
+   "packs_apparent": 4254,
+   "parts": {
+    "bases": 28672,
+    "layers": 10493952,
+    "nodes.log": 4096,
+    "store": 22044672,
+    "store/objects": 22024192,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 43126784,
+   "apparent_bytes": 43077949,
+   "label": "after_2",
+   "objects_apparent": 32509952,
+   "objects_files": 3,
+   "packs_apparent": 4445,
+   "parts": {
+    "bases": 28672,
+    "layers": 10498048,
+    "nodes.log": 4096,
+    "store": 32530432,
+    "store/objects": 32509952,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 53616640,
+   "apparent_bytes": 53564479,
+   "label": "after_3",
+   "objects_apparent": 42995712,
+   "objects_files": 4,
+   "packs_apparent": 4636,
+   "parts": {
+    "bases": 28672,
+    "layers": 10502144,
+    "nodes.log": 4096,
+    "store": 43016192,
+    "store/objects": 42995712,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 64106496,
+   "apparent_bytes": 64051005,
+   "label": "after_4",
+   "objects_apparent": 53481472,
+   "objects_files": 5,
+   "packs_apparent": 4827,
+   "parts": {
+    "bases": 28672,
+    "layers": 10506240,
+    "nodes.log": 4096,
+    "store": 53501952,
+    "store/objects": 53481472,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 74596352,
+   "apparent_bytes": 74537536,
+   "label": "after_5",
+   "objects_apparent": 63967232,
+   "objects_files": 6,
+   "packs_apparent": 5018,
+   "parts": {
+    "bases": 28672,
+    "layers": 10510336,
+    "nodes.log": 4096,
+    "store": 63987712,
+    "store/objects": 63967232,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 85086208,
+   "apparent_bytes": 85024074,
+   "label": "after_6",
+   "objects_apparent": 74452992,
+   "objects_files": 7,
+   "packs_apparent": 5209,
+   "parts": {
+    "bases": 28672,
+    "layers": 10514432,
+    "nodes.log": 4096,
+    "store": 74473472,
+    "store/objects": 74452992,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 95576064,
+   "apparent_bytes": 95510610,
+   "label": "after_7",
+   "objects_apparent": 84938752,
+   "objects_files": 8,
+   "packs_apparent": 5400,
+   "parts": {
+    "bases": 28672,
+    "layers": 10518528,
+    "nodes.log": 4096,
+    "store": 84959232,
+    "store/objects": 84938752,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 106065920,
+   "apparent_bytes": 105997146,
+   "label": "after_8",
+   "objects_apparent": 95424512,
+   "objects_files": 9,
+   "packs_apparent": 5591,
+   "parts": {
+    "bases": 28672,
+    "layers": 10522624,
+    "nodes.log": 4096,
+    "store": 95444992,
+    "store/objects": 95424512,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 116555776,
+   "apparent_bytes": 116483682,
+   "label": "after_9",
+   "objects_apparent": 105910272,
+   "objects_files": 10,
+   "packs_apparent": 5782,
+   "parts": {
+    "bases": 28672,
+    "layers": 10526720,
+    "nodes.log": 4096,
+    "store": 105930752,
+    "store/objects": 105910272,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 127045632,
+   "apparent_bytes": 126970219,
+   "label": "after_10",
+   "objects_apparent": 116396032,
+   "objects_files": 11,
+   "packs_apparent": 5973,
+   "parts": {
+    "bases": 28672,
+    "layers": 10530816,
+    "nodes.log": 4096,
+    "store": 116416512,
+    "store/objects": 116396032,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 137535488,
+   "apparent_bytes": 137456765,
+   "label": "after_11",
+   "objects_apparent": 126881792,
+   "objects_files": 12,
+   "packs_apparent": 6164,
+   "parts": {
+    "bases": 28672,
+    "layers": 10534912,
+    "nodes.log": 4096,
+    "store": 126902272,
+    "store/objects": 126881792,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 148025344,
+   "apparent_bytes": 147943310,
+   "label": "after_12",
+   "objects_apparent": 137367552,
+   "objects_files": 13,
+   "packs_apparent": 6355,
+   "parts": {
+    "bases": 28672,
+    "layers": 10539008,
+    "nodes.log": 4096,
+    "store": 137388032,
+    "store/objects": 137367552,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 158515200,
+   "apparent_bytes": 158429848,
+   "label": "after_13",
+   "objects_apparent": 147853312,
+   "objects_files": 14,
+   "packs_apparent": 6546,
+   "parts": {
+    "bases": 28672,
+    "layers": 10543104,
+    "nodes.log": 4096,
+    "store": 147873792,
+    "store/objects": 147853312,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 169009152,
+   "apparent_bytes": 168916390,
+   "label": "after_14",
+   "objects_apparent": 158339072,
+   "objects_files": 15,
+   "packs_apparent": 6737,
+   "parts": {
+    "bases": 28672,
+    "layers": 10547200,
+    "nodes.log": 4096,
+    "store": 158359552,
+    "store/objects": 158339072,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 179499008,
+   "apparent_bytes": 179402931,
+   "label": "after_15",
+   "objects_apparent": 168824832,
+   "objects_files": 16,
+   "packs_apparent": 6928,
+   "parts": {
+    "bases": 28672,
+    "layers": 10551296,
+    "nodes.log": 4096,
+    "store": 168845312,
+    "store/objects": 168824832,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 189988864,
+   "apparent_bytes": 189889474,
+   "label": "after_16",
+   "objects_apparent": 179310592,
+   "objects_files": 17,
+   "packs_apparent": 7119,
+   "parts": {
+    "bases": 28672,
+    "layers": 10555392,
+    "nodes.log": 4096,
+    "store": 179331072,
+    "store/objects": 179310592,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 200478720,
+   "apparent_bytes": 200376015,
+   "label": "after_17",
+   "objects_apparent": 189796352,
+   "objects_files": 18,
+   "packs_apparent": 7310,
+   "parts": {
+    "bases": 28672,
+    "layers": 10559488,
+    "nodes.log": 4096,
+    "store": 189816832,
+    "store/objects": 189796352,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 210968576,
+   "apparent_bytes": 210862550,
+   "label": "after_18",
+   "objects_apparent": 200282112,
+   "objects_files": 19,
+   "packs_apparent": 7501,
+   "parts": {
+    "bases": 28672,
+    "layers": 10563584,
+    "nodes.log": 4096,
+    "store": 200302592,
+    "store/objects": 200282112,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 221458432,
+   "apparent_bytes": 221349094,
+   "label": "after_19",
+   "objects_apparent": 210767872,
+   "objects_files": 20,
+   "packs_apparent": 7692,
+   "parts": {
+    "bases": 28672,
+    "layers": 10567680,
+    "nodes.log": 4096,
+    "store": 210788352,
+    "store/objects": 210767872,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 231948288,
+   "apparent_bytes": 231835636,
+   "label": "after_20",
+   "objects_apparent": 221253632,
+   "objects_files": 21,
+   "packs_apparent": 7883,
+   "parts": {
+    "bases": 28672,
+    "layers": 10571776,
+    "nodes.log": 4096,
+    "store": 221274112,
+    "store/objects": 221253632,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 221462528,
+   "apparent_bytes": 221346217,
+   "label": "final",
+   "objects_apparent": 221253632,
+   "objects_files": 21,
+   "packs_apparent": 7995,
+   "parts": {
+    "bases": 28672,
+    "layers": 86016,
+    "nodes.log": 4096,
+    "store": 221274112,
+    "store/objects": 221253632,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  }
+ ],
+ "spec": {
+  "bytes": 100,
+  "commits": 20,
+  "op": "overwrite",
+  "size": 10485760
+ },
+ "status": "closed",
+ "steps": [
+  {
+   "apply_ns": 88865958,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 7245609,
+    "op": "overwrite",
+    "step": 1
+   },
+   "probe": {
+    "allocated_bytes": 32636928,
+    "apparent_bytes": 32591414,
+    "label": "after_1",
+    "objects_apparent": 22024192,
+    "objects_files": 2,
+    "packs_apparent": 4254,
+    "parts": {
+     "bases": 28672,
+     "layers": 10493952,
+     "nodes.log": 4096,
+     "store": 22044672,
+     "store/objects": 22024192,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 191249000,
+   "snapshot": "s1",
+   "step": 1
+  },
+  {
+   "apply_ns": 80673750,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 1804963,
+    "op": "overwrite",
+    "step": 2
+   },
+   "probe": {
+    "allocated_bytes": 43126784,
+    "apparent_bytes": 43077949,
+    "label": "after_2",
+    "objects_apparent": 32509952,
+    "objects_files": 3,
+    "packs_apparent": 4445,
+    "parts": {
+     "bases": 28672,
+     "layers": 10498048,
+     "nodes.log": 4096,
+     "store": 32530432,
+     "store/objects": 32509952,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 166359333,
+   "snapshot": "s2",
+   "step": 2
+  },
+  {
+   "apply_ns": 82565833,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 9768224,
+    "op": "overwrite",
+    "step": 3
+   },
+   "probe": {
+    "allocated_bytes": 53616640,
+    "apparent_bytes": 53564479,
+    "label": "after_3",
+    "objects_apparent": 42995712,
+    "objects_files": 4,
+    "packs_apparent": 4636,
+    "parts": {
+     "bases": 28672,
+     "layers": 10502144,
+     "nodes.log": 4096,
+     "store": 43016192,
+     "store/objects": 42995712,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 165981667,
+   "snapshot": "s3",
+   "step": 3
+  },
+  {
+   "apply_ns": 90329042,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 3773272,
+    "op": "overwrite",
+    "step": 4
+   },
+   "probe": {
+    "allocated_bytes": 64106496,
+    "apparent_bytes": 64051005,
+    "label": "after_4",
+    "objects_apparent": 53481472,
+    "objects_files": 5,
+    "packs_apparent": 4827,
+    "parts": {
+     "bases": 28672,
+     "layers": 10506240,
+     "nodes.log": 4096,
+     "store": 53501952,
+     "store/objects": 53481472,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 198341042,
+   "snapshot": "s4",
+   "step": 4
+  },
+  {
+   "apply_ns": 94186250,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 8832043,
+    "op": "overwrite",
+    "step": 5
+   },
+   "probe": {
+    "allocated_bytes": 74596352,
+    "apparent_bytes": 74537536,
+    "label": "after_5",
+    "objects_apparent": 63967232,
+    "objects_files": 6,
+    "packs_apparent": 5018,
+    "parts": {
+     "bases": 28672,
+     "layers": 10510336,
+     "nodes.log": 4096,
+     "store": 63987712,
+     "store/objects": 63967232,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 166931625,
+   "snapshot": "s5",
+   "step": 5
+  },
+  {
+   "apply_ns": 83460167,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 5999631,
+    "op": "overwrite",
+    "step": 6
+   },
+   "probe": {
+    "allocated_bytes": 85086208,
+    "apparent_bytes": 85024074,
+    "label": "after_6",
+    "objects_apparent": 74452992,
+    "objects_files": 7,
+    "packs_apparent": 5209,
+    "parts": {
+     "bases": 28672,
+     "layers": 10514432,
+     "nodes.log": 4096,
+     "store": 74473472,
+     "store/objects": 74452992,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 156627583,
+   "snapshot": "s6",
+   "step": 6
+  },
+  {
+   "apply_ns": 82618417,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 10420882,
+    "op": "overwrite",
+    "step": 7
+   },
+   "probe": {
+    "allocated_bytes": 95576064,
+    "apparent_bytes": 95510610,
+    "label": "after_7",
+    "objects_apparent": 84938752,
+    "objects_files": 8,
+    "packs_apparent": 5400,
+    "parts": {
+     "bases": 28672,
+     "layers": 10518528,
+     "nodes.log": 4096,
+     "store": 84959232,
+     "store/objects": 84938752,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 167492333,
+   "snapshot": "s7",
+   "step": 7
+  },
+  {
+   "apply_ns": 107179750,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 7800160,
+    "op": "overwrite",
+    "step": 8
+   },
+   "probe": {
+    "allocated_bytes": 106065920,
+    "apparent_bytes": 105997146,
+    "label": "after_8",
+    "objects_apparent": 95424512,
+    "objects_files": 9,
+    "packs_apparent": 5591,
+    "parts": {
+     "bases": 28672,
+     "layers": 10522624,
+     "nodes.log": 4096,
+     "store": 95444992,
+     "store/objects": 95424512,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 190380542,
+   "snapshot": "s8",
+   "step": 8
+  },
+  {
+   "apply_ns": 101478667,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 5777181,
+    "op": "overwrite",
+    "step": 9
+   },
+   "probe": {
+    "allocated_bytes": 116555776,
+    "apparent_bytes": 116483682,
+    "label": "after_9",
+    "objects_apparent": 105910272,
+    "objects_files": 10,
+    "packs_apparent": 5782,
+    "parts": {
+     "bases": 28672,
+     "layers": 10526720,
+     "nodes.log": 4096,
+     "store": 105930752,
+     "store/objects": 105910272,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 176893125,
+   "snapshot": "s9",
+   "step": 9
+  },
+  {
+   "apply_ns": 93970375,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 9963828,
+    "op": "overwrite",
+    "step": 10
+   },
+   "probe": {
+    "allocated_bytes": 127045632,
+    "apparent_bytes": 126970219,
+    "label": "after_10",
+    "objects_apparent": 116396032,
+    "objects_files": 11,
+    "packs_apparent": 5973,
+    "parts": {
+     "bases": 28672,
+     "layers": 10530816,
+     "nodes.log": 4096,
+     "store": 116416512,
+     "store/objects": 116396032,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 189531750,
+   "snapshot": "s10",
+   "step": 10
+  },
+  {
+   "apply_ns": 103411208,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 4393355,
+    "op": "overwrite",
+    "step": 11
+   },
+   "probe": {
+    "allocated_bytes": 137535488,
+    "apparent_bytes": 137456765,
+    "label": "after_11",
+    "objects_apparent": 126881792,
+    "objects_files": 12,
+    "packs_apparent": 6164,
+    "parts": {
+     "bases": 28672,
+     "layers": 10534912,
+     "nodes.log": 4096,
+     "store": 126902272,
+     "store/objects": 126881792,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 183529833,
+   "snapshot": "s11",
+   "step": 11
+  },
+  {
+   "apply_ns": 102035167,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 10451058,
+    "op": "overwrite",
+    "step": 12
+   },
+   "probe": {
+    "allocated_bytes": 148025344,
+    "apparent_bytes": 147943310,
+    "label": "after_12",
+    "objects_apparent": 137367552,
+    "objects_files": 13,
+    "packs_apparent": 6355,
+    "parts": {
+     "bases": 28672,
+     "layers": 10539008,
+     "nodes.log": 4096,
+     "store": 137388032,
+     "store/objects": 137367552,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 200838292,
+   "snapshot": "s12",
+   "step": 12
+  },
+  {
+   "apply_ns": 100043375,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 3418689,
+    "op": "overwrite",
+    "step": 13
+   },
+   "probe": {
+    "allocated_bytes": 158515200,
+    "apparent_bytes": 158429848,
+    "label": "after_13",
+    "objects_apparent": 147853312,
+    "objects_files": 14,
+    "packs_apparent": 6546,
+    "parts": {
+     "bases": 28672,
+     "layers": 10543104,
+     "nodes.log": 4096,
+     "store": 147873792,
+     "store/objects": 147853312,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 205925875,
+   "snapshot": "s13",
+   "step": 13
+  },
+  {
+   "apply_ns": 102678667,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 7798416,
+    "op": "overwrite",
+    "step": 14
+   },
+   "probe": {
+    "allocated_bytes": 169009152,
+    "apparent_bytes": 168916390,
+    "label": "after_14",
+    "objects_apparent": 158339072,
+    "objects_files": 15,
+    "packs_apparent": 6737,
+    "parts": {
+     "bases": 28672,
+     "layers": 10547200,
+     "nodes.log": 4096,
+     "store": 158359552,
+     "store/objects": 158339072,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 165340083,
+   "snapshot": "s14",
+   "step": 14
+  },
+  {
+   "apply_ns": 97914750,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 9121902,
+    "op": "overwrite",
+    "step": 15
+   },
+   "probe": {
+    "allocated_bytes": 179499008,
+    "apparent_bytes": 179402931,
+    "label": "after_15",
+    "objects_apparent": 168824832,
+    "objects_files": 16,
+    "packs_apparent": 6928,
+    "parts": {
+     "bases": 28672,
+     "layers": 10551296,
+     "nodes.log": 4096,
+     "store": 168845312,
+     "store/objects": 168824832,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 195577625,
+   "snapshot": "s15",
+   "step": 15
+  },
+  {
+   "apply_ns": 100746333,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 3449214,
+    "op": "overwrite",
+    "step": 16
+   },
+   "probe": {
+    "allocated_bytes": 189988864,
+    "apparent_bytes": 189889474,
+    "label": "after_16",
+    "objects_apparent": 179310592,
+    "objects_files": 17,
+    "packs_apparent": 7119,
+    "parts": {
+     "bases": 28672,
+     "layers": 10555392,
+     "nodes.log": 4096,
+     "store": 179331072,
+     "store/objects": 179310592,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 173758125,
+   "snapshot": "s16",
+   "step": 16
+  },
+  {
+   "apply_ns": 90452750,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 1490452,
+    "op": "overwrite",
+    "step": 17
+   },
+   "probe": {
+    "allocated_bytes": 200478720,
+    "apparent_bytes": 200376015,
+    "label": "after_17",
+    "objects_apparent": 189796352,
+    "objects_files": 18,
+    "packs_apparent": 7310,
+    "parts": {
+     "bases": 28672,
+     "layers": 10559488,
+     "nodes.log": 4096,
+     "store": 189816832,
+     "store/objects": 189796352,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 152633917,
+   "snapshot": "s17",
+   "step": 17
+  },
+  {
+   "apply_ns": 88612708,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 9154789,
+    "op": "overwrite",
+    "step": 18
+   },
+   "probe": {
+    "allocated_bytes": 210968576,
+    "apparent_bytes": 210862550,
+    "label": "after_18",
+    "objects_apparent": 200282112,
+    "objects_files": 19,
+    "packs_apparent": 7501,
+    "parts": {
+     "bases": 28672,
+     "layers": 10563584,
+     "nodes.log": 4096,
+     "store": 200302592,
+     "store/objects": 200282112,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 144936125,
+   "snapshot": "s18",
+   "step": 18
+  },
+  {
+   "apply_ns": 83069416,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 9777581,
+    "op": "overwrite",
+    "step": 19
+   },
+   "probe": {
+    "allocated_bytes": 221458432,
+    "apparent_bytes": 221349094,
+    "label": "after_19",
+    "objects_apparent": 210767872,
+    "objects_files": 20,
+    "packs_apparent": 7692,
+    "parts": {
+     "bases": 28672,
+     "layers": 10567680,
+     "nodes.log": 4096,
+     "store": 210788352,
+     "store/objects": 210767872,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 175659584,
+   "snapshot": "s19",
+   "step": 19
+  },
+  {
+   "apply_ns": 89152833,
+   "edit": {
+    "bytes": 100,
+    "case": "L10",
+    "offset": 6986809,
+    "op": "overwrite",
+    "step": 20
+   },
+   "probe": {
+    "allocated_bytes": 231948288,
+    "apparent_bytes": 231835636,
+    "label": "after_20",
+    "objects_apparent": 221253632,
+    "objects_files": 21,
+    "packs_apparent": 7883,
+    "parts": {
+     "bases": 28672,
+     "layers": 10571776,
+     "nodes.log": 4096,
+     "store": 221274112,
+     "store/objects": 221253632,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 160219542,
+   "snapshot": "s20",
+   "step": 20
+  }
+ ],
+ "verification": {
+  "expected": {
+   "sha256": "7b86a60262cb1d84275578158eed20a1befbe3f90137f66432b0426f26f0558e",
+   "size": 10485760,
+   "step": 20
+  },
+  "got": {
+   "sha256": "7b86a60262cb1d84275578158eed20a1befbe3f90137f66432b0426f26f0558e",
+   "size": 10485760
+  },
+  "result": "PASS"
+ },
+ "verify_open_ns": 79342375,
+ "verify_read_ns": 95924208,
+ "workload": "fsh-ovnfs-largefile-v0"
+}

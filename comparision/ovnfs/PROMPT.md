@@ -57,3 +57,36 @@ Release every resource you create.
    volume rm its data volume; confirm no fsh-cmp containers or volumes remain.
    Report what was kept.
 ```
+
+## Large-file cases (2026-11-07, verbatim)
+
+Asked after the 2026-11-07 rerun and design comparison:
+
+1. > so layerfs is much ahead? and ovnfs can fail on other history test, and large file,
+   > samll edit against large file cases?
+2. > Yes, measure ovnfs
+3. > how does it compare to layerfs ?
+
+Reproduction (for an agent), from `comparision/ovnfs/largefile-2026-11-07/`:
+
+```text
+Same rules as above (public LayerFS CLI, private LAYERFS_HOME, one unit per command,
+no retries, one sample, record load, release everything).
+
+1. Oracle: python3 largefile.py expect <case> for L10, L100, I10, A5; check it once in a
+   throwaway container by gen + apply on plain disk (hashes must match every step).
+2. ovnfs: build the image as above. For each case:
+     python3 lf_ovnfs.py <case> open
+     python3 lf_ovnfs.py <case> steps <first> <last>   # in chunks well under 2 minutes
+     python3 lf_ovnfs.py <case> verify
+     python3 lf_ovnfs.py <case> close
+   (LF_RESULTS selects the results directory; LF_OVNFS_IMAGE the image.)
+3. LayerFS: make a campaign directory with artifacts/layerfs, home/ (0700), xdg/ (sealed
+   bundle), empty/, and base/<case>/<case>.bin from `largefile.py gen`. Then
+   `layerfs machine start docker` and run lf_layerfs.py the same way with LF_CAMPAIGN set.
+   The Sandbox image needs no extra files: the driver passes largefile.py inline.
+4. Copy results/<arm>-<case>/{state.json,events.jsonl} here and update report.md.
+5. Clean up: each close removes its container/volume (ovnfs) or Store (LayerFS); then
+   layerfs machine stop docker, docker rm lfs-<id>-docker, docker volume rm
+   lfs-<id>-docker-data.
+```
