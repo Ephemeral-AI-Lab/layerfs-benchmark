@@ -1,10 +1,12 @@
 # Rerun 2026-11-07: LayerFS `751b6b83` vs ovnfs `5d54cb0`
 
 **Run on the same day at the same host load, the latest ovnfs needed 7–10% more space than
-the latest LayerFS v2.0.0 for every history (25.7–26.4 MB vs 23.8–24.0 MB). LayerFS added 11–35×
-fewer bytes per commit (2.1–3.3 KB vs 29–115 KB), committed 2.3–3.5× faster (median
-19–28 ms vs 63–66 ms) and opened branches 2.4–4.4× faster. ovnfs read the full tree about
-2× faster (1.6–2.1 s vs 3.7–4.2 s) and imported it about 14× faster.** All 15 branch heads
+the latest LayerFS v2.0.0 for every history (25.7–26.4 MB vs 23.8–24.0 MB), and LayerFS added
+11–35× fewer bytes per commit (2.1–3.3 KB vs 29–115 KB). ovnfs read the full tree about 2×
+faster (1.6–2.1 s vs 3.7–4.2 s) and imported it about 14× faster. The commit, edit-step and
+branch-open timings mostly measure the route into each system, not the system: timed inside
+its container, an ovnfs commit took 8–12 ms, against 63–66 ms through the harness's
+`docker exec`. This run does not show which system commits faster.** All 15 branch heads
 matched the host oracle on both systems. Storage numbers are exact bytes. Timings are warm,
 one sample per case, at host load 4–8: diagnostics, not qualified performance claims.
 
@@ -123,8 +125,14 @@ Today's two runs first, then 11-06 for reference (taken at load 13–27).
 | S1–S4 | ovnfs 11-06 | 131–212 | 130–183 | 142–458 | 393–660 | 4,123–15,799 |
 
 Control overhead (a no-op command through the same route, one call per case): LayerFS
-`workspace exec ws true` 22–37 ms; ovnfs `docker exec … true` 51–64 ms. Both arms' edit
-step includes it.
+`workspace exec ws true` 22–37 ms; ovnfs `docker exec … true` 51–64 ms.
+
+**Correction (2026-11-07, after publication):** every ovnfs timing above includes one
+`docker exec` from the Mac into its container, which costs about 50–100 ms by itself. LayerFS
+timings include its own CLI start and worker round trip, a different and cheaper route. The
+first version of this report read the commit and branch-open columns as LayerFS being
+2.3–4.4× faster; the diagnostic below shows that gap is mostly the route. The import and
+full-read gaps are far larger than one `docker exec` and stand.
 
 ## Observations
 
@@ -141,12 +149,16 @@ step includes it.
   commits cost 16,306 B. Each `ovnfs new` adds about 82 KB in `bases/` and about 24 KB of
   `nodes.log` (about 115 KB per checkout, down from 2.1 MB). Identical content is shared
   in both.
-- **Commit and branch open: LayerFS.** Commit medians are 19–28 ms vs 63–66 ms, and
-  opening a branch (fork + mount) takes 29–35 ms vs 83–139 ms.
-- **Edit step: ovnfs, slightly.** The step medians are 80–86 ms vs 94–112 ms. Taking off
-  each arm's single no-op control sample leaves about 22–30 ms for ovnfs and 65–75 ms for
-  LayerFS, so the edit itself (5 file operations through FUSE) is about 2–3× faster on
-  ovnfs. That rests on one control call per case, so treat it as rough.
+- **Commit: no ranking from this run.** Measured end to end, LayerFS took 19–28 ms and
+  ovnfs 63–66 ms, but inside its container `ovnfs snap --wait` took 8–12 ms (diagnostic
+  below); the rest was `docker exec`. LayerFS's 19–28 ms also includes starting the CLI and
+  a worker round trip, and its in-worker commit time was not measured. A fair comparison
+  needs both timed through equal routes.
+- **Branch open and edit step: also route-bound.** Opening a branch took 29–35 ms on
+  LayerFS and 83–139 ms on ovnfs, and the edit step 94–112 ms vs 80–86 ms; each ovnfs figure
+  includes one `docker exec`. Inside the container, ovnfs applied the same 5 edits in
+  27–37 ms. ovnfs's in-container branch open and LayerFS's in-Sandbox edit time were not
+  measured.
 - **Full-tree read: ovnfs, about 2×.** LayerFS's reads improved from 6.6–24.5 s to
   3.7–4.2 s and no longer warm up across sibling branches (S4 on 11-06: 24.5 s falling to
   9.4 s; today flat at 3.8–4.2 s). The read walks 9,415 files one at a time, and LayerFS
@@ -159,8 +171,32 @@ step includes it.
   ovnfs captures a copy already inside its container (0.35–0.39 s), and copying it in with
   `docker cp` is not counted.
 
+## Diagnostic: ovnfs timed inside its container
+
+Run after publication to split the route from ovnfs's own work: a fresh throwaway container
+(`fsh-cmp-ovnfs:5d54cb0`, base copied in, `ovnfs new` for `main` and `b01`), the first 15
+steps of S1, timed with a Python loop inside the container (host load 5.6). Not a sample of
+the benchmark; container and volume were removed afterwards.
+
+| Call | Where timed | Calls | ms |
+| --- | --- | ---: | --- |
+| `docker exec <ctr> true` | from the Mac | 5 | 61.9–100.3 |
+| `true` | inside | 5 | 0.4–0.6 |
+| `ovnfs version` (CLI start) | inside | 5 | 2.5–3.2 |
+| `ovnfs snap b01 --wait` | inside | 10 | 8.4–12.2 (median 9.9) |
+| `ovnfs snap b01` (no wait) | inside | 5 | 6.1–8.4 |
+| `model.py apply` (5 edits) | inside | 15 | 26.9–37.3 (median 30.5) |
+
+`snap --wait` flushes the memory tier, writes a durable intent, renames the upper into a
+layer, writes `state.json` again and waits for the background hash
+(`checkout/operations.go:703-1060`).
+
 ## Limits
 
+- The two arms are reached through different routes: ovnfs through `docker exec` (about
+  50–100 ms per call), LayerFS through its CLI and worker. Small operations (commit, edit,
+  branch open) are dominated by that route, so their cross-system ratios are not
+  meaningful here.
 - One sample per case and arm, warm caches, run a few minutes apart in one session at
   similar load (LayerFS 4.3–8.1, ovnfs 5.6–7.7). Other sessions' containers shared the
   Docker engine. No cold-cache claim; every timing is an INELIGIBLE diagnostic.
@@ -207,6 +243,7 @@ rerun-2026-11-07/
   design.md                  storage and overlay design, ovnfs 5d54cb0 vs LayerFS 751b6b83
   compare.py                 the driver as run for both arms
   compare_past.py            tabulates this rerun next to ../results/ (11-06)
+  snap_diag.py               the in-container ovnfs timing diagnostic
   results/
     summary-vs-past.json     per case: LayerFS and ovnfs, 11-06 and 11-07
     layerfs-<case>/, ovnfs-<case>/   state.json, events.jsonl
