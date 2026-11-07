@@ -8,6 +8,8 @@ cannot hide whole-file copies) and a sequence of small edits:
     L100  100 MiB, 10 commits, overwrite 100 B in place at a seeded offset
     I10   10 MiB,  10 commits, insert 100 B at a seeded offset (shifts the rest)
     A5    5 MiB,   20 commits, append 16 KiB
+    ADD500  500 MiB (the L500 file), 1 commit, append 500 MiB of new bytes
+    DEL500  1000 MiB (ADD500's result), 1 commit, cut the last 500 MiB (back to L500)
 
     largefile.py gen CASE DIR       write the starting file DIR/<case>.bin
     largefile.py apply CASE K DIR   apply edit K (1-based) to DIR/<case>.bin
@@ -30,12 +32,33 @@ CASES = {
     "L500": {"size": 500 * MiB, "commits": 5, "op": "overwrite", "bytes": 100},
     "I10": {"size": 10 * MiB, "commits": 10, "op": "insert", "bytes": 100},
     "A5": {"size": 5 * MiB, "commits": 20, "op": "append", "bytes": 16 * 1024},
+    "ADD500": {"size": 500 * MiB, "commits": 1, "op": "grow", "bytes": 500 * MiB},
+    "DEL500": {"size": 1000 * MiB, "commits": 1, "op": "shrink", "bytes": 500 * MiB},
 }
+GROWTH = 500 * MiB
 VERSION = "fsh-ovnfs-largefile-v0"
 
 
 def base_bytes(case):
     return random.Random(f"{VERSION}/{case}/base").randbytes(CASES[case]["size"])
+
+
+def growth_blocks():
+    """The 500 MiB ADD500 appends, in seeded 1 MiB blocks: Python 3.11 (the
+    containers' Python) cannot make 500 MiB in one randbytes call."""
+    r = random.Random(f"{VERSION}/grow500")
+    for _ in range(GROWTH // MiB):
+        yield r.randbytes(MiB)
+
+
+def base_blocks(case):
+    """The starting file: ADD500 starts from the L500 file, DEL500 from ADD500's result."""
+    if case in ("ADD500", "DEL500"):
+        yield base_bytes("L500")
+        if case == "DEL500":
+            yield from growth_blocks()
+    else:
+        yield base_bytes(case)
 
 
 def edit(case, k, size):
@@ -51,6 +74,14 @@ def edit(case, k, size):
 def apply_to_file(case, k, path):
     op = CASES[case]["op"]
     size = os.path.getsize(path)
+    if op == "grow":
+        with open(path, "ab") as f:
+            for block in growth_blocks():
+                f.write(block)
+        return {"case": case, "step": k, "op": op, "offset": size, "bytes": GROWTH}
+    if op == "shrink":
+        os.truncate(path, size - GROWTH)
+        return {"case": case, "step": k, "op": op, "offset": size - GROWTH, "bytes": GROWTH}
     offset, payload = edit(case, k, size)
     if op == "overwrite":
         with open(path, "r+b") as f:
@@ -79,6 +110,15 @@ def apply_to_bytes(case, k, data):
 
 
 def expect(case):
+    if CASES[case]["op"] in ("grow", "shrink"):
+        small = hashlib.sha256(base_bytes("L500"))
+        large = small.copy()
+        for block in growth_blocks():
+            large.update(block)
+        small = {"size": 500 * MiB, "sha256": small.hexdigest()}
+        large = {"size": 1000 * MiB, "sha256": large.hexdigest()}
+        first, last = (small, large) if case == "ADD500" else (large, small)
+        return [{"step": 0, **first}, {"step": 1, **last}]
     data = base_bytes(case)
     out = [{"step": 0, "size": len(data), "sha256": hashlib.sha256(data).hexdigest()}]
     for k in range(1, CASES[case]["commits"] + 1):
@@ -104,7 +144,8 @@ def main(argv):
     if len(argv) == 3 and argv[0] == "gen" and argv[1] in CASES:
         path = os.path.join(argv[2], f"{argv[1]}.bin")
         with open(path, "wb") as f:
-            f.write(base_bytes(argv[1]))
+            for block in base_blocks(argv[1]):
+                f.write(block)
         print(json.dumps({"case": argv[1], "path": path, "size": os.path.getsize(path)}))
     elif len(argv) == 4 and argv[0] == "apply" and argv[1] in CASES:
         print(json.dumps(apply_to_file(argv[1], int(argv[2]), os.path.join(argv[3], f"{argv[1]}.bin"))))

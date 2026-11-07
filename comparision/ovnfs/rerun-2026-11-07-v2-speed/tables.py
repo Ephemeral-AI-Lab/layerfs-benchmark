@@ -38,8 +38,10 @@ def small(case):
 
 def large():
     rows = {}
-    for arm in ("layerfs-before-L500", "layerfs-L500", "ovnfs-L500"):
+    for arm in ("layerfs-before-L500", "layerfs-L500", "ovnfs-L500", "layerfs-ADD500", "ovnfs-ADD500",
+                "layerfs-DEL500", "ovnfs-DEL500"):
         s = json.loads((HERE / "results" / arm / "state.json").read_text())
+        probes = {p["label"]: p.get("total_bytes", p.get("allocated_bytes")) for p in s["probes"]}
         commit = "commit_ns" if "commit_ns" in s["steps"][0] else "snap_ns"
         rows[arm] = {
             "verification": s["verification"]["result"],
@@ -48,6 +50,8 @@ def large():
             "commit_ms": [ms(x[commit]) for x in s["steps"]],
             "apply_ms": [ms(x["apply_ns"]) for x in s["steps"]],
             "new_stored": [x.get("new_stored") for x in s["steps"]],
+            "stored_after_import": probes.get("import"),
+            "stored_at_end": probes.get("final"),
             "read_ms": ms(s["verify_read_ns"]),
             "load": [x["load"] for x in s["load_1m"]],
         }
