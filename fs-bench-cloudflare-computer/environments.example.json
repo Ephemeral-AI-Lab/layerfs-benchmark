@@ -51,6 +51,14 @@
       }
     }
   },
+  "host_baseline": {
+    "directory": "/absolute/apfs-work-outside-any-store",
+    "platform": "darwin",
+    "tool_environment": {
+      "BENCH_TOOL_ROOT": "/absolute/native-tools",
+      "PATH": "/absolute/native-tools/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    }
+  },
   "postgresql": {
     "password_env": "BENCH_PG_PASSWORD",
     "databases": {

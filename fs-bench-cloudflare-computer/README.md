@@ -6,9 +6,9 @@
 | Item | Value |
 | --- | --- |
 | Tool | Unchanged upstream `script/fs-bench.sh` from Cloudflare Computer `de87919a4fd37242e960e13b7b3ba802d1eef0a0` (MIT) |
-| Runs on | Four LayerFS machines (native, Docker, Lima, Apple Container) and two Store backends (SQLite, PostgreSQL): 1 case, 12 scenarios, 8 rows |
-| Status | Implemented diagnostic workload; no cold-cache qualification; timings are INELIGIBLE diagnostics. Computer itself is not measured |
-| Frozen rules | [AGENTS.md](AGENTS.md); exact body and scenarios in [src/cases.py](src/cases.py); image in [TOOL.md](TOOL.md) |
+| Runs on | Four LayerFS machines (native, Docker, Lima, Apple Container) and two Store backends (SQLite, PostgreSQL): 1 case, 12 scenarios, 8 rows, plus one host-baseline sample per campaign taken on plain APFS outside LayerFS |
+| Status | Implemented diagnostic workload; no cold-cache qualification; timings are INELIGIBLE diagnostics. Computer itself is not measured. The host baseline is host cost, not a LayerFS row |
+| Frozen rules | [AGENTS.md](AGENTS.md); exact body and scenarios in [src/cases.py](src/cases.py); host recorder in [src/host.py](src/host.py); image in [TOOL.md](TOOL.md) |
 | Lifecycle | [shared/src/runner.py](../shared/src/runner.py); this suite has no separate lifecycle |
 
 ## Overview
@@ -37,6 +37,13 @@ Each scenario runs once in a fresh directory that the script removes. A PASS
 row means the CLI lifecycle succeeded and the script reported one sample for
 all twelve. It is not content verification or a cold performance claim.
 
+Native macOS cost is reported in two parts. One host sample per campaign runs
+the same script, with the same pinned bash and PATH, on an ordinary APFS
+directory outside LayerFS ([src/host.py](src/host.py)); the scenario tables then
+show `host ms`, `host / Docker` and `native − host ms`, so `native − host` is
+the LayerFS-attributable time. The sample is host cost, not a ninth row, and it
+is taken once because the host does not depend on the database.
+
 ## Setup
 
 Prerequisites, all described in [TOOL.md](TOOL.md):
@@ -48,7 +55,9 @@ Prerequisites, all described in [TOOL.md](TOOL.md):
   bundle's archive;
 - a dedicated PostgreSQL server with one empty database per PostgreSQL row;
 - for native macOS, a pinned bash 4+ and a `sha256sum -c --quiet` wrapper on
-  the Exec PATH ([TOOL.md](TOOL.md#native-macos)).
+  the Exec PATH ([TOOL.md](TOOL.md#native-macos));
+- for the host baseline, one empty APFS directory outside every Store, Workspace
+  and campaign cache, used by the same pinned tools.
 
 Config: copy [environments.example.json](environments.example.json), replace
 placeholders and keep `"shared_infrastructure": true`, so a NOT_RUN row does
@@ -65,15 +74,25 @@ python3 fs-bench-cloudflare-computer/src/run.py run --environment $E --cache $C 
   --case B01 --machine docker --backend sqlite --output $O/docker/sqlite
 ```
 
+Record the campaign's one host sample (plain APFS outside LayerFS; it refuses
+the directory with a reason rather than guess):
+
+```bash
+python3 fs-bench-cloudflare-computer/src/host.py --environment $E --cache $C
+```
+
 Finish, release the shared infrastructure, then publish:
 
 ```bash
 python3 fs-bench-cloudflare-computer/src/run.py finish --environment $E --cache $C
 python3 fs-bench-cloudflare-computer/src/report.py --input $C --cleanup /retained/final-cleanup.json \
-  --environment $E --output result/YYYY-MM-DD/fs-bench-cloudflare-computer/FULL_LAYERFS_SHA/report.md
+  --environment $E --host-baseline $C/host-baseline.json \
+  --output result/YYYY-MM-DD/fs-bench-cloudflare-computer/FULL_LAYERFS_SHA/report.md
 ```
 
-Each row has a 25 s budget; native macOS rows have 60 s ([AGENTS.md](AGENTS.md)). Run the harness checks with an explicit bound:
+Each row has a 25 s budget; native macOS rows have 60 s ([AGENTS.md](AGENTS.md)).
+Without `--host-baseline` the report still renders, with the host columns reading
+`UNAVAILABLE`. Run the harness checks with an explicit bound:
 
 ```bash
 python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "discover", "-s", "fs-bench-cloudflare-computer/tests", "-v"], check=True, timeout=30)'
