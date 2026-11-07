@@ -2,6 +2,12 @@
 
 > group: comparison · measures: storage, speed (diagnostic) · run 2026-11-06
 
+> **Update 2026-11-07 (evening):** with the exec and import speed work merged (`layerfs_v2_0_0`
+> @ `c421d9db`), LayerFS imports S1–S4 2.3–2.5× faster (2.2–3.1 s; ovnfs is still 6–8× faster),
+> its edit step drops 39–46 ms, and a 500 MiB file imports in 5.0 s (was 32.1 s) and commits
+> about 35× faster than ovnfs, storing 3–8 KB per commit against a full copy. See
+> [rerun-2026-11-07-v2-speed/report.md](rerun-2026-11-07-v2-speed/report.md).
+>
 > **Update 2026-11-07:** rerun with ovnfs `5d54cb0` (now packs, compresses and
 > delta-encodes its store) and LayerFS `layerfs_v2_0_0` @ `751b6b83`, same day and load.
 > ovnfs now needs 7–10% more space than LayerFS (not 3.8–4.4×) and adds 11–35× more bytes
