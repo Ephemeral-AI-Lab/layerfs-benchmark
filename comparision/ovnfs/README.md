@@ -2,6 +2,13 @@
 
 > group: comparison · measures: storage, speed (diagnostic) · run 2026-11-06
 
+> **Update 2026-11-08:** with the commit speed work merged (`layerfs_v2_0_0` @ `b9c4adcb`),
+> LayerFS commits an appended 500 MiB in 1.40 s (ovnfs 1.35 s) and a brand-new
+> 500 MiB file in 1.82 s (ovnfs 0.84 s), storing only the new data. Edits and cuts
+> on a 500 MiB file still commit in 15–19 ms against ovnfs's 0.77–1.14 s. On S1–S4 LayerFS
+> stores 8–10% fewer bytes; ovnfs imports 6–8× faster and reads 2–5× faster. See
+> [rerun-2026-11-08-commit-speed/report.md](rerun-2026-11-08-commit-speed/report.md).
+>
 > **Update 2026-11-07 (evening):** with the exec and import speed work merged (`layerfs_v2_0_0`
 > @ `c421d9db`), LayerFS imports S1–S4 2.3–2.5× faster (2.2–3.1 s; ovnfs is still 6–8× faster),
 > its edit step drops 39–46 ms, and a 500 MiB file imports in 5.0 s (was 32.1 s) and commits
