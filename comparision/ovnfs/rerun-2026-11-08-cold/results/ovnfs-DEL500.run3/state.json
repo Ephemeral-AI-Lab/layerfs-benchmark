@@ -1,0 +1,360 @@
+{
+ "arm": "ovnfs",
+ "branch_open_ns": 81422375,
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 344851792
+  },
+  {
+   "exit": 0,
+   "label": "mkdir",
+   "seq": 2,
+   "wall_ns": 53410000
+  },
+  {
+   "exit": 0,
+   "label": "copy_script",
+   "seq": 3,
+   "wall_ns": 28241916
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 4,
+   "wall_ns": 9759218250
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 5,
+   "wall_ns": 168552875
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 6,
+   "wall_ns": 78716041
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 7,
+   "wall_ns": 2238777667
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 8,
+   "wall_ns": 88059459
+  },
+  {
+   "exit": 0,
+   "label": "new_b01",
+   "seq": 9,
+   "wall_ns": 81422375
+  },
+  {
+   "exit": 0,
+   "label": "probe_branch",
+   "seq": 10,
+   "wall_ns": 87540250
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 11,
+   "wall_ns": 718329250
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 12,
+   "wall_ns": 3261047792
+  },
+  {
+   "exit": 0,
+   "label": "snap_1",
+   "seq": 13,
+   "wall_ns": 647952875
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_1",
+   "seq": 14,
+   "wall_ns": 72870750
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop",
+   "seq": 15,
+   "wall_ns": 292190083
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start",
+   "seq": 16,
+   "wall_ns": 176597375
+  },
+  {
+   "exit": 0,
+   "label": "vnew",
+   "seq": 17,
+   "wall_ns": 73949667
+  },
+  {
+   "exit": 0,
+   "label": "evict_read",
+   "seq": 18,
+   "wall_ns": 725787667
+  },
+  {
+   "exit": 0,
+   "label": "vsha",
+   "seq": 19,
+   "wall_ns": 855760334
+  },
+  {
+   "exit": 0,
+   "label": "vrm",
+   "seq": 20,
+   "wall_ns": 60800416
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 21,
+   "wall_ns": 262313083
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 22,
+   "wall_ns": 66413959
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 23,
+   "wall_ns": 209703500
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 24,
+   "wall_ns": 45763542
+  }
+ ],
+ "case": "DEL500",
+ "copy_base_ns": 9759218250,
+ "image": "fsh-cmp-ovnfs:5d54cb0",
+ "import_ns": 2238777667,
+ "import_reply": {
+  "capture": {
+   "bytes": 1048576000,
+   "cache": 0,
+   "files": 1,
+   "hashed": 1,
+   "hashed_bytes": 1048576000,
+   "hidden": 0,
+   "local": 0,
+   "repos": null,
+   "root": "/data/src",
+   "seconds": 1.5643995419999999
+  },
+  "checkout": {
+   "base": "b_3ea1970a67d5",
+   "created": "2026-11-07T18:37:35.272800798Z",
+   "dirty": false,
+   "git": false,
+   "name": "main",
+   "path": "/root/checkouts/main",
+   "source": "/data/src"
+  },
+  "warnings": []
+ },
+ "load_1m": [
+  {
+   "load": 8.45,
+   "unit": "open"
+  },
+  {
+   "load": 7.64,
+   "unit": "steps 1 1"
+  },
+  {
+   "load": 8.31,
+   "unit": "verify"
+  },
+  {
+   "load": 7.72,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-lf-ov-del500",
+  "volume": "fsh-lf-ov-del500"
+ },
+ "owned_released": true,
+ "probes": [
+  {
+   "allocated_bytes": 1126400,
+   "apparent_bytes": 1102369,
+   "label": "floor",
+   "objects_apparent": 1052672,
+   "objects_files": 0,
+   "packs_apparent": 4096,
+   "parts": {
+    "bases": 4096,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 1069056,
+    "store/objects": 1052672,
+    "store/packs": 4096,
+    "uppers": 4096
+   }
+  },
+  {
+   "allocated_bytes": 1049735168,
+   "apparent_bytes": 1049692160,
+   "label": "import",
+   "objects_apparent": 1049628672,
+   "objects_files": 1,
+   "packs_apparent": 4178,
+   "parts": {
+    "bases": 16384,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 1049653248,
+    "store/objects": 1049632768,
+    "store/packs": 8192,
+    "uppers": 12288
+   }
+  },
+  {
+   "allocated_bytes": 1049755648,
+   "apparent_bytes": 1049705741,
+   "label": "branch",
+   "objects_apparent": 1049628672,
+   "objects_files": 1,
+   "packs_apparent": 4178,
+   "parts": {
+    "bases": 28672,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 1049653248,
+    "store/objects": 1049632768,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 2098339840,
+   "apparent_bytes": 2098286168,
+   "label": "after_1",
+   "objects_apparent": 1573916672,
+   "objects_files": 2,
+   "packs_apparent": 4260,
+   "parts": {
+    "bases": 28672,
+    "layers": 524300288,
+    "nodes.log": 4096,
+    "store": 1573941248,
+    "store/objects": 1573920768,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 1574051840,
+   "apparent_bytes": 1573994576,
+   "label": "final",
+   "objects_apparent": 1573916672,
+   "objects_files": 2,
+   "packs_apparent": 4372,
+   "parts": {
+    "bases": 28672,
+    "layers": 8192,
+    "nodes.log": 4096,
+    "store": 1573945344,
+    "store/objects": 1573924864,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  }
+ ],
+ "read_evict": {
+  "bytes": 2621444287,
+  "files": 18,
+  "left": [],
+  "resident_after": 0,
+  "resident_before": 524337152,
+  "shm_resident_after": 0,
+  "wall_ns": 725787667
+ },
+ "spec": {
+  "bytes": 524288000,
+  "commits": 1,
+  "op": "shrink",
+  "size": 1048576000
+ },
+ "status": "closed",
+ "steps": [
+  {
+   "apply_ns": 718329250,
+   "edit": {
+    "bytes": 524288000,
+    "case": "DEL500",
+    "offset": 524288000,
+    "op": "shrink",
+    "step": 1
+   },
+   "evict": {
+    "bytes": 2621443348,
+    "files": 17,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 2621489152,
+    "shm_resident_after": 0,
+    "wall_ns": 3261047792
+   },
+   "probe": {
+    "allocated_bytes": 2098339840,
+    "apparent_bytes": 2098286168,
+    "label": "after_1",
+    "objects_apparent": 1573916672,
+    "objects_files": 2,
+    "packs_apparent": 4260,
+    "parts": {
+     "bases": 28672,
+     "layers": 524300288,
+     "nodes.log": 4096,
+     "store": 1573941248,
+     "store/objects": 1573920768,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 647952875,
+   "snapshot": "s1",
+   "step": 1
+  }
+ ],
+ "verification": {
+  "expected": {
+   "sha256": "7cded5a0d145514cdfdeb82b65b351e82578563955fba1a804dc0fb62fed5f80",
+   "size": 524288000,
+   "step": 1
+  },
+  "got": {
+   "sha256": "7cded5a0d145514cdfdeb82b65b351e82578563955fba1a804dc0fb62fed5f80",
+   "size": 524288000
+  },
+  "result": "PASS"
+ },
+ "verify_open_ns": 73949667,
+ "verify_read_ns": 855760334,
+ "workload": "fsh-ovnfs-largefile-v0"
+}

@@ -2,6 +2,13 @@
 
 > group: comparison · measures: storage, speed (diagnostic) · run 2026-11-06
 
+> **Update 2026-11-08 (cold):** with caches inside the Docker VM emptied before every commit and
+> read (3 samples, 13 cases, every eviction verified), LayerFS `b9c4adcb` commits small edits
+> 1.5–2.2× faster than ovnfs on multi-branch histories and 7.4–21× faster on large files, while
+> ovnfs needs 7.6–10% more space on the histories and 3–20× more on large files. ovnfs commits a
+> brand-new or appended 500 MiB file faster and reads back faster in 11 of 13 cases. See
+> [rerun-2026-11-08-cold/report.md](rerun-2026-11-08-cold/report.md).
+>
 > **Update 2026-11-08:** with the commit speed work merged (`layerfs_v2_0_0` @ `b9c4adcb`),
 > LayerFS commits an appended 500 MiB in 1.40 s (ovnfs 1.35 s) and a brand-new
 > 500 MiB file in 1.82 s (ovnfs 0.84 s), storing only the new data. Edits and cuts

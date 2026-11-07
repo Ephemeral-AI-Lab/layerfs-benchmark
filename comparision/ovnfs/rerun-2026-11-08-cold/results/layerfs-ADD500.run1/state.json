@@ -1,0 +1,275 @@
+{
+ "arm": "layerfs",
+ "calls": [
+  {
+   "exit": 0,
+   "label": "store_create",
+   "seq": 1,
+   "wall_ns": 19246416
+  },
+  {
+   "exit": 0,
+   "label": "init_floor",
+   "seq": 2,
+   "wall_ns": 25282625
+  },
+  {
+   "exit": 0,
+   "label": "store_push",
+   "seq": 3,
+   "wall_ns": 54536500
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 4,
+   "wall_ns": 13452750
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor_alloc",
+   "seq": 5,
+   "wall_ns": 776544709
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 14563091833
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 7,
+   "wall_ns": 15582958
+  },
+  {
+   "exit": 0,
+   "label": "probe_import_alloc",
+   "seq": 8,
+   "wall_ns": 700732958
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_create",
+   "seq": 9,
+   "wall_ns": 591385667
+  },
+  {
+   "exit": 0,
+   "label": "fork",
+   "seq": 10,
+   "wall_ns": 26914292
+  },
+  {
+   "exit": 0,
+   "label": "mount",
+   "seq": 11,
+   "wall_ns": 27844625
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 12,
+   "wall_ns": 3955214875
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 13,
+   "wall_ns": 890244375
+  },
+  {
+   "exit": 0,
+   "label": "commit_1",
+   "seq": 14,
+   "wall_ns": 3239686959
+  },
+  {
+   "exit": 0,
+   "label": "unmount",
+   "seq": 15,
+   "wall_ns": 102993541
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_close",
+   "seq": 16,
+   "wall_ns": 992450291
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_stop",
+   "seq": 17,
+   "wall_ns": 380170875
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_start",
+   "seq": 18,
+   "wall_ns": 1133028459
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_create",
+   "seq": 19,
+   "wall_ns": 179640917
+  },
+  {
+   "exit": 0,
+   "label": "vmount",
+   "seq": 20,
+   "wall_ns": 32371708
+  },
+  {
+   "exit": 0,
+   "label": "evict_read",
+   "seq": 21,
+   "wall_ns": 721060958
+  },
+  {
+   "exit": 0,
+   "label": "vsha",
+   "seq": 22,
+   "wall_ns": 17042363417
+  },
+  {
+   "exit": 0,
+   "label": "vunmount",
+   "seq": 23,
+   "wall_ns": 49411833
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_close",
+   "seq": 24,
+   "wall_ns": 40778958
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 25,
+   "wall_ns": 7773750
+  },
+  {
+   "exit": 0,
+   "label": "probe_final_alloc",
+   "seq": 26,
+   "wall_ns": 197113334
+  },
+  {
+   "exit": 0,
+   "label": "store_remove",
+   "seq": 27,
+   "wall_ns": 100701291
+  }
+ ],
+ "case": "ADD500",
+ "fork_ns": 26914292,
+ "import_ns": 14563091833,
+ "load_1m": [
+  {
+   "load": 9.7,
+   "unit": "open"
+  },
+  {
+   "load": 9.77,
+   "unit": "steps 1 1"
+  },
+  {
+   "load": 9.4,
+   "unit": "verify"
+  },
+  {
+   "load": 9.09,
+   "unit": "close"
+  }
+ ],
+ "mount_ns": 27844625,
+ "probes": [
+  {
+   "allocated_bytes": 217088,
+   "file_bytes": 217088,
+   "label": "floor",
+   "state": "idle",
+   "total_bytes": 217088,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 530395136,
+   "file_bytes": 530391040,
+   "label": "import",
+   "state": "idle",
+   "total_bytes": 530391040,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 1060564992,
+   "file_bytes": 1060560896,
+   "label": "final",
+   "state": "idle",
+   "total_bytes": 1060560896,
+   "wal_bytes": 0
+  }
+ ],
+ "read_evict": {
+  "bytes": 1060722953,
+  "files": 12,
+  "left": [],
+  "resident_after": 0,
+  "resident_before": 533098496,
+  "shm_resident_after": 32768,
+  "wall_ns": 721060958
+ },
+ "sandbox_create_ns": 591385667,
+ "spec": {
+  "bytes": 524288000,
+  "commits": 1,
+  "op": "grow",
+  "size": 524288000
+ },
+ "status": "closed",
+ "steps": [
+  {
+   "apply_ns": 3955214875,
+   "commit_ns": 3239686959,
+   "edit": {
+    "bytes": 524288000,
+    "case": "ADD500",
+    "offset": 524288000,
+    "op": "grow",
+    "step": 1
+   },
+   "evict": {
+    "bytes": 1063602442,
+    "files": 12,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 1063624704,
+    "shm_resident_after": 32768,
+    "wall_ns": 890244375
+   },
+   "new_canonical": 525953225,
+   "new_metadata": 941777,
+   "new_stored": 525795569,
+   "step": 1
+  }
+ ],
+ "store_removed": true,
+ "verification": {
+  "expected": {
+   "sha256": "27a1ec9f81e7aa1b7aa6dc00af00b9e138bde5c7f9017e2af09a3d3442e75eb5",
+   "size": 1048576000,
+   "step": 1
+  },
+  "got": {
+   "sha256": "27a1ec9f81e7aa1b7aa6dc00af00b9e138bde5c7f9017e2af09a3d3442e75eb5",
+   "size": 1048576000
+  },
+  "result": "PASS"
+ },
+ "verify_open_ns": 32371708,
+ "verify_read_ns": 17042363417,
+ "workload": "fsh-ovnfs-largefile-v0",
+ "ws": "lf-add500-sb:wb01"
+}

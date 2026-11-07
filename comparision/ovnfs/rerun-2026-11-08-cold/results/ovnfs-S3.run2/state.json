@@ -1,0 +1,923 @@
+{
+ "arm": "ovnfs",
+ "branches": {
+  "l01": {
+   "fork_ns": 136516666,
+   "head_sha256": "d0812ac53cba1c617c34a2313556085ec3bffdd1d500b821d484814ac157e492",
+   "mount_ns": 0,
+   "read_evict": {
+    "bytes": 89117733,
+    "files": 9421,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 24121344,
+    "shm_resident_after": 0,
+    "wall_ns": 1055676000
+   },
+   "steps": [
+    {
+     "apply_ns": 89712083,
+     "commit_ns": 73315708,
+     "evict": {
+      "bytes": 89034664,
+      "files": 9419,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 112799744,
+      "shm_resident_after": 0,
+      "wall_ns": 1199486625
+     },
+     "snapshot": "s1"
+    },
+    {
+     "apply_ns": 90418625,
+     "commit_ns": 68865333,
+     "evict": {
+      "bytes": 89057182,
+      "files": 9420,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 143360,
+      "shm_resident_after": 0,
+      "wall_ns": 1136824792
+     },
+     "snapshot": "s2"
+    },
+    {
+     "apply_ns": 88768834,
+     "commit_ns": 78215292,
+     "evict": {
+      "bytes": 89087061,
+      "files": 9421,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 253952,
+      "shm_resident_after": 0,
+      "wall_ns": 1066307750
+     },
+     "snapshot": "s3"
+    }
+   ],
+   "unmount_ns": 0,
+   "verification": "PASS",
+   "verify_open_ns": 75566291,
+   "verify_read_ns": 4885840709
+  },
+  "l02": {
+   "fork_ns": 90662541,
+   "head_sha256": "55ff7787e66f8ff1991a024041edd143d4ef942ccc90dcb75cd55f227144d773",
+   "mount_ns": 0,
+   "read_evict": {
+    "bytes": 89212011,
+    "files": 9424,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 24219648,
+    "shm_resident_after": 0,
+    "wall_ns": 949586792
+   },
+   "steps": [
+    {
+     "apply_ns": 84766208,
+     "commit_ns": 76428750,
+     "evict": {
+      "bytes": 89141738,
+      "files": 9422,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 88719360,
+      "shm_resident_after": 0,
+      "wall_ns": 961421292
+     },
+     "snapshot": "s5"
+    },
+    {
+     "apply_ns": 101630958,
+     "commit_ns": 72054584,
+     "evict": {
+      "bytes": 89168360,
+      "files": 9422,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 159744,
+      "shm_resident_after": 0,
+      "wall_ns": 985584333
+     },
+     "snapshot": "s6"
+    },
+    {
+     "apply_ns": 88016542,
+     "commit_ns": 81811375,
+     "evict": {
+      "bytes": 89211942,
+      "files": 9425,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 200704,
+      "shm_resident_after": 0,
+      "wall_ns": 989981208
+     },
+     "snapshot": "s7"
+    }
+   ],
+   "unmount_ns": 0,
+   "verification": "PASS",
+   "verify_open_ns": 63631791,
+   "verify_read_ns": 4964834166
+  },
+  "l03": {
+   "fork_ns": 72886416,
+   "head_sha256": "c86afca11075db59d9b41517fe1f5bb1f5dba1b029e13a91811f3bbd8c92295e",
+   "mount_ns": 0,
+   "read_evict": {
+    "bytes": 89264809,
+    "files": 9427,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 24281088,
+    "shm_resident_after": 0,
+    "wall_ns": 922273041
+   },
+   "steps": [
+    {
+     "apply_ns": 97733916,
+     "commit_ns": 70503959,
+     "evict": {
+      "bytes": 89235223,
+      "files": 9424,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 88715264,
+      "shm_resident_after": 0,
+      "wall_ns": 818011500
+     },
+     "snapshot": "s9"
+    },
+    {
+     "apply_ns": 82800250,
+     "commit_ns": 90764584,
+     "evict": {
+      "bytes": 89254689,
+      "files": 9427,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 131072,
+      "shm_resident_after": 0,
+      "wall_ns": 840239125
+     },
+     "snapshot": "s10"
+    },
+    {
+     "apply_ns": 89897500,
+     "commit_ns": 67623167,
+     "evict": {
+      "bytes": 89270160,
+      "files": 9427,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 172032,
+      "shm_resident_after": 0,
+      "wall_ns": 942490708
+     },
+     "snapshot": "s11"
+    }
+   ],
+   "unmount_ns": 0,
+   "verification": "PASS",
+   "verify_open_ns": 60699250,
+   "verify_read_ns": 4519753916
+  },
+  "l04": {
+   "fork_ns": 76043084,
+   "head_sha256": "1e3fa8d38b2379e5b7bec5e749048c4fb999ba1d0cf6a9461169a9c733366c64",
+   "mount_ns": 0,
+   "read_evict": {
+    "bytes": 89353891,
+    "files": 9430,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 24383488,
+    "shm_resident_after": 0,
+    "wall_ns": 930401667
+   },
+   "steps": [
+    {
+     "apply_ns": 90822250,
+     "commit_ns": 86754333,
+     "evict": {
+      "bytes": 89289689,
+      "files": 9430,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 88702976,
+      "shm_resident_after": 0,
+      "wall_ns": 876457666
+     },
+     "snapshot": "s13"
+    },
+    {
+     "apply_ns": 91545167,
+     "commit_ns": 69707375,
+     "evict": {
+      "bytes": 89317921,
+      "files": 9429,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 147456,
+      "shm_resident_after": 0,
+      "wall_ns": 1069182542
+     },
+     "snapshot": "s14"
+    },
+    {
+     "apply_ns": 88485542,
+     "commit_ns": 72731167,
+     "evict": {
+      "bytes": 89342989,
+      "files": 9430,
+      "left": [],
+      "resident_after": 0,
+      "resident_before": 200704,
+      "shm_resident_after": 0,
+      "wall_ns": 1055504916
+     },
+     "snapshot": "s15"
+    }
+   ],
+   "unmount_ns": 0,
+   "verification": "PASS",
+   "verify_open_ns": 73935292,
+   "verify_read_ns": 4778040583
+  }
+ },
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 453907875
+  },
+  {
+   "exit": 0,
+   "label": "mkdir_src",
+   "seq": 2,
+   "wall_ns": 81932000
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 3,
+   "wall_ns": 1731152792
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 4,
+   "wall_ns": 163918000
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 5,
+   "wall_ns": 61685833
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 477937209
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 7,
+   "wall_ns": 70118916
+  },
+  {
+   "exit": 0,
+   "label": "new_l01",
+   "seq": 8,
+   "wall_ns": 136516666
+  },
+  {
+   "exit": 0,
+   "label": "control_exec_true",
+   "seq": 9,
+   "wall_ns": 56787709
+  },
+  {
+   "exit": 0,
+   "label": "exec_l01_1",
+   "seq": 10,
+   "wall_ns": 89712083
+  },
+  {
+   "exit": 0,
+   "label": "evict_l01_1",
+   "seq": 11,
+   "wall_ns": 1199486625
+  },
+  {
+   "exit": 0,
+   "label": "commit_l01_1",
+   "seq": 12,
+   "wall_ns": 73315708
+  },
+  {
+   "exit": 0,
+   "label": "exec_l01_2",
+   "seq": 13,
+   "wall_ns": 90418625
+  },
+  {
+   "exit": 0,
+   "label": "evict_l01_2",
+   "seq": 14,
+   "wall_ns": 1136824792
+  },
+  {
+   "exit": 0,
+   "label": "commit_l01_2",
+   "seq": 15,
+   "wall_ns": 68865333
+  },
+  {
+   "exit": 0,
+   "label": "exec_l01_3",
+   "seq": 16,
+   "wall_ns": 88768834
+  },
+  {
+   "exit": 0,
+   "label": "evict_l01_3",
+   "seq": 17,
+   "wall_ns": 1066307750
+  },
+  {
+   "exit": 0,
+   "label": "commit_l01_3",
+   "seq": 18,
+   "wall_ns": 78215292
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_l01",
+   "seq": 19,
+   "wall_ns": 270080584
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_l01",
+   "seq": 20,
+   "wall_ns": 162928833
+  },
+  {
+   "exit": 0,
+   "label": "vnew_l01",
+   "seq": 21,
+   "wall_ns": 75566291
+  },
+  {
+   "exit": 0,
+   "label": "evict_read_l01",
+   "seq": 22,
+   "wall_ns": 1055676000
+  },
+  {
+   "exit": 0,
+   "label": "manifest_l01",
+   "seq": 23,
+   "wall_ns": 4885840709
+  },
+  {
+   "exit": 0,
+   "label": "vrm_l01",
+   "seq": 24,
+   "wall_ns": 62267458
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_l01",
+   "seq": 25,
+   "wall_ns": 72248583
+  },
+  {
+   "exit": 0,
+   "label": "fork_l02",
+   "seq": 26,
+   "wall_ns": 90662541
+  },
+  {
+   "exit": 0,
+   "label": "exec_l02_1",
+   "seq": 27,
+   "wall_ns": 84766208
+  },
+  {
+   "exit": 0,
+   "label": "evict_l02_1",
+   "seq": 28,
+   "wall_ns": 961421292
+  },
+  {
+   "exit": 0,
+   "label": "commit_l02_1",
+   "seq": 29,
+   "wall_ns": 76428750
+  },
+  {
+   "exit": 0,
+   "label": "exec_l02_2",
+   "seq": 30,
+   "wall_ns": 101630958
+  },
+  {
+   "exit": 0,
+   "label": "evict_l02_2",
+   "seq": 31,
+   "wall_ns": 985584333
+  },
+  {
+   "exit": 0,
+   "label": "commit_l02_2",
+   "seq": 32,
+   "wall_ns": 72054584
+  },
+  {
+   "exit": 0,
+   "label": "exec_l02_3",
+   "seq": 33,
+   "wall_ns": 88016542
+  },
+  {
+   "exit": 0,
+   "label": "evict_l02_3",
+   "seq": 34,
+   "wall_ns": 989981208
+  },
+  {
+   "exit": 0,
+   "label": "commit_l02_3",
+   "seq": 35,
+   "wall_ns": 81811375
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_l02",
+   "seq": 36,
+   "wall_ns": 263933375
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_l02",
+   "seq": 37,
+   "wall_ns": 163177833
+  },
+  {
+   "exit": 0,
+   "label": "vnew_l02",
+   "seq": 38,
+   "wall_ns": 63631791
+  },
+  {
+   "exit": 0,
+   "label": "evict_read_l02",
+   "seq": 39,
+   "wall_ns": 949586792
+  },
+  {
+   "exit": 0,
+   "label": "manifest_l02",
+   "seq": 40,
+   "wall_ns": 4964834166
+  },
+  {
+   "exit": 0,
+   "label": "vrm_l02",
+   "seq": 41,
+   "wall_ns": 76044167
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_l02",
+   "seq": 42,
+   "wall_ns": 76082167
+  },
+  {
+   "exit": 0,
+   "label": "fork_l03",
+   "seq": 43,
+   "wall_ns": 72886416
+  },
+  {
+   "exit": 0,
+   "label": "exec_l03_1",
+   "seq": 44,
+   "wall_ns": 97733916
+  },
+  {
+   "exit": 0,
+   "label": "evict_l03_1",
+   "seq": 45,
+   "wall_ns": 818011500
+  },
+  {
+   "exit": 0,
+   "label": "commit_l03_1",
+   "seq": 46,
+   "wall_ns": 70503959
+  },
+  {
+   "exit": 0,
+   "label": "exec_l03_2",
+   "seq": 47,
+   "wall_ns": 82800250
+  },
+  {
+   "exit": 0,
+   "label": "evict_l03_2",
+   "seq": 48,
+   "wall_ns": 840239125
+  },
+  {
+   "exit": 0,
+   "label": "commit_l03_2",
+   "seq": 49,
+   "wall_ns": 90764584
+  },
+  {
+   "exit": 0,
+   "label": "exec_l03_3",
+   "seq": 50,
+   "wall_ns": 89897500
+  },
+  {
+   "exit": 0,
+   "label": "evict_l03_3",
+   "seq": 51,
+   "wall_ns": 942490708
+  },
+  {
+   "exit": 0,
+   "label": "commit_l03_3",
+   "seq": 52,
+   "wall_ns": 67623167
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_l03",
+   "seq": 53,
+   "wall_ns": 271571334
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_l03",
+   "seq": 54,
+   "wall_ns": 167640792
+  },
+  {
+   "exit": 0,
+   "label": "vnew_l03",
+   "seq": 55,
+   "wall_ns": 60699250
+  },
+  {
+   "exit": 0,
+   "label": "evict_read_l03",
+   "seq": 56,
+   "wall_ns": 922273041
+  },
+  {
+   "exit": 0,
+   "label": "manifest_l03",
+   "seq": 57,
+   "wall_ns": 4519753916
+  },
+  {
+   "exit": 0,
+   "label": "vrm_l03",
+   "seq": 58,
+   "wall_ns": 63206916
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_l03",
+   "seq": 59,
+   "wall_ns": 70054000
+  },
+  {
+   "exit": 0,
+   "label": "fork_l04",
+   "seq": 60,
+   "wall_ns": 76043084
+  },
+  {
+   "exit": 0,
+   "label": "exec_l04_1",
+   "seq": 61,
+   "wall_ns": 90822250
+  },
+  {
+   "exit": 0,
+   "label": "evict_l04_1",
+   "seq": 62,
+   "wall_ns": 876457666
+  },
+  {
+   "exit": 0,
+   "label": "commit_l04_1",
+   "seq": 63,
+   "wall_ns": 86754333
+  },
+  {
+   "exit": 0,
+   "label": "exec_l04_2",
+   "seq": 64,
+   "wall_ns": 91545167
+  },
+  {
+   "exit": 0,
+   "label": "evict_l04_2",
+   "seq": 65,
+   "wall_ns": 1069182542
+  },
+  {
+   "exit": 0,
+   "label": "commit_l04_2",
+   "seq": 66,
+   "wall_ns": 69707375
+  },
+  {
+   "exit": 0,
+   "label": "exec_l04_3",
+   "seq": 67,
+   "wall_ns": 88485542
+  },
+  {
+   "exit": 0,
+   "label": "evict_l04_3",
+   "seq": 68,
+   "wall_ns": 1055504916
+  },
+  {
+   "exit": 0,
+   "label": "commit_l04_3",
+   "seq": 69,
+   "wall_ns": 72731167
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_l04",
+   "seq": 70,
+   "wall_ns": 277248500
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_l04",
+   "seq": 71,
+   "wall_ns": 166725750
+  },
+  {
+   "exit": 0,
+   "label": "vnew_l04",
+   "seq": 72,
+   "wall_ns": 73935292
+  },
+  {
+   "exit": 0,
+   "label": "evict_read_l04",
+   "seq": 73,
+   "wall_ns": 930401667
+  },
+  {
+   "exit": 0,
+   "label": "manifest_l04",
+   "seq": 74,
+   "wall_ns": 4778040583
+  },
+  {
+   "exit": 0,
+   "label": "vrm_l04",
+   "seq": 75,
+   "wall_ns": 64773875
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_l04",
+   "seq": 76,
+   "wall_ns": 71390041
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 77,
+   "wall_ns": 269355958
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 78,
+   "wall_ns": 68281208
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 79,
+   "wall_ns": 249710834
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 80,
+   "wall_ns": 113710958
+  }
+ ],
+ "case": "S3",
+ "control_ns": 56787709,
+ "daemon_start_ns": 163918000,
+ "import_ns": 477937209,
+ "import_reply": {
+  "capture": {
+   "bytes": 65020822,
+   "cache": 0,
+   "files": 9415,
+   "hashed": 9404,
+   "hashed_bytes": 65020523,
+   "hidden": 0,
+   "local": 0,
+   "repos": null,
+   "root": "/data/src",
+   "seconds": 0.390960958
+  },
+  "checkout": {
+   "base": "b_78a1c73df503",
+   "created": "2026-11-07T18:20:51.227895Z",
+   "dirty": false,
+   "git": false,
+   "name": "main",
+   "path": "/root/checkouts/main",
+   "source": "/data/src"
+  },
+  "warnings": []
+ },
+ "load_1m": [
+  {
+   "load": 10.39,
+   "unit": "open"
+  },
+  {
+   "load": 11.24,
+   "unit": "branch l01"
+  },
+  {
+   "load": 10.43,
+   "unit": "branch l02"
+  },
+  {
+   "load": 10.44,
+   "unit": "branch l03"
+  },
+  {
+   "load": 9.99,
+   "unit": "branch l04"
+  },
+  {
+   "load": 9.24,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-cmp-ov-s3",
+  "volume": "fsh-cmp-ov-s3"
+ },
+ "owned_released": true,
+ "probes": [
+  {
+   "allocated_bytes": 1126400,
+   "apparent_bytes": 1102369,
+   "label": "floor",
+   "parts": {
+    "bases": 4096,
+    "git": 4096,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "snapshots": 4096,
+    "sources": 4096,
+    "store": 1069056,
+    "store/objects": 1052672,
+    "store/packs": 4096,
+    "uppers": 4096
+   },
+   "total_bytes": 1126400
+  },
+  {
+   "allocated_bytes": 25088000,
+   "apparent_bytes": 25056187,
+   "label": "import",
+   "parts": {
+    "bases": 86016,
+    "git": 4096,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 24915968,
+    "store/objects": 1052672,
+    "store/packs": 23851008,
+    "uppers": 12288
+   },
+   "total_bytes": 25088000
+  },
+  {
+   "allocated_bytes": 25296896,
+   "apparent_bytes": 25246021,
+   "label": "after_l01",
+   "parts": {
+    "bases": 167936,
+    "git": 4096,
+    "layers": 16384,
+    "nodes.log": 28672,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 24997888,
+    "store/objects": 1052672,
+    "store/packs": 23932928,
+    "uppers": 20480
+   },
+   "total_bytes": 25296896
+  },
+  {
+   "allocated_bytes": 25403392,
+   "apparent_bytes": 25348694,
+   "label": "after_l02",
+   "parts": {
+    "bases": 167936,
+    "git": 4096,
+    "layers": 28672,
+    "nodes.log": 28672,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 25083904,
+    "store/objects": 1052672,
+    "store/packs": 24018944,
+    "uppers": 28672
+   },
+   "total_bytes": 25403392
+  },
+  {
+   "allocated_bytes": 25468928,
+   "apparent_bytes": 25409683,
+   "label": "after_l03",
+   "parts": {
+    "bases": 167936,
+    "git": 4096,
+    "layers": 40960,
+    "nodes.log": 24576,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 25133056,
+    "store/objects": 1052672,
+    "store/packs": 24068096,
+    "uppers": 36864
+   },
+   "total_bytes": 25468928
+  },
+  {
+   "allocated_bytes": 25587712,
+   "apparent_bytes": 25506958,
+   "label": "after_l04",
+   "parts": {
+    "bases": 167936,
+    "git": 4096,
+    "layers": 53248,
+    "nodes.log": 32768,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 25219072,
+    "store/objects": 1052672,
+    "store/packs": 24154112,
+    "uppers": 45056
+   },
+   "total_bytes": 25587712
+  },
+  {
+   "allocated_bytes": 25587712,
+   "apparent_bytes": 25506958,
+   "label": "final",
+   "parts": {
+    "bases": 167936,
+    "git": 4096,
+    "layers": 53248,
+    "nodes.log": 32768,
+    "snapshots": 4096,
+    "sources": 28672,
+    "store": 25219072,
+    "store/objects": 1052672,
+    "store/packs": 24154112,
+    "uppers": 45056
+   },
+   "total_bytes": 25587712
+  }
+ ],
+ "status": "closed"
+}

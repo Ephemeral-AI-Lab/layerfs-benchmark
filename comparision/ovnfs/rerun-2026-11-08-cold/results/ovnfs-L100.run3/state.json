@@ -1,0 +1,1080 @@
+{
+ "arm": "ovnfs",
+ "branch_open_ns": 73534083,
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 433925167
+  },
+  {
+   "exit": 0,
+   "label": "mkdir",
+   "seq": 2,
+   "wall_ns": 72489042
+  },
+  {
+   "exit": 0,
+   "label": "copy_script",
+   "seq": 3,
+   "wall_ns": 39998208
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 4,
+   "wall_ns": 1208530375
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 5,
+   "wall_ns": 185671417
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 6,
+   "wall_ns": 71711458
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 7,
+   "wall_ns": 255534541
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 8,
+   "wall_ns": 89353458
+  },
+  {
+   "exit": 0,
+   "label": "new_b01",
+   "seq": 9,
+   "wall_ns": 73534083
+  },
+  {
+   "exit": 0,
+   "label": "probe_branch",
+   "seq": 10,
+   "wall_ns": 84172000
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 11,
+   "wall_ns": 135641958
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 12,
+   "wall_ns": 833005542
+  },
+  {
+   "exit": 0,
+   "label": "snap_1",
+   "seq": 13,
+   "wall_ns": 203552791
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_1",
+   "seq": 14,
+   "wall_ns": 81328125
+  },
+  {
+   "exit": 0,
+   "label": "apply_2",
+   "seq": 15,
+   "wall_ns": 122125167
+  },
+  {
+   "exit": 0,
+   "label": "evict_2",
+   "seq": 16,
+   "wall_ns": 684883000
+  },
+  {
+   "exit": 0,
+   "label": "snap_2",
+   "seq": 17,
+   "wall_ns": 235058834
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_2",
+   "seq": 18,
+   "wall_ns": 93861584
+  },
+  {
+   "exit": 0,
+   "label": "apply_3",
+   "seq": 19,
+   "wall_ns": 125530417
+  },
+  {
+   "exit": 0,
+   "label": "evict_3",
+   "seq": 20,
+   "wall_ns": 654087791
+  },
+  {
+   "exit": 0,
+   "label": "snap_3",
+   "seq": 21,
+   "wall_ns": 201418542
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_3",
+   "seq": 22,
+   "wall_ns": 89183250
+  },
+  {
+   "exit": 0,
+   "label": "apply_4",
+   "seq": 23,
+   "wall_ns": 128291542
+  },
+  {
+   "exit": 0,
+   "label": "evict_4",
+   "seq": 24,
+   "wall_ns": 712750209
+  },
+  {
+   "exit": 0,
+   "label": "snap_4",
+   "seq": 25,
+   "wall_ns": 300219167
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_4",
+   "seq": 26,
+   "wall_ns": 87137209
+  },
+  {
+   "exit": 0,
+   "label": "apply_5",
+   "seq": 27,
+   "wall_ns": 119705459
+  },
+  {
+   "exit": 0,
+   "label": "evict_5",
+   "seq": 28,
+   "wall_ns": 661708416
+  },
+  {
+   "exit": 0,
+   "label": "snap_5",
+   "seq": 29,
+   "wall_ns": 214188542
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_5",
+   "seq": 30,
+   "wall_ns": 86257458
+  },
+  {
+   "exit": 0,
+   "label": "apply_6",
+   "seq": 31,
+   "wall_ns": 129332125
+  },
+  {
+   "exit": 0,
+   "label": "evict_6",
+   "seq": 32,
+   "wall_ns": 634432458
+  },
+  {
+   "exit": 0,
+   "label": "snap_6",
+   "seq": 33,
+   "wall_ns": 218567125
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_6",
+   "seq": 34,
+   "wall_ns": 83146209
+  },
+  {
+   "exit": 0,
+   "label": "apply_7",
+   "seq": 35,
+   "wall_ns": 113727042
+  },
+  {
+   "exit": 0,
+   "label": "evict_7",
+   "seq": 36,
+   "wall_ns": 685602042
+  },
+  {
+   "exit": 0,
+   "label": "snap_7",
+   "seq": 37,
+   "wall_ns": 223681791
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_7",
+   "seq": 38,
+   "wall_ns": 90118250
+  },
+  {
+   "exit": 0,
+   "label": "apply_8",
+   "seq": 39,
+   "wall_ns": 118879500
+  },
+  {
+   "exit": 0,
+   "label": "evict_8",
+   "seq": 40,
+   "wall_ns": 620055292
+  },
+  {
+   "exit": 0,
+   "label": "snap_8",
+   "seq": 41,
+   "wall_ns": 216606542
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_8",
+   "seq": 42,
+   "wall_ns": 87718875
+  },
+  {
+   "exit": 0,
+   "label": "apply_9",
+   "seq": 43,
+   "wall_ns": 120661667
+  },
+  {
+   "exit": 0,
+   "label": "evict_9",
+   "seq": 44,
+   "wall_ns": 619413042
+  },
+  {
+   "exit": 0,
+   "label": "snap_9",
+   "seq": 45,
+   "wall_ns": 292658417
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_9",
+   "seq": 46,
+   "wall_ns": 90805833
+  },
+  {
+   "exit": 0,
+   "label": "apply_10",
+   "seq": 47,
+   "wall_ns": 126546667
+  },
+  {
+   "exit": 0,
+   "label": "evict_10",
+   "seq": 48,
+   "wall_ns": 674701875
+  },
+  {
+   "exit": 0,
+   "label": "snap_10",
+   "seq": 49,
+   "wall_ns": 242570667
+  },
+  {
+   "exit": 0,
+   "label": "probe_after_10",
+   "seq": 50,
+   "wall_ns": 95531459
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop",
+   "seq": 51,
+   "wall_ns": 281803583
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start",
+   "seq": 52,
+   "wall_ns": 188015209
+  },
+  {
+   "exit": 0,
+   "label": "vnew",
+   "seq": 53,
+   "wall_ns": 71999625
+  },
+  {
+   "exit": 0,
+   "label": "evict_read",
+   "seq": 54,
+   "wall_ns": 779062375
+  },
+  {
+   "exit": 0,
+   "label": "vsha",
+   "seq": 55,
+   "wall_ns": 377550625
+  },
+  {
+   "exit": 0,
+   "label": "vrm",
+   "seq": 56,
+   "wall_ns": 106792041
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 57,
+   "wall_ns": 292843625
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 58,
+   "wall_ns": 81872375
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 59,
+   "wall_ns": 299703583
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 60,
+   "wall_ns": 37352459
+  }
+ ],
+ "case": "L100",
+ "copy_base_ns": 1208530375,
+ "image": "fsh-cmp-ovnfs:5d54cb0",
+ "import_ns": 255534541,
+ "import_reply": {
+  "capture": {
+   "bytes": 104857600,
+   "cache": 0,
+   "files": 1,
+   "hashed": 1,
+   "hashed_bytes": 104857600,
+   "hidden": 0,
+   "local": 0,
+   "repos": null,
+   "root": "/data/src",
+   "seconds": 0.173284833
+  },
+  "checkout": {
+   "base": "b_1f87a8acabd8",
+   "created": "2026-11-07T18:38:43.221412427Z",
+   "dirty": false,
+   "git": false,
+   "name": "main",
+   "path": "/root/checkouts/main",
+   "source": "/data/src"
+  },
+  "warnings": []
+ },
+ "load_1m": [
+  {
+   "load": 10.68,
+   "unit": "open"
+  },
+  {
+   "load": 10.68,
+   "unit": "steps 1 10"
+  },
+  {
+   "load": 11.17,
+   "unit": "verify"
+  },
+  {
+   "load": 11.17,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-lf-ov-l100",
+  "volume": "fsh-lf-ov-l100"
+ },
+ "owned_released": true,
+ "probes": [
+  {
+   "allocated_bytes": 1126400,
+   "apparent_bytes": 1102369,
+   "label": "floor",
+   "objects_apparent": 1052672,
+   "objects_files": 0,
+   "packs_apparent": 4096,
+   "parts": {
+    "bases": 4096,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 1069056,
+    "store/objects": 1052672,
+    "store/packs": 4096,
+    "uppers": 4096
+   }
+  },
+  {
+   "allocated_bytes": 106012672,
+   "apparent_bytes": 105973754,
+   "label": "import",
+   "objects_apparent": 105910272,
+   "objects_files": 1,
+   "packs_apparent": 4176,
+   "parts": {
+    "bases": 16384,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 105930752,
+    "store/objects": 105910272,
+    "store/packs": 8192,
+    "uppers": 12288
+   }
+  },
+  {
+   "allocated_bytes": 106033152,
+   "apparent_bytes": 105987333,
+   "label": "branch",
+   "objects_apparent": 105910272,
+   "objects_files": 1,
+   "packs_apparent": 4176,
+   "parts": {
+    "bases": 28672,
+    "layers": 4096,
+    "nodes.log": 4096,
+    "store": 105930752,
+    "store/objects": 105910272,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 315760640,
+   "apparent_bytes": 315706958,
+   "label": "after_1",
+   "objects_apparent": 210767872,
+   "objects_files": 2,
+   "packs_apparent": 4256,
+   "parts": {
+    "bases": 28672,
+    "layers": 104869888,
+    "nodes.log": 4096,
+    "store": 210792448,
+    "store/objects": 210771968,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 420626432,
+   "apparent_bytes": 420565349,
+   "label": "after_2",
+   "objects_apparent": 315625472,
+   "objects_files": 3,
+   "packs_apparent": 4448,
+   "parts": {
+    "bases": 28672,
+    "layers": 104873984,
+    "nodes.log": 4096,
+    "store": 315654144,
+    "store/objects": 315633664,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 525488128,
+   "apparent_bytes": 525423740,
+   "label": "after_3",
+   "objects_apparent": 420483072,
+   "objects_files": 4,
+   "packs_apparent": 4640,
+   "parts": {
+    "bases": 28672,
+    "layers": 104873984,
+    "nodes.log": 4096,
+    "store": 420515840,
+    "store/objects": 420495360,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 630353920,
+   "apparent_bytes": 630282123,
+   "label": "after_4",
+   "objects_apparent": 525340672,
+   "objects_files": 5,
+   "packs_apparent": 4832,
+   "parts": {
+    "bases": 28672,
+    "layers": 104882176,
+    "nodes.log": 4096,
+    "store": 525373440,
+    "store/objects": 525352960,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 735211520,
+   "apparent_bytes": 735140503,
+   "label": "after_5",
+   "objects_apparent": 630198272,
+   "objects_files": 6,
+   "packs_apparent": 5024,
+   "parts": {
+    "bases": 28672,
+    "layers": 104882176,
+    "nodes.log": 4096,
+    "store": 630231040,
+    "store/objects": 630210560,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 840073216,
+   "apparent_bytes": 839998891,
+   "label": "after_6",
+   "objects_apparent": 735055872,
+   "objects_files": 7,
+   "packs_apparent": 5216,
+   "parts": {
+    "bases": 28672,
+    "layers": 104886272,
+    "nodes.log": 4096,
+    "store": 735088640,
+    "store/objects": 735068160,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 944934912,
+   "apparent_bytes": 944857283,
+   "label": "after_7",
+   "objects_apparent": 839913472,
+   "objects_files": 8,
+   "packs_apparent": 5408,
+   "parts": {
+    "bases": 28672,
+    "layers": 104890368,
+    "nodes.log": 4096,
+    "store": 839946240,
+    "store/objects": 839925760,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 1049796608,
+   "apparent_bytes": 1049715671,
+   "label": "after_8",
+   "objects_apparent": 944771072,
+   "objects_files": 9,
+   "packs_apparent": 5600,
+   "parts": {
+    "bases": 28672,
+    "layers": 104894464,
+    "nodes.log": 4096,
+    "store": 944803840,
+    "store/objects": 944783360,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 1154662400,
+   "apparent_bytes": 1154574064,
+   "label": "after_9",
+   "objects_apparent": 1049628672,
+   "objects_files": 10,
+   "packs_apparent": 5792,
+   "parts": {
+    "bases": 28672,
+    "layers": 104902656,
+    "nodes.log": 4096,
+    "store": 1049661440,
+    "store/objects": 1049640960,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 1259524096,
+   "apparent_bytes": 1259432458,
+   "label": "after_10",
+   "objects_apparent": 1154486272,
+   "objects_files": 11,
+   "packs_apparent": 5984,
+   "parts": {
+    "bases": 28672,
+    "layers": 104902656,
+    "nodes.log": 4096,
+    "store": 1154523136,
+    "store/objects": 1154502656,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  },
+  {
+   "allocated_bytes": 1154666496,
+   "apparent_bytes": 1154571260,
+   "label": "final",
+   "objects_apparent": 1154486272,
+   "objects_files": 11,
+   "packs_apparent": 6096,
+   "parts": {
+    "bases": 28672,
+    "layers": 45056,
+    "nodes.log": 4096,
+    "store": 1154523136,
+    "store/objects": 1154502656,
+    "store/packs": 8192,
+    "uppers": 20480
+   }
+  }
+ ],
+ "read_evict": {
+  "bytes": 1258302572,
+  "files": 36,
+  "left": [],
+  "resident_after": 0,
+  "resident_before": 104943616,
+  "shm_resident_after": 0,
+  "wall_ns": 779062375
+ },
+ "spec": {
+  "bytes": 100,
+  "commits": 10,
+  "op": "overwrite",
+  "size": 104857600
+ },
+ "status": "closed",
+ "steps": [
+  {
+   "apply_ns": 135641958,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 21360726,
+    "op": "overwrite",
+    "step": 1
+   },
+   "evict": {
+    "bytes": 314576140,
+    "files": 17,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 314621952,
+    "shm_resident_after": 0,
+    "wall_ns": 833005542
+   },
+   "probe": {
+    "allocated_bytes": 315760640,
+    "apparent_bytes": 315706958,
+    "label": "after_1",
+    "objects_apparent": 210767872,
+    "objects_files": 2,
+    "packs_apparent": 4256,
+    "parts": {
+     "bases": 28672,
+     "layers": 104869888,
+     "nodes.log": 4096,
+     "store": 210792448,
+     "store/objects": 210771968,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 203552791,
+   "snapshot": "s1",
+   "step": 1
+  },
+  {
+   "apply_ns": 122125167,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 16020707,
+    "op": "overwrite",
+    "step": 2
+   },
+   "evict": {
+    "bytes": 419434509,
+    "files": 19,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 684883000
+   },
+   "probe": {
+    "allocated_bytes": 420626432,
+    "apparent_bytes": 420565349,
+    "label": "after_2",
+    "objects_apparent": 315625472,
+    "objects_files": 3,
+    "packs_apparent": 4448,
+    "parts": {
+     "bases": 28672,
+     "layers": 104873984,
+     "nodes.log": 4096,
+     "store": 315654144,
+     "store/objects": 315633664,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 235058834,
+   "snapshot": "s2",
+   "step": 2
+  },
+  {
+   "apply_ns": 125530417,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 59068537,
+    "op": "overwrite",
+    "step": 3
+   },
+   "evict": {
+    "bytes": 524292900,
+    "files": 21,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 654087791
+   },
+   "probe": {
+    "allocated_bytes": 525488128,
+    "apparent_bytes": 525423740,
+    "label": "after_3",
+    "objects_apparent": 420483072,
+    "objects_files": 4,
+    "packs_apparent": 4640,
+    "parts": {
+     "bases": 28672,
+     "layers": 104873984,
+     "nodes.log": 4096,
+     "store": 420515840,
+     "store/objects": 420495360,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 201418542,
+   "snapshot": "s3",
+   "step": 3
+  },
+  {
+   "apply_ns": 128291542,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 13072958,
+    "op": "overwrite",
+    "step": 4
+   },
+   "evict": {
+    "bytes": 629151283,
+    "files": 23,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 712750209
+   },
+   "probe": {
+    "allocated_bytes": 630353920,
+    "apparent_bytes": 630282123,
+    "label": "after_4",
+    "objects_apparent": 525340672,
+    "objects_files": 5,
+    "packs_apparent": 4832,
+    "parts": {
+     "bases": 28672,
+     "layers": 104882176,
+     "nodes.log": 4096,
+     "store": 525373440,
+     "store/objects": 525352960,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 300219167,
+   "snapshot": "s4",
+   "step": 4
+  },
+  {
+   "apply_ns": 119705459,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 73662573,
+    "op": "overwrite",
+    "step": 5
+   },
+   "evict": {
+    "bytes": 734009663,
+    "files": 25,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 661708416
+   },
+   "probe": {
+    "allocated_bytes": 735211520,
+    "apparent_bytes": 735140503,
+    "label": "after_5",
+    "objects_apparent": 630198272,
+    "objects_files": 6,
+    "packs_apparent": 5024,
+    "parts": {
+     "bases": 28672,
+     "layers": 104882176,
+     "nodes.log": 4096,
+     "store": 630231040,
+     "store/objects": 630210560,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 214188542,
+   "snapshot": "s5",
+   "step": 5
+  },
+  {
+   "apply_ns": 129332125,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 89687399,
+    "op": "overwrite",
+    "step": 6
+   },
+   "evict": {
+    "bytes": 838868051,
+    "files": 27,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 634432458
+   },
+   "probe": {
+    "allocated_bytes": 840073216,
+    "apparent_bytes": 839998891,
+    "label": "after_6",
+    "objects_apparent": 735055872,
+    "objects_files": 7,
+    "packs_apparent": 5216,
+    "parts": {
+     "bases": 28672,
+     "layers": 104886272,
+     "nodes.log": 4096,
+     "store": 735088640,
+     "store/objects": 735068160,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 218567125,
+   "snapshot": "s6",
+   "step": 6
+  },
+  {
+   "apply_ns": 113727042,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 102759594,
+    "op": "overwrite",
+    "step": 7
+   },
+   "evict": {
+    "bytes": 943726443,
+    "files": 29,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 685602042
+   },
+   "probe": {
+    "allocated_bytes": 944934912,
+    "apparent_bytes": 944857283,
+    "label": "after_7",
+    "objects_apparent": 839913472,
+    "objects_files": 8,
+    "packs_apparent": 5408,
+    "parts": {
+     "bases": 28672,
+     "layers": 104890368,
+     "nodes.log": 4096,
+     "store": 839946240,
+     "store/objects": 839925760,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 223681791,
+   "snapshot": "s7",
+   "step": 7
+  },
+  {
+   "apply_ns": 118879500,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 87413209,
+    "op": "overwrite",
+    "step": 8
+   },
+   "evict": {
+    "bytes": 1048584831,
+    "files": 31,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 620055292
+   },
+   "probe": {
+    "allocated_bytes": 1049796608,
+    "apparent_bytes": 1049715671,
+    "label": "after_8",
+    "objects_apparent": 944771072,
+    "objects_files": 9,
+    "packs_apparent": 5600,
+    "parts": {
+     "bases": 28672,
+     "layers": 104894464,
+     "nodes.log": 4096,
+     "store": 944803840,
+     "store/objects": 944783360,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 216606542,
+   "snapshot": "s8",
+   "step": 8
+  },
+  {
+   "apply_ns": 120661667,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 101043665,
+    "op": "overwrite",
+    "step": 9
+   },
+   "evict": {
+    "bytes": 1153443224,
+    "files": 33,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 619413042
+   },
+   "probe": {
+    "allocated_bytes": 1154662400,
+    "apparent_bytes": 1154574064,
+    "label": "after_9",
+    "objects_apparent": 1049628672,
+    "objects_files": 10,
+    "packs_apparent": 5792,
+    "parts": {
+     "bases": 28672,
+     "layers": 104902656,
+     "nodes.log": 4096,
+     "store": 1049661440,
+     "store/objects": 1049640960,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 292658417,
+   "snapshot": "s9",
+   "step": 9
+  },
+  {
+   "apply_ns": 126546667,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 86456188,
+    "op": "overwrite",
+    "step": 10
+   },
+   "evict": {
+    "bytes": 1258301615,
+    "files": 35,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 209727488,
+    "shm_resident_after": 0,
+    "wall_ns": 674701875
+   },
+   "probe": {
+    "allocated_bytes": 1259524096,
+    "apparent_bytes": 1259432458,
+    "label": "after_10",
+    "objects_apparent": 1154486272,
+    "objects_files": 11,
+    "packs_apparent": 5984,
+    "parts": {
+     "bases": 28672,
+     "layers": 104902656,
+     "nodes.log": 4096,
+     "store": 1154523136,
+     "store/objects": 1154502656,
+     "store/packs": 8192,
+     "uppers": 20480
+    }
+   },
+   "snap_ns": 242570667,
+   "snapshot": "s10",
+   "step": 10
+  }
+ ],
+ "verification": {
+  "expected": {
+   "sha256": "4585d40d8c6ddca9900e9f9258b425815e826f4adefccfe3fb20a621f466657e",
+   "size": 104857600,
+   "step": 10
+  },
+  "got": {
+   "sha256": "4585d40d8c6ddca9900e9f9258b425815e826f4adefccfe3fb20a621f466657e",
+   "size": 104857600
+  },
+  "result": "PASS"
+ },
+ "verify_open_ns": 71999625,
+ "verify_read_ns": 377550625,
+ "workload": "fsh-ovnfs-largefile-v0"
+}
