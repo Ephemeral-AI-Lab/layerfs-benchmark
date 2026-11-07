@@ -103,6 +103,7 @@ python3 -c 'import subprocess; subprocess.run(["python3", "-m", "unittest", "dis
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-08 | `98ebfdfb96` | 4 of 8 rows ran all twelve scenarios (4 NOT_RUN, 4 PASS); final cleanup COMPLETE | [report](../result/2026-11-08/fs-bench-cloudflare-computer/98ebfdfb96fcb88a1c7275c4323e1a387349a219/report.md) |
 | 2026-11-07 | `85a0865cde` | 8 of 8 rows ran all twelve scenarios (8 PASS); final cleanup COMPLETE | [report](../result/2026-11-07/fs-bench-cloudflare-computer/85a0865cde92f1d85a4e8bf402c597c935ff8db6/report.md) |
 | 2026-11-06 | `6d820c756b` | 8 of 8 rows ran all twelve scenarios (8 PASS); final cleanup COMPLETE | [report](../result/2026-11-06/fs-bench-cloudflare-computer/6d820c756b9b12541ac84af7b88467069f31bcbf/report.md) |
 <!-- runs:end -->
