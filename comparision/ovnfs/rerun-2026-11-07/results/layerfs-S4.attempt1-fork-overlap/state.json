@@ -1,0 +1,124 @@
+{
+ "arm": "layerfs",
+ "branches": {},
+ "calls": [
+  {
+   "exit": 0,
+   "label": "store_create",
+   "seq": 1,
+   "wall_ns": 12906500
+  },
+  {
+   "exit": 0,
+   "label": "init_floor",
+   "seq": 2,
+   "wall_ns": 15924208
+  },
+  {
+   "exit": 0,
+   "label": "store_push",
+   "seq": 3,
+   "wall_ns": 34344542
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 4,
+   "wall_ns": 7498042
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor_alloc",
+   "seq": 5,
+   "wall_ns": 330772750
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 6439467167
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 7,
+   "wall_ns": 9783875
+  },
+  {
+   "exit": 0,
+   "label": "probe_import_alloc",
+   "seq": 8,
+   "wall_ns": 251413750
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_create",
+   "seq": 9,
+   "wall_ns": 3732704583
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_close",
+   "seq": 10,
+   "wall_ns": 50554875
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 11,
+   "wall_ns": 9069708
+  },
+  {
+   "exit": 0,
+   "label": "probe_final_alloc",
+   "seq": 12,
+   "wall_ns": 227462167
+  },
+  {
+   "exit": 0,
+   "label": "store_remove",
+   "seq": 13,
+   "wall_ns": 21289542
+  }
+ ],
+ "case": "S4",
+ "import_ns": 6439467167,
+ "load_1m": [
+  {
+   "load": 24.32,
+   "unit": "open"
+  },
+  {
+   "load": 8.61,
+   "unit": "close"
+  }
+ ],
+ "probes": [
+  {
+   "allocated_bytes": 217088,
+   "file_bytes": 217088,
+   "label": "floor",
+   "state": "idle",
+   "total_bytes": 217088,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 23724032,
+   "file_bytes": 23724032,
+   "label": "import",
+   "state": "idle",
+   "total_bytes": 23724032,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 23724032,
+   "file_bytes": 23724032,
+   "label": "final",
+   "state": "idle",
+   "total_bytes": 23724032,
+   "wal_bytes": 0
+  }
+ ],
+ "sandbox_create_ns": 3732704583,
+ "status": "closed"
+}
