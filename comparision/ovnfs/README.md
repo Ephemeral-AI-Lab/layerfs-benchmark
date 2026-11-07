@@ -7,7 +7,8 @@
 > verified). On multi-branch histories LayerFS `b9c4adcb` runs the file operation 1.3–1.7× faster
 > and commits 1.5–2.2× faster than ovnfs; on large files 1.5–4.9× and 7.4–21× faster. ovnfs needs
 > 7.6–10% more space on the histories and 3–20× more on large files, and is faster with 500 MiB of
-> new data. See [rerun-2026-11-08-cold/report.md](rerun-2026-11-08-cold/report.md).
+> new data. In explicit cold read cases ovnfs reads 1.3–1.5× faster on a many-file tree and about
+> 6× faster on a 500 MiB file. See [rerun-2026-11-08-cold/report.md](rerun-2026-11-08-cold/report.md).
 >
 > **Update 2026-11-08:** with the commit speed work merged (`layerfs_v2_0_0` @ `b9c4adcb`),
 > LayerFS commits an appended 500 MiB in 1.40 s (ovnfs 1.35 s) and a brand-new

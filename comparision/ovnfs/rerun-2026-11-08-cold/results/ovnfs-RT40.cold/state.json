@@ -1,0 +1,743 @@
+{
+ "arm": "ovnfs",
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 221768500
+  },
+  {
+   "exit": 0,
+   "label": "mkdir",
+   "seq": 2,
+   "wall_ns": 55201292
+  },
+  {
+   "exit": 0,
+   "label": "copy_script",
+   "seq": 3,
+   "wall_ns": 28918791
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 4,
+   "wall_ns": 1249021125
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 5,
+   "wall_ns": 167131959
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 471251291
+  },
+  {
+   "exit": 0,
+   "label": "new_b01",
+   "seq": 7,
+   "wall_ns": 146416750
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 8,
+   "wall_ns": 98616791
+  },
+  {
+   "exit": 0,
+   "label": "snap_1",
+   "seq": 9,
+   "wall_ns": 73157959
+  },
+  {
+   "exit": 0,
+   "label": "apply_2",
+   "seq": 10,
+   "wall_ns": 97299875
+  },
+  {
+   "exit": 0,
+   "label": "snap_2",
+   "seq": 11,
+   "wall_ns": 71938917
+  },
+  {
+   "exit": 0,
+   "label": "apply_3",
+   "seq": 12,
+   "wall_ns": 89025167
+  },
+  {
+   "exit": 0,
+   "label": "snap_3",
+   "seq": 13,
+   "wall_ns": 65572208
+  },
+  {
+   "exit": 0,
+   "label": "apply_4",
+   "seq": 14,
+   "wall_ns": 89132625
+  },
+  {
+   "exit": 0,
+   "label": "snap_4",
+   "seq": 15,
+   "wall_ns": 68370833
+  },
+  {
+   "exit": 0,
+   "label": "apply_5",
+   "seq": 16,
+   "wall_ns": 87087000
+  },
+  {
+   "exit": 0,
+   "label": "snap_5",
+   "seq": 17,
+   "wall_ns": 74561875
+  },
+  {
+   "exit": 0,
+   "label": "apply_6",
+   "seq": 18,
+   "wall_ns": 92967500
+  },
+  {
+   "exit": 0,
+   "label": "snap_6",
+   "seq": 19,
+   "wall_ns": 67263375
+  },
+  {
+   "exit": 0,
+   "label": "apply_7",
+   "seq": 20,
+   "wall_ns": 88657250
+  },
+  {
+   "exit": 0,
+   "label": "snap_7",
+   "seq": 21,
+   "wall_ns": 68867541
+  },
+  {
+   "exit": 0,
+   "label": "apply_8",
+   "seq": 22,
+   "wall_ns": 95492458
+  },
+  {
+   "exit": 0,
+   "label": "snap_8",
+   "seq": 23,
+   "wall_ns": 67836417
+  },
+  {
+   "exit": 0,
+   "label": "apply_9",
+   "seq": 24,
+   "wall_ns": 98212000
+  },
+  {
+   "exit": 0,
+   "label": "snap_9",
+   "seq": 25,
+   "wall_ns": 67207584
+  },
+  {
+   "exit": 0,
+   "label": "apply_10",
+   "seq": 26,
+   "wall_ns": 91960875
+  },
+  {
+   "exit": 0,
+   "label": "snap_10",
+   "seq": 27,
+   "wall_ns": 76746042
+  },
+  {
+   "exit": 0,
+   "label": "apply_11",
+   "seq": 28,
+   "wall_ns": 83987666
+  },
+  {
+   "exit": 0,
+   "label": "snap_11",
+   "seq": 29,
+   "wall_ns": 75452833
+  },
+  {
+   "exit": 0,
+   "label": "apply_12",
+   "seq": 30,
+   "wall_ns": 87261042
+  },
+  {
+   "exit": 0,
+   "label": "snap_12",
+   "seq": 31,
+   "wall_ns": 67783792
+  },
+  {
+   "exit": 0,
+   "label": "apply_13",
+   "seq": 32,
+   "wall_ns": 91347625
+  },
+  {
+   "exit": 0,
+   "label": "snap_13",
+   "seq": 33,
+   "wall_ns": 87179042
+  },
+  {
+   "exit": 0,
+   "label": "apply_14",
+   "seq": 34,
+   "wall_ns": 114737042
+  },
+  {
+   "exit": 0,
+   "label": "snap_14",
+   "seq": 35,
+   "wall_ns": 82663375
+  },
+  {
+   "exit": 0,
+   "label": "apply_15",
+   "seq": 36,
+   "wall_ns": 98241375
+  },
+  {
+   "exit": 0,
+   "label": "snap_15",
+   "seq": 37,
+   "wall_ns": 79850583
+  },
+  {
+   "exit": 0,
+   "label": "apply_16",
+   "seq": 38,
+   "wall_ns": 100488250
+  },
+  {
+   "exit": 0,
+   "label": "snap_16",
+   "seq": 39,
+   "wall_ns": 78302458
+  },
+  {
+   "exit": 0,
+   "label": "apply_17",
+   "seq": 40,
+   "wall_ns": 113765958
+  },
+  {
+   "exit": 0,
+   "label": "snap_17",
+   "seq": 41,
+   "wall_ns": 79297916
+  },
+  {
+   "exit": 0,
+   "label": "apply_18",
+   "seq": 42,
+   "wall_ns": 98461625
+  },
+  {
+   "exit": 0,
+   "label": "snap_18",
+   "seq": 43,
+   "wall_ns": 81503209
+  },
+  {
+   "exit": 0,
+   "label": "apply_19",
+   "seq": 44,
+   "wall_ns": 107934333
+  },
+  {
+   "exit": 0,
+   "label": "snap_19",
+   "seq": 45,
+   "wall_ns": 81579583
+  },
+  {
+   "exit": 0,
+   "label": "apply_20",
+   "seq": 46,
+   "wall_ns": 97656917
+  },
+  {
+   "exit": 0,
+   "label": "snap_20",
+   "seq": 47,
+   "wall_ns": 84493583
+  },
+  {
+   "exit": 0,
+   "label": "apply_21",
+   "seq": 48,
+   "wall_ns": 107536042
+  },
+  {
+   "exit": 0,
+   "label": "snap_21",
+   "seq": 49,
+   "wall_ns": 87799083
+  },
+  {
+   "exit": 0,
+   "label": "apply_22",
+   "seq": 50,
+   "wall_ns": 101942875
+  },
+  {
+   "exit": 0,
+   "label": "snap_22",
+   "seq": 51,
+   "wall_ns": 89741667
+  },
+  {
+   "exit": 0,
+   "label": "apply_23",
+   "seq": 52,
+   "wall_ns": 93672792
+  },
+  {
+   "exit": 0,
+   "label": "snap_23",
+   "seq": 53,
+   "wall_ns": 84920750
+  },
+  {
+   "exit": 0,
+   "label": "apply_24",
+   "seq": 54,
+   "wall_ns": 99538583
+  },
+  {
+   "exit": 0,
+   "label": "snap_24",
+   "seq": 55,
+   "wall_ns": 83880417
+  },
+  {
+   "exit": 0,
+   "label": "apply_25",
+   "seq": 56,
+   "wall_ns": 97295458
+  },
+  {
+   "exit": 0,
+   "label": "snap_25",
+   "seq": 57,
+   "wall_ns": 96795917
+  },
+  {
+   "exit": 0,
+   "label": "apply_26",
+   "seq": 58,
+   "wall_ns": 105531333
+  },
+  {
+   "exit": 0,
+   "label": "snap_26",
+   "seq": 59,
+   "wall_ns": 88177291
+  },
+  {
+   "exit": 0,
+   "label": "apply_27",
+   "seq": 60,
+   "wall_ns": 106772916
+  },
+  {
+   "exit": 0,
+   "label": "snap_27",
+   "seq": 61,
+   "wall_ns": 92639166
+  },
+  {
+   "exit": 0,
+   "label": "apply_28",
+   "seq": 62,
+   "wall_ns": 110189959
+  },
+  {
+   "exit": 0,
+   "label": "snap_28",
+   "seq": 63,
+   "wall_ns": 81907042
+  },
+  {
+   "exit": 0,
+   "label": "apply_29",
+   "seq": 64,
+   "wall_ns": 110186041
+  },
+  {
+   "exit": 0,
+   "label": "snap_29",
+   "seq": 65,
+   "wall_ns": 98813291
+  },
+  {
+   "exit": 0,
+   "label": "apply_30",
+   "seq": 66,
+   "wall_ns": 119434792
+  },
+  {
+   "exit": 0,
+   "label": "snap_30",
+   "seq": 67,
+   "wall_ns": 83843042
+  },
+  {
+   "exit": 0,
+   "label": "apply_31",
+   "seq": 68,
+   "wall_ns": 102867125
+  },
+  {
+   "exit": 0,
+   "label": "snap_31",
+   "seq": 69,
+   "wall_ns": 89675375
+  },
+  {
+   "exit": 0,
+   "label": "apply_32",
+   "seq": 70,
+   "wall_ns": 99613750
+  },
+  {
+   "exit": 0,
+   "label": "snap_32",
+   "seq": 71,
+   "wall_ns": 82346042
+  },
+  {
+   "exit": 0,
+   "label": "apply_33",
+   "seq": 72,
+   "wall_ns": 115733667
+  },
+  {
+   "exit": 0,
+   "label": "snap_33",
+   "seq": 73,
+   "wall_ns": 82674750
+  },
+  {
+   "exit": 0,
+   "label": "apply_34",
+   "seq": 74,
+   "wall_ns": 100898125
+  },
+  {
+   "exit": 0,
+   "label": "snap_34",
+   "seq": 75,
+   "wall_ns": 90854250
+  },
+  {
+   "exit": 0,
+   "label": "apply_35",
+   "seq": 76,
+   "wall_ns": 105126084
+  },
+  {
+   "exit": 0,
+   "label": "snap_35",
+   "seq": 77,
+   "wall_ns": 84325583
+  },
+  {
+   "exit": 0,
+   "label": "apply_36",
+   "seq": 78,
+   "wall_ns": 97290583
+  },
+  {
+   "exit": 0,
+   "label": "snap_36",
+   "seq": 79,
+   "wall_ns": 89263000
+  },
+  {
+   "exit": 0,
+   "label": "apply_37",
+   "seq": 80,
+   "wall_ns": 92853250
+  },
+  {
+   "exit": 0,
+   "label": "snap_37",
+   "seq": 81,
+   "wall_ns": 95698333
+  },
+  {
+   "exit": 0,
+   "label": "apply_38",
+   "seq": 82,
+   "wall_ns": 88809250
+  },
+  {
+   "exit": 0,
+   "label": "snap_38",
+   "seq": 83,
+   "wall_ns": 87002125
+  },
+  {
+   "exit": 0,
+   "label": "apply_39",
+   "seq": 84,
+   "wall_ns": 98943792
+  },
+  {
+   "exit": 0,
+   "label": "snap_39",
+   "seq": 85,
+   "wall_ns": 82656875
+  },
+  {
+   "exit": 0,
+   "label": "apply_40",
+   "seq": 86,
+   "wall_ns": 100463625
+  },
+  {
+   "exit": 0,
+   "label": "snap_40",
+   "seq": 87,
+   "wall_ns": 95530708
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_1",
+   "seq": 88,
+   "wall_ns": 285168917
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_1",
+   "seq": 89,
+   "wall_ns": 183539916
+  },
+  {
+   "exit": 0,
+   "label": "new_1",
+   "seq": 90,
+   "wall_ns": 80125666
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 91,
+   "wall_ns": 1065821583
+  },
+  {
+   "exit": 0,
+   "label": "read_1",
+   "seq": 92,
+   "wall_ns": 4078105292
+  },
+  {
+   "exit": 0,
+   "label": "rm_1",
+   "seq": 93,
+   "wall_ns": 80443292
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_2",
+   "seq": 94,
+   "wall_ns": 293684458
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_2",
+   "seq": 95,
+   "wall_ns": 185302792
+  },
+  {
+   "exit": 0,
+   "label": "new_2",
+   "seq": 96,
+   "wall_ns": 82490333
+  },
+  {
+   "exit": 0,
+   "label": "evict_2",
+   "seq": 97,
+   "wall_ns": 975729250
+  },
+  {
+   "exit": 0,
+   "label": "read_2",
+   "seq": 98,
+   "wall_ns": 3893508000
+  },
+  {
+   "exit": 0,
+   "label": "rm_2",
+   "seq": 99,
+   "wall_ns": 86049500
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_3",
+   "seq": 100,
+   "wall_ns": 296530709
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_3",
+   "seq": 101,
+   "wall_ns": 190732334
+  },
+  {
+   "exit": 0,
+   "label": "new_3",
+   "seq": 102,
+   "wall_ns": 88976916
+  },
+  {
+   "exit": 0,
+   "label": "evict_3",
+   "seq": 103,
+   "wall_ns": 983584667
+  },
+  {
+   "exit": 0,
+   "label": "read_3",
+   "seq": 104,
+   "wall_ns": 3963916500
+  },
+  {
+   "exit": 0,
+   "label": "rm_3",
+   "seq": 105,
+   "wall_ns": 84972792
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 106,
+   "wall_ns": 280637208
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 107,
+   "wall_ns": 203403833
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 108,
+   "wall_ns": 130876333
+  }
+ ],
+ "case": "RT40",
+ "load_1m": [
+  {
+   "load": 6.18,
+   "unit": "open"
+  },
+  {
+   "load": 6.65,
+   "unit": "read 1"
+  },
+  {
+   "load": 6.76,
+   "unit": "read 2"
+  },
+  {
+   "load": 6.54,
+   "unit": "read 3"
+  },
+  {
+   "load": 6.33,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-rd-ov-rt40",
+  "volume": "fsh-rd-ov-rt40"
+ },
+ "owned_released": true,
+ "reads": [
+  {
+   "evict": {
+    "bytes": 90085132,
+    "files": 9458,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 113971200,
+    "shm_resident_after": 0,
+    "wall_ns": 1065821583
+   },
+   "got": {
+    "bytes": 65003151,
+    "files": 9409
+   },
+   "k": 1,
+   "open_ns": 80125666,
+   "read_ns": 4078105292,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 90085179,
+    "files": 9458,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 112472064,
+    "shm_resident_after": 0,
+    "wall_ns": 975729250
+   },
+   "got": {
+    "bytes": 65003151,
+    "files": 9409
+   },
+   "k": 2,
+   "open_ns": 82490333,
+   "read_ns": 3893508000,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 90085226,
+    "files": 9458,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 112472064,
+    "shm_resident_after": 0,
+    "wall_ns": 983584667
+   },
+   "got": {
+    "bytes": 65003151,
+    "files": 9409
+   },
+   "k": 3,
+   "open_ns": 88976916,
+   "read_ns": 3963916500,
+   "verification": "PASS"
+  }
+ ],
+ "released": true,
+ "snapshot": "s40",
+ "status": "closed"
+}

@@ -135,10 +135,27 @@ def arm(case, name):
     }
 
 
+READS = ("RT0", "RT40", "RF0", "RF5")
+
+
+def reads(case, name):
+    """Explicit cold read case: every read's time (ms), median, MB/s, verification and cold evidence."""
+    s = json.loads((HERE / "results" / f"{name}-{case}.cold" / "state.json").read_text())
+    rs = s["reads"]
+    times = [ms(r["read_ns"]) for r in rs]
+    return {"status": s["status"], "reads": len(rs), "read_ms": med(times), "read_ms_all": [round(x) for x in times],
+            "bytes": rs[0]["got"]["bytes"], "files": rs[0]["got"]["files"],
+            "mb_per_s": round(rs[0]["got"]["bytes"] / 1e6 / (med(times) / 1e3), 1),
+            "verified": all(r["verification"] == "PASS" for r in rs),
+            "cold_demonstrated": all(r["evict"]["resident_after"] == 0 for r in rs),
+            "load": [x["load"] for x in s["load_1m"]]}
+
+
 def main():
     out = {c: {a: arm(c, a) for a in ("ovnfs", "layerfs")} for c in SMALL + LARGE + EDITS}
     for c in out:
         out[c]["logical"] = logical(c)
+    out["read"] = {c: {a: reads(c, a) for a in ("ovnfs", "layerfs")} for c in READS}
     print(json.dumps(out, indent=1))
 
 

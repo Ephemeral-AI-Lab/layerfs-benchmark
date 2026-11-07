@@ -1,0 +1,282 @@
+{
+ "arm": "layerfs",
+ "branch": "b01",
+ "calls": [
+  {
+   "exit": 0,
+   "label": "store_create",
+   "seq": 1,
+   "wall_ns": 12085875
+  },
+  {
+   "exit": 0,
+   "label": "init_floor",
+   "seq": 2,
+   "wall_ns": 14174791
+  },
+  {
+   "exit": 0,
+   "label": "store_push",
+   "seq": 3,
+   "wall_ns": 25722250
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 4,
+   "wall_ns": 2197868667
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_create",
+   "seq": 5,
+   "wall_ns": 3163160292
+  },
+  {
+   "exit": 0,
+   "label": "fork",
+   "seq": 6,
+   "wall_ns": 14120500
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_close_1",
+   "seq": 7,
+   "wall_ns": 1781137500
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_stop_1",
+   "seq": 8,
+   "wall_ns": 476671167
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_start_1",
+   "seq": 9,
+   "wall_ns": 532271000
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_create_1",
+   "seq": 10,
+   "wall_ns": 80472167
+  },
+  {
+   "exit": 0,
+   "label": "mount_1",
+   "seq": 11,
+   "wall_ns": 13052750
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 12,
+   "wall_ns": 270557416
+  },
+  {
+   "exit": 0,
+   "label": "read_1",
+   "seq": 13,
+   "wall_ns": 5210986167
+  },
+  {
+   "exit": 0,
+   "label": "unmount_1",
+   "seq": 14,
+   "wall_ns": 42333708
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_close_2",
+   "seq": 15,
+   "wall_ns": 38407708
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_stop_2",
+   "seq": 16,
+   "wall_ns": 322584250
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_start_2",
+   "seq": 17,
+   "wall_ns": 526727250
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_create_2",
+   "seq": 18,
+   "wall_ns": 78330584
+  },
+  {
+   "exit": 0,
+   "label": "mount_2",
+   "seq": 19,
+   "wall_ns": 13477167
+  },
+  {
+   "exit": 0,
+   "label": "evict_2",
+   "seq": 20,
+   "wall_ns": 248111625
+  },
+  {
+   "exit": 0,
+   "label": "read_2",
+   "seq": 21,
+   "wall_ns": 5412570375
+  },
+  {
+   "exit": 0,
+   "label": "unmount_2",
+   "seq": 22,
+   "wall_ns": 39046375
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_close_3",
+   "seq": 23,
+   "wall_ns": 41900459
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_stop_3",
+   "seq": 24,
+   "wall_ns": 369052250
+  },
+  {
+   "exit": 0,
+   "label": "cold_machine_start_3",
+   "seq": 25,
+   "wall_ns": 508807375
+  },
+  {
+   "exit": 0,
+   "label": "cold_sandbox_create_3",
+   "seq": 26,
+   "wall_ns": 65676250
+  },
+  {
+   "exit": 0,
+   "label": "mount_3",
+   "seq": 27,
+   "wall_ns": 12396125
+  },
+  {
+   "exit": 0,
+   "label": "evict_3",
+   "seq": 28,
+   "wall_ns": 253316708
+  },
+  {
+   "exit": 0,
+   "label": "read_3",
+   "seq": 29,
+   "wall_ns": 5314430500
+  },
+  {
+   "exit": 0,
+   "label": "unmount_3",
+   "seq": 30,
+   "wall_ns": 36581417
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_close",
+   "seq": 31,
+   "wall_ns": 42921750
+  },
+  {
+   "exit": 0,
+   "label": "store_remove",
+   "seq": 32,
+   "wall_ns": 18112041
+  }
+ ],
+ "case": "RT0",
+ "load_1m": [
+  {
+   "load": 5.45,
+   "unit": "open"
+  },
+  {
+   "load": 5.82,
+   "unit": "read 1"
+  },
+  {
+   "load": 6.02,
+   "unit": "read 2"
+  },
+  {
+   "load": 6.34,
+   "unit": "read 3"
+  },
+  {
+   "load": 6.31,
+   "unit": "close"
+  }
+ ],
+ "reads": [
+  {
+   "evict": {
+    "bytes": 23906543,
+    "files": 12,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 23928832,
+    "shm_resident_after": 32768,
+    "wall_ns": 270557416
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 1,
+   "open_ns": 13052750,
+   "read_ns": 5210986167,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 23906543,
+    "files": 12,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 23830528,
+    "shm_resident_after": 32768,
+    "wall_ns": 248111625
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 2,
+   "open_ns": 13477167,
+   "read_ns": 5412570375,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 23906543,
+    "files": 12,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 23830528,
+    "shm_resident_after": 32768,
+    "wall_ns": 253316708
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 3,
+   "open_ns": 12396125,
+   "read_ns": 5314430500,
+   "verification": "PASS"
+  }
+ ],
+ "released": true,
+ "status": "closed"
+}

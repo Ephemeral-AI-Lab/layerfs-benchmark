@@ -1,6 +1,6 @@
 # Rerun 2026-11-08 (cold): LayerFS `b9c4adcb` vs ovnfs `5d54cb0`
 
-**Speed here is the exec of each file operation plus the commit, with caches inside the Docker VM emptied before every commit. On multi-branch histories LayerFS ran the file operation 1.3–1.7× faster and committed 1.5–2.2× faster than ovnfs; on large files, 1.5–4.9× and 7.4–21× faster. On storage, ovnfs needed 7.6–10% more space on the histories and 3–20× more on large files. ovnfs was faster with 500 MiB of new data: writing and committing a brand-new file took it 1.8 s and 1.0 s, against LayerFS's 2.7 s and 1.4 s.**
+**Speed here is the exec of each file operation plus the commit, with caches inside the Docker VM emptied before every commit. On multi-branch histories LayerFS ran the file operation 1.3–1.7× faster and committed 1.5–2.2× faster than ovnfs; on large files, 1.5–4.9× and 7.4–21× faster. On storage, ovnfs needed 7.6–10% more space on the histories and 3–20× more on large files. ovnfs was faster with 500 MiB of new data: writing and committing a brand-new file took it 1.8 s and 1.0 s, against LayerFS's 2.7 s and 1.4 s. In the separate cold read cases, ovnfs read 1.3–1.5× faster on the many-file tree and about 6× faster on a 500 MiB file.**
 
 All 78 runs passed: 13 cases × 3 samples × 2 systems, and every head matched its oracle. Each of the 990 cache evictions was checked afterwards: 0 bytes of the evicted files were left in memory. Storage numbers are exact bytes; a cold timing is the median of 3 samples. Cold applies inside the Docker VM only (see [Cold method](#cold-method)).
 
@@ -12,7 +12,7 @@ All 78 runs passed: 13 cases × 3 samples × 2 systems, and every head matched i
 | Where it ran | public CLI on macOS → Docker machine: worker container, Sandboxes as namespaces in it | daemon + FUSE in one container per case |
 | Persistence | SQLite Store, Disposable, on the worker's Docker volume; `LAYERFS_CONSTRUCTION_WORKERS=1` | state directory on an ext4 Docker volume |
 | Host | macOS; Docker Desktop VM (Apple Virtualization framework, 8 CPUs, 8 GiB) | same |
-| Ran (+08) | 2026-11-08 02:03–02:41, both systems interleaved per case; LayerFS first in samples 1 and 3, ovnfs first in sample 2. L10 storage-growth run: 02:56 | same |
+| Ran (+08) | 2026-11-08 02:03–02:41, both systems interleaved per case; LayerFS first in samples 1 and 3, ovnfs first in sample 2. L10 storage-growth run: 02:56. Read cases: 03:38–03:42 | same |
 | Host 1-minute load | 7.4–16.4 | same |
 
 The workloads match the earlier reruns: S1–S4 from the fs-storage-history edit model ([harness/compare.py](harness/compare.py)) and the `fsh-ovnfs-largefile-v0` file cases ([harness/largefile.py](harness/largefile.py)). This run adds the cold boundaries below and four small-edit cases (L100, L10, I10, A5).
@@ -35,7 +35,7 @@ A cold boundary comes **before every commit**. The final read of each head, whic
   - *Program files* (python3, the system binaries) on both systems.
 - **Flushing moves work out of the timer.** Because the flush happens before the timed commit, data the edit wrote no longer has to be written back during the commit. That's why ovnfs commits DEL500 and L500 faster cold than warm (0.59 s vs 1.14 s, 0.60 s vs 0.95 s).
 - **The file operation's exec is not evicted right before it.** It runs after the previous step's commit (which came after an eviction) or, for a branch's first step, after the mount. The figures label it "Exec: file operation", without "cold".
-- **Reads aren't measured.** Comparing read speed needs a case built for it; the final read here only checks correctness.
+- **Reads are measured only in the [read cases](#read-cases).** The final read in the edit cases only checks correctness.
 
 ## History: small code edits on several branches
 
@@ -125,6 +125,36 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 - **Removing and cutting:** LayerFS runs the operation 1.8× and 21× faster, commits 3.6× and 11.7× faster, and stores at most a few KB.
 - **Outliers:** the long whiskers on NEW500 and ADD500 (LayerFS exec 4.4 s and 4.0 s, commit 2.8 s and 3.2 s; ovnfs NEW500 exec 3.0 s, commit 1.9 s) each come from sample 1. ovnfs's ADD500 commit spread is 1.2–1.7 s across all three.
 
+## Read cases
+
+Reading is measured only here, in four cases built for it. Each case sets up a committed state once. Then it times 3 reads, each with a full cold boundary:
+- **LayerFS:** close the Sandbox, restart the machine, create a new Sandbox, mount the branch, evict.
+- **ovnfs:** restart the daemon, open a fresh checkout of the snapshot, evict.
+
+The timed exec walks the tree and reads every regular file in 1 MiB blocks; its file and byte counts must match the oracle. Driver: [harness/readcase.py](harness/readcase.py).
+
+| Case | What is read |
+| --- | --- |
+| RT0 | the 65 MB source tree (9,404 files, 65.0 MB), as imported |
+| RT40 | that tree after S1's 40 commits (9,409 files, 65.0 MB) |
+| RF0 | one 500 MiB file, as imported |
+| RF5 | that file after 5 commits of a 100 B overwrite |
+
+![Read speed](read-speed.svg)
+
+| Case | Read, cold: ovnfs (ms) | Read, cold: LayerFS (ms) | Throughput: ovnfs (MB/s) | Throughput: LayerFS (MB/s) | ovnfs faster by |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| RT0 | **3,532** (3,527–3,677) | 5,314 (5,211–5,413) | **18.4** | 12.2 | 1.5× |
+| RT40 | **3,964** (3,894–4,078) | 5,322 (5,230–5,425) | **16.4** | 12.2 | 1.3× |
+| RF0 | **556** (541–656) | 3,325 (3,304–3,358) | **943** | 158 | 6.0× |
+| RF5 | **579** (544–583) | 3,311 (3,278–3,340) | **906** | 158 | 5.7× |
+
+- **ovnfs reads faster in all four cases:** 1.3–1.5× on the many-file tree, and about 6× on the 500 MiB file.
+- **LayerFS's large-file read tops out near 158 MB/s cold.** ovnfs reads the same file at 906–943 MB/s.
+- **History doesn't slow either system's reads:** RT40 vs RT0 and RF5 vs RF0 differ by at most 12% on ovnfs (RT40) and under 1% on LayerFS.
+- **Times include the route into each system**, as all speed numbers here do (the CLI to the worker, or `docker exec`). A route costs tens of ms, small next to these reads.
+- **Every read verified, every eviction at 0 bytes.** The cases ran 2026-11-08 03:38–03:42 (+08) at host load 5.5–12.7, with systems alternating which went first per case.
+
 ## Other measurements (not in the figures)
 
 | Group | Import, warm: ovnfs (ms) | Import, warm: LayerFS (ms) |
@@ -133,7 +163,7 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 | Large file | 98–1,124 | 128–4,326 |
 | 500 MiB | 96–2,344 | 63–8,359 |
 
-Import is a diagnostic, not cold. LayerFS sends the data from the Mac to its worker; ovnfs imports from a folder already inside its container. Reads aren't reported: each run's final read only checks correctness, and its raw timings stay in `results/` as diagnostics.
+Import is a diagnostic, not cold. LayerFS sends the data from the Mac to its worker; ovnfs imports from a folder already inside its container. Each edit run's final read only checks correctness. Its raw timings stay in `results/` as diagnostics; read speed comes from the [read cases](#read-cases).
 
 ## Limits
 
@@ -145,10 +175,10 @@ Import is a diagnostic, not cold. LayerFS sends the data from the Mac to its wor
 
 ## Cleanup
 
-Every case released its Store, Sandbox, ovnfs container and volume. After the campaign, the LayerFS machine's worker container and volume were removed, as was a stopped helper container left by the discarded attempt. Nothing owned by this run remains in Docker. The campaign home and 500 MiB base files stay in the local cache.
+Every case released its Store, Sandbox, ovnfs container and volume. After the campaign, the LayerFS machine's worker container and volume were removed, as was a stopped helper container left by the discarded attempt. The read cases released their Stores, Sandboxes, ovnfs containers and volumes, then the LayerFS machine. Their smoke tests found two driver bugs: LayerFS can't mount `main` directly, and `close` was refused after a failure. Those left one Sandbox and two Stores, released through the CLI before the counted run. Nothing owned by this run remains in Docker. The campaign home and 500 MiB base files stay in the local cache.
 
 ## Files
 
-- [results/](results/): `<arm>-<case>.run{1,2,3}` with `state.json` (timings, storage probes, every eviction record) and `events.jsonl`; `layerfs-L10.growth` for the L10 line.
-- [tables.py](tables.py) prints every number above; [charts.py](charts.py) draws the six figures (storage and speed per group).
-- [harness/](harness/): the drivers with cold boundaries (`compare.py`, `lf_layerfs.py`, `lf_ovnfs.py`, `cold.py`, `evict.py`), the workload (`largefile.py`), and `run.sh` / `campaign.sh`.
+- [results/](results/): `<arm>-<case>.run{1,2,3}` with `state.json` (timings, storage probes, every eviction record) and `events.jsonl`; `layerfs-L10.growth` for the L10 line; `<arm>-<RT0|RT40|RF0|RF5>.cold` for the read cases.
+- [tables.py](tables.py) prints every number above; [charts.py](charts.py) draws the seven figures (storage and speed per group, plus read).
+- [harness/](harness/): the drivers with cold boundaries (`compare.py`, `lf_layerfs.py`, `lf_ovnfs.py`, `cold.py`, `evict.py`), the workload (`largefile.py`), the read cases (`readcase.py`, `readrun.sh`), and `run.sh` / `campaign.sh`.

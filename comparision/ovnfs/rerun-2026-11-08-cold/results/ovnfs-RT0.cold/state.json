@@ -1,0 +1,263 @@
+{
+ "arm": "ovnfs",
+ "calls": [
+  {
+   "exit": 0,
+   "label": "docker_run",
+   "seq": 1,
+   "wall_ns": 201341708
+  },
+  {
+   "exit": 0,
+   "label": "mkdir",
+   "seq": 2,
+   "wall_ns": 70514583
+  },
+  {
+   "exit": 0,
+   "label": "copy_script",
+   "seq": 3,
+   "wall_ns": 30491291
+  },
+  {
+   "exit": 0,
+   "label": "copy_base",
+   "seq": 4,
+   "wall_ns": 1347509125
+  },
+  {
+   "exit": 0,
+   "label": "daemon_start",
+   "seq": 5,
+   "wall_ns": 165266167
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 471349292
+  },
+  {
+   "exit": 0,
+   "label": "snap_main",
+   "seq": 7,
+   "wall_ns": 71788958
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_1",
+   "seq": 8,
+   "wall_ns": 267236417
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_1",
+   "seq": 9,
+   "wall_ns": 168609458
+  },
+  {
+   "exit": 0,
+   "label": "new_1",
+   "seq": 10,
+   "wall_ns": 61936041
+  },
+  {
+   "exit": 0,
+   "label": "evict_1",
+   "seq": 11,
+   "wall_ns": 1226260542
+  },
+  {
+   "exit": 0,
+   "label": "read_1",
+   "seq": 12,
+   "wall_ns": 3527314875
+  },
+  {
+   "exit": 0,
+   "label": "rm_1",
+   "seq": 13,
+   "wall_ns": 88359291
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_2",
+   "seq": 14,
+   "wall_ns": 299946958
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_2",
+   "seq": 15,
+   "wall_ns": 189823625
+  },
+  {
+   "exit": 0,
+   "label": "new_2",
+   "seq": 16,
+   "wall_ns": 72274000
+  },
+  {
+   "exit": 0,
+   "label": "evict_2",
+   "seq": 17,
+   "wall_ns": 877664083
+  },
+  {
+   "exit": 0,
+   "label": "read_2",
+   "seq": 18,
+   "wall_ns": 3676875875
+  },
+  {
+   "exit": 0,
+   "label": "rm_2",
+   "seq": 19,
+   "wall_ns": 90699209
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_stop_3",
+   "seq": 20,
+   "wall_ns": 280436250
+  },
+  {
+   "exit": 0,
+   "label": "cold_daemon_start_3",
+   "seq": 21,
+   "wall_ns": 200268959
+  },
+  {
+   "exit": 0,
+   "label": "new_3",
+   "seq": 22,
+   "wall_ns": 77022417
+  },
+  {
+   "exit": 0,
+   "label": "evict_3",
+   "seq": 23,
+   "wall_ns": 931503667
+  },
+  {
+   "exit": 0,
+   "label": "read_3",
+   "seq": 24,
+   "wall_ns": 3532070417
+  },
+  {
+   "exit": 0,
+   "label": "rm_3",
+   "seq": 25,
+   "wall_ns": 89386875
+  },
+  {
+   "exit": 0,
+   "label": "daemon_stop",
+   "seq": 26,
+   "wall_ns": 305739500
+  },
+  {
+   "exit": 0,
+   "label": "docker_rm",
+   "seq": 27,
+   "wall_ns": 190583209
+  },
+  {
+   "exit": 0,
+   "label": "volume_rm",
+   "seq": 28,
+   "wall_ns": 134440667
+  }
+ ],
+ "case": "RT0",
+ "load_1m": [
+  {
+   "load": 6.31,
+   "unit": "open"
+  },
+  {
+   "load": 6.93,
+   "unit": "read 1"
+  },
+  {
+   "load": 6.61,
+   "unit": "read 2"
+  },
+  {
+   "load": 6.4,
+   "unit": "read 3"
+  },
+  {
+   "load": 6.45,
+   "unit": "close"
+  }
+ ],
+ "owned": {
+  "container": "fsh-rd-ov-rt0",
+  "volume": "fsh-rd-ov-rt0"
+ },
+ "owned_released": true,
+ "reads": [
+  {
+   "evict": {
+    "bytes": 88962556,
+    "files": 9416,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 112721920,
+    "shm_resident_after": 0,
+    "wall_ns": 1226260542
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 1,
+   "open_ns": 61936041,
+   "read_ns": 3527314875,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 88962604,
+    "files": 9416,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 112697344,
+    "shm_resident_after": 0,
+    "wall_ns": 877664083
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 2,
+   "open_ns": 72274000,
+   "read_ns": 3676875875,
+   "verification": "PASS"
+  },
+  {
+   "evict": {
+    "bytes": 88962651,
+    "files": 9416,
+    "left": [],
+    "resident_after": 0,
+    "resident_before": 112697344,
+    "shm_resident_after": 0,
+    "wall_ns": 931503667
+   },
+   "got": {
+    "bytes": 65020523,
+    "files": 9404
+   },
+   "k": 3,
+   "open_ns": 77022417,
+   "read_ns": 3532070417,
+   "verification": "PASS"
+  }
+ ],
+ "released": true,
+ "snapshot": "s1",
+ "status": "closed"
+}

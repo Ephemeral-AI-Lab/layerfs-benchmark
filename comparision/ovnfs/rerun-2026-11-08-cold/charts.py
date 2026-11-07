@@ -147,6 +147,19 @@ def main():
     save(fig, "big500-storage.svg")
     speed(d, big, title, "big500-speed.svg")
 
+    rc = list(tables.READS)
+    ov, lf = [], []
+    for c in rc:
+        for arm, dst in (("ovnfs", ov), ("layerfs", lf)):
+            s = json.loads((HERE / "results" / f"{arm}-{c}.cold" / "state.json").read_text())
+            dst.append(tri([r["read_ns"] / 1e9 for r in s["reads"]]))
+    labels = ["RT0 tree", "RT40 tree +40", "RF0 500 MiB", "RF5 500 MiB +5"]
+    fig, ax = plt.subplots(1, 1, figsize=(7.0, 0.55 * len(rc) + 1.3), layout="constrained")
+    bars(ax, "Exec: read every byte, cold (s)", labels, ov, lf, lambda v: f"{v:.2f}")
+    fig.suptitle("Read cases: speed", x=0.01, ha="left", fontsize=11)
+    legend(fig)
+    save(fig, "read-speed.svg")
+
 
 if __name__ == "__main__":
     main()
