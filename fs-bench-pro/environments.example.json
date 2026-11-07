@@ -1,0 +1,57 @@
+{
+ "cli": "/ABSOLUTE/layerfs-checkout/target/release/layerfs",
+ "home": "/ABSOLUTE/bench-root/vol/home",
+ "xdg_cache": "/ABSOLUTE/bench-root/xdg-cache",
+ "fixtures": "/ABSOLUTE/bench-root/fixtures",
+ "out": "/ABSOLUTE/bench-root/out",
+ "guest_tool": "/ABSOLUTE/bench-root/tools/resident-linux-aarch64",
+ "native": {
+  "store": "s-native",
+  "image": "/ABSOLUTE/bench-root/native.sparseimage",
+  "mount": "/ABSOLUTE/bench-root/vol"
+ },
+ "machines": {
+  "docker": {
+   "machine": "docker",
+   "store": "s-docker",
+   "guest": [
+    "docker",
+    "exec",
+    "-i",
+    "lfs-<home-id>-docker"
+   ]
+  },
+  "lima": {
+   "machine": "lm1",
+   "store": "s-lima",
+   "guest": [
+    "limactl",
+    "shell",
+    "lfs-<home-id>-lm1",
+    "sudo"
+   ]
+  },
+  "apple-container": {
+   "machine": "ac1",
+   "store": "s-ac",
+   "guest": [
+    "container",
+    "exec",
+    "-i",
+    "lfs-<home-id>-ac1"
+   ]
+  }
+ },
+ "identity": {
+  "source": "<fill per campaign>",
+  "cli_sha256": "<fill per campaign>",
+  "bundle_json_sha256": "<fill per campaign>",
+  "linux_layerfs_sha256": "<fill per campaign>",
+  "profile": "<fill per campaign>",
+  "host": "<fill per campaign>",
+  "docker": "<fill per campaign>",
+  "lima": "<fill per campaign>",
+  "apple_container": "<fill per campaign>",
+  "store": "<fill per campaign>"
+ }
+}
