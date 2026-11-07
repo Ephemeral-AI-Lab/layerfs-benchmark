@@ -1,6 +1,6 @@
 # Rerun 2026-11-08 (cold): LayerFS `b9c4adcb` vs ovnfs `5d54cb0`
 
-**With caches inside the Docker VM emptied before every commit, LayerFS committed small edits 1.5–2.2× faster than ovnfs on multi-branch histories and 7.4–21× faster on large files. On storage, ovnfs needed 7.6–10% more space on the histories and 3–20× more on large files. ovnfs committed a brand-new or appended 500 MiB file faster (1.0 s vs 1.4 s and 1.4 s vs 1.5 s) and read data back faster in 11 of 13 cases.**
+**Speed here is the exec of each file operation plus the commit, with caches inside the Docker VM emptied before every commit. On multi-branch histories LayerFS ran the file operation 1.3–1.7× faster and committed 1.5–2.2× faster than ovnfs; on large files, 1.5–4.9× and 7.4–21× faster. On storage, ovnfs needed 7.6–10% more space on the histories and 3–20× more on large files. ovnfs was faster with 500 MiB of new data: writing and committing a brand-new file took it 1.8 s and 1.0 s, against LayerFS's 2.7 s and 1.4 s.**
 
 All 78 runs passed: 13 cases × 3 samples × 2 systems, and every head matched its oracle. Each of the 990 cache evictions was checked afterwards: 0 bytes of the evicted files were left in memory. Storage numbers are exact bytes; a cold timing is the median of 3 samples. Cold applies inside the Docker VM only (see [Cold method](#cold-method)).
 
@@ -19,7 +19,7 @@ The workloads match the earlier reruns: S1–S4 from the fs-storage-history edit
 
 ## Cold method
 
-A cold boundary comes **before every commit** and **before each final read**.
+A cold boundary comes **before every commit**. The final read of each head, which checks it against its oracle, also gets one, but its time isn't part of this comparison.
 
 | Boundary | LayerFS | ovnfs |
 | --- | --- | --- |
@@ -34,13 +34,16 @@ A cold boundary comes **before every commit** and **before each final read**.
   - *The macOS cache under the VM's disk image.* After eviction the VM reads at 2.9–3.1 GB/s, against 4.9 GB/s warm. That's consistent with real SSD reads, but an empty host cache can't be proved without purging the shared Mac.
   - *Program files* (python3, the system binaries) on both systems.
 - **Flushing moves work out of the timer.** Because the flush happens before the timed commit, data the edit wrote no longer has to be written back during the commit. That's why ovnfs commits DEL500 and L500 faster cold than warm (0.59 s vs 1.14 s, 0.60 s vs 0.95 s).
-- **Import and exec are not cold.** They're excluded from the figures and listed as warm diagnostics at the end.
+- **The file operation's exec is not evicted right before it.** It runs after the previous step's commit (which came after an eviction) or, for a branch's first step, after the mount. The figures label it "Exec: file operation", without "cold".
+- **Reads aren't measured.** Comparing read speed needs a case built for it; the final read here only checks correctness.
 
 ## History: small code edits on several branches
 
 S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S3 is a chain of 4 branches with 3 commits each; S4 is 5 branches making the same edit. All start from the same 65 MB source tree.
 
-![History figure](history.svg)
+![History storage](history-storage.svg)
+
+![History speed](history-speed.svg)
 
 | Case | States | Raw (MB) | Distinct files (MB) | Stored at end: ovnfs (MB) | Stored at end: LayerFS (MB) | Raw ÷ stored: ovnfs | Raw ÷ stored: LayerFS | Added per commit: ovnfs (KB) | Added per commit: LayerFS (KB) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -49,17 +52,18 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 | S3 | 13 | 845.1 | 65.0 | 25.59 | **23.81** | 33× | **35×** | 41.6 | **6.5** |
 | S4 | 6 | 390.1 | 64.7 | 25.62 | **23.78** | 15× | **16×** | 105.7 | **4.9** |
 
-| Case | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
-| --- | ---: | ---: |
-| S1 | 83.8 (80.1–103.8) | **41.9** (34.7–50.6) |
-| S2 | 77.5 (72.5–79.4) | **35.8** (35.6–39.1) |
-| S3 | 73.7 (73.0–75.8) | **39.1** (38.4–39.4) |
-| S4 | 70.6 (69.3–77.2) | **46.0** (45.9–46.3) |
+| Case | Exec, file operation: ovnfs (ms) | Exec, file operation: LayerFS (ms) | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| S1 | 105.6 (103.3–137.9) | **82.3** (63.9–93.8) | 83.8 (80.1–103.8) | **41.9** (34.7–50.6) |
+| S2 | 94.7 (93.3–95.3) | **56.3** (54.9–62.1) | 77.5 (72.5–79.4) | **35.8** (35.6–39.1) |
+| S3 | 91.4 (89.8–95.5) | **57.2** (54.8–58.0) | 73.7 (73.0–75.8) | **39.1** (38.4–39.4) |
+| S4 | 92.7 (91.0–101.1) | **60.7** (58.1–63.6) | 70.6 (69.3–77.2) | **46.0** (45.9–46.3) |
 
 - **Raw** counts every state's file bytes, including the imported base. **Distinct files** counts each distinct file content once. **Stored** is the Store size at the end: SQLite file + WAL for LayerFS, `du` of the state folder for ovnfs. "Added per commit" is (stored at end − stored after import) ÷ commits.
 - **Total storage:** ovnfs ends 7.6–10.0% larger. The base tree dominates the total.
 - **Per commit:** ovnfs adds 6–22× more than LayerFS. In LayerFS's own accounting, delta + zstd shrinks each commit's canonical bytes 11–28× (S1: 2,356 → 109 KB over 40 commits). About two-thirds of what remains is metadata (nearly all of it on S4), and the SQLite Store grows 1.5–2.6× beyond that.
-- **Commit:** LayerFS is 1.5–2.2× faster cold. Small-history commits include each system's route (CLI to worker, or `docker exec`); in the [morning rerun](../rerun-2026-11-07/report.md), an ovnfs commit took 8–12 ms inside its container.
+- **Exec, file operation:** LayerFS runs the edit 1.3–1.7× faster.
+- **Commit:** LayerFS is 1.5–2.2× faster cold. Small-history execs and commits include each system's route (CLI to worker, or `docker exec`); in the [morning rerun](../rerun-2026-11-07/report.md), an ovnfs commit took 8–12 ms inside its container.
 
 ## Large file, small edits
 
@@ -71,7 +75,9 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 | A5 | 5 MiB | append 16 KiB | 20 |
 | L500 | 500 MiB | overwrite 100 B | 5 |
 
-![Large-file figure](large-file.svg)
+![Large-file storage](large-file-storage.svg)
+
+![Large-file speed](large-file-speed.svg)
 
 | Case | Raw (MB) | Stored at end: ovnfs (MB) | Stored at end: LayerFS (MB) | Stored ÷ raw: ovnfs | Stored ÷ raw: LayerFS | Added per commit: ovnfs | Added per commit: LayerFS |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -81,16 +87,17 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 | A5 | 113.5 | 18.7 | **5.9** | 16% | **5%** | 613 KB | **18.4 KB** |
 | L500 | 3,145.7 | 3,146.9 | **530.4** | 100% | **17%** | 524.3 MB | **7.4 KB** |
 
-| Case | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
-| --- | ---: | ---: |
-| L100 | 221.1 (181.9–250.9) | **24.5** (22.0–24.8) |
-| L10 | 190.9 (173.2–202.3) | **24.4** (23.0–24.4) |
-| I10 | 197.9 (182.9–200.2) | **25.5** (22.6–27.3) |
-| A5 | 145.2 (133.8–147.9) | **19.5** (19.1–22.8) |
-| L500 | 603.9 (583.9–624.7) | **28.1** (25.8–38.9) |
+| Case | Exec, file operation: ovnfs (ms) | Exec, file operation: LayerFS (ms) | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| L100 | 123.8 (118.6–129.6) | **46.1** (44.9–48.0) | 221.1 (181.9–250.9) | **24.5** (22.0–24.8) |
+| L10 | 103.2 (92.5–105.5) | **47.4** (45.8–48.0) | 190.9 (173.2–202.3) | **24.4** (23.0–24.4) |
+| I10 | 112.8 (107.6–113.6) | **73.7** (72.6–78.8) | 197.9 (182.9–200.2) | **25.5** (22.6–27.3) |
+| A5 | 95.3 (90.0–103.0) | **48.5** (45.9–51.2) | 145.2 (133.8–147.9) | **19.5** (19.1–22.8) |
+| L500 | 217.2 (206.5–217.8) | **44.5** (44.1–55.6) | 603.9 (583.9–624.7) | **28.1** (25.8–38.9) |
 
 - **Storage:** ovnfs keeps every version of an overwritten or inserted-into file in full, about 100% of raw. LayerFS keeps 5–17%: the starting file plus a few KB per commit, almost all of it metadata (for example, 41.9 of L100's 43.4 KB). On A5, ovnfs packs the appends to 16% of raw; LayerFS stores the incompressible appended data nearly as is (delta + zstd 1.2×), ending at 5%.
 - **The L10 line** is one extra run per system, measured the same way: allocated bytes of the Store's files after every commit, with the Store open. The LayerFS figure includes its write-ahead log (WAL), which is why it rises from 10.8 to 12.6 MB; after the Sandbox closes it's 10.9 MB. ovnfs rises from 11.7 to 232 MB, and is 221 MB after its daemon stops. This run was not cold; storage doesn't depend on caches.
+- **Exec, file operation:** LayerFS runs the edit 1.5–4.9× faster; the gap is largest on the 500 MiB file (44 vs 217 ms).
 - **Commit:** LayerFS is 7.4–21× faster cold.
 
 ## 500 MiB create, append, remove, cut
@@ -102,31 +109,31 @@ S1 is 1 branch with 40 commits; S2 is 5 branches off main with 3 commits each; S
 | RM500 | removing an existing 500 MiB file from the tree |
 | DEL500 | cutting the last 500 MiB off a 1000 MiB file |
 
-![500 MiB figure](big500.svg)
+![500 MiB storage](big500-storage.svg)
 
-| Case | Stored by the commit: ovnfs | Stored by the commit: LayerFS | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
-| --- | ---: | ---: | ---: | ---: |
-| NEW500 | **524.3 MB** | 530.3 MB | **997** (960–1,931) | 1,359 (1,329–2,780) |
-| ADD500 | 1,048.6 MB | **530.2 MB** | **1,401** (1,170–1,726) | 1,541 (1,488–3,240) |
-| RM500 | 24.6 KB | **0** | 68 (60–78) | **19** (18–27) |
-| DEL500 | 524.3 MB | **8.2 KB** | 593 (569–648) | **51** (50–66) |
+![500 MiB speed](big500-speed.svg)
 
-- **New data:** ovnfs is ahead. It commits a brand-new 500 MiB file 1.4× faster and an appended 500 MiB 1.1× faster, and stores the new file 1% smaller.
+| Case | Stored by the commit: ovnfs | Stored by the commit: LayerFS | Exec, file operation: ovnfs (ms) | Exec, file operation: LayerFS (ms) | Commit, cold: ovnfs (ms) | Commit, cold: LayerFS (ms) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| NEW500 | **524.3 MB** | 530.3 MB | **1,756** (1,524–2,974) | 2,669 (2,436–4,364) | **997** (960–1,931) | 1,359 (1,329–2,780) |
+| ADD500 | 1,048.6 MB | **530.2 MB** | **1,816** (1,742–1,853) | 1,874 (1,863–3,955) | **1,401** (1,170–1,726) | 1,541 (1,488–3,240) |
+| RM500 | 24.6 KB | **0** | 85 (80–113) | **48** (48–48) | 68 (60–78) | **19** (18–27) |
+| DEL500 | 524.3 MB | **8.2 KB** | 972 (718–1,437) | **47** (43–66) | 593 (569–648) | **51** (50–66) |
+
+- **New data:** ovnfs is ahead. Writing a brand-new 500 MiB file takes it 1.8 s against LayerFS's 2.7 s, and committing it 1.0 s against 1.4 s. Appending 500 MiB is about even to write (1.82 vs 1.87 s) and 1.1× faster to commit on ovnfs. ovnfs also stores the new file 1% smaller.
 - **Appending:** LayerFS stores only the new 500 MiB; ovnfs stores a new 1000 MiB copy.
-- **Removing and cutting:** LayerFS commits 3.6× and 11.7× faster and stores at most a few KB.
-- **Outliers:** the long LayerFS whiskers on NEW500 and ADD500 (2.8 s, 3.2 s) and ovnfs's on NEW500 (1.9 s) each come from sample 1. ovnfs's ADD500 spread is 1.2–1.7 s across all three.
+- **Removing and cutting:** LayerFS runs the operation 1.8× and 21× faster, commits 3.6× and 11.7× faster, and stores at most a few KB.
+- **Outliers:** the long whiskers on NEW500 and ADD500 (LayerFS exec 4.4 s and 4.0 s, commit 2.8 s and 3.2 s; ovnfs NEW500 exec 3.0 s, commit 1.9 s) each come from sample 1. ovnfs's ADD500 commit spread is 1.2–1.7 s across all three.
 
 ## Other measurements (not in the figures)
 
-| Group | Read, cold: ovnfs ÷ LayerFS time | Import, warm: ovnfs (ms) | Import, warm: LayerFS (ms) | Exec, warm: ovnfs (ms) | Exec, warm: LayerFS (ms) |
-| --- | --- | ---: | ---: | ---: | ---: |
-| History S1–S4 | ovnfs 1.26–1.77× faster | 467–680 | 2,239–3,111 | 92.7–105.6 | 56.3–82.3 |
-| Large file | ovnfs 1.35–5.7× faster on 4 cases; LayerFS 1.08× faster on A5 | 98–1,124 | 128–4,326 | 95.3–217.2 | 44.5–73.7 |
-| 500 MiB | ovnfs 3.8–5.2× faster on NEW500, ADD500, DEL500; LayerFS 1.04× faster on RM500 | 96–2,344 | 63–8,359 | 84.7–1,816 | 46.9–2,669 |
+| Group | Import, warm: ovnfs (ms) | Import, warm: LayerFS (ms) |
+| --- | ---: | ---: |
+| History S1–S4 | 467–680 | 2,239–3,111 |
+| Large file | 98–1,124 | 128–4,326 |
+| 500 MiB | 96–2,344 | 63–8,359 |
 
-- **Reads:** cold reads went through a freshly restarted system on both sides. ovnfs reads faster in 11 of 13 cases.
-- **Import:** a diagnostic, not cold. LayerFS sends the data from the Mac to its worker; ovnfs imports from a folder already inside its container.
-- **Exec:** a diagnostic, not cold. Nothing was evicted before the edit step.
+Import is a diagnostic, not cold. LayerFS sends the data from the Mac to its worker; ovnfs imports from a folder already inside its container. Reads aren't reported: each run's final read only checks correctness, and its raw timings stay in `results/` as diagnostics.
 
 ## Limits
 
@@ -143,5 +150,5 @@ Every case released its Store, Sandbox, ovnfs container and volume. After the ca
 ## Files
 
 - [results/](results/): `<arm>-<case>.run{1,2,3}` with `state.json` (timings, storage probes, every eviction record) and `events.jsonl`; `layerfs-L10.growth` for the L10 line.
-- [tables.py](tables.py) prints every number above; [charts.py](charts.py) draws the three figures.
+- [tables.py](tables.py) prints every number above; [charts.py](charts.py) draws the six figures (storage and speed per group).
 - [harness/](harness/): the drivers with cold boundaries (`compare.py`, `lf_layerfs.py`, `lf_ovnfs.py`, `cold.py`, `evict.py`), the workload (`largefile.py`), and `run.sh` / `campaign.sh`.

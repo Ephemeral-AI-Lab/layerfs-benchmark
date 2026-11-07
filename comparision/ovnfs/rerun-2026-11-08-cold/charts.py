@@ -1,4 +1,4 @@
-"""Draw the report's three figures (history.svg, large-file.svg, big500.svg) from results/.
+"""Draw the report's six figures (a storage and a speed figure per case group) from results/.
 
 Bars are medians of the three cold samples with min-max whiskers; every axis starts at 0. The L10
 line uses results/layerfs-L10.growth (LayerFS Store size on disk after every commit) and ovnfs's
@@ -86,22 +86,33 @@ def save(fig, name):
     plt.close(fig)
 
 
+def speed(d, cases, title, name):
+    fig, axs = plt.subplots(1, 2, figsize=(10.5, 0.55 * len(cases) + 1.3), layout="constrained")
+    bars(axs[0], "Exec: file operation (ms)", cases, *collect(d, cases, "apply_ms"), lambda v: f"{v:,.0f}")
+    bars(axs[1], "Commit, cold (ms)", cases, *collect(d, cases, "commit_ms"), lambda v: f"{v:,.0f}")
+    fig.suptitle(title + ": speed", x=0.01, ha="left", fontsize=11)
+    legend(fig)
+    save(fig, name)
+
+
 def main():
     d = {c: {a: tables.arm(c, a) for a in ("ovnfs", "layerfs")} for c in tables.SMALL + tables.LARGE + tables.EDITS}
     for c in d:
         d[c]["logical"] = tables.logical(c)
 
     hist = list(tables.SMALL)
-    fig, axs = plt.subplots(1, 3, figsize=(10.5, 2.9), layout="constrained")
+    title = "History: small code edits on several branches (S1-S4)"
+    fig, axs = plt.subplots(1, 2, figsize=(10.5, 0.55 * len(hist) + 1.3), layout="constrained")
     bars(axs[0], "Added per commit (KB)", hist, *collect(d, hist, "stored_by_commits", 1e-3, True), lambda v: f"{v:.1f}")
     bars(axs[1], "Stored at end (MB)", hist, *collect(d, hist, "stored_at_end", 1e-6), lambda v: f"{v:.1f}")
-    bars(axs[2], "Commit, cold (ms)", hist, *collect(d, hist, "commit_ms"), lambda v: f"{v:.0f}")
-    fig.suptitle("History: small code edits on several branches (S1-S4)", x=0.01, ha="left", fontsize=11)
+    fig.suptitle(title + ": storage", x=0.01, ha="left", fontsize=11)
     legend(fig)
-    save(fig, "history.svg")
+    save(fig, "history-storage.svg")
+    speed(d, hist, title, "history-speed.svg")
 
     edits = ["L100", "L10", "I10", "A5", "L500"]
-    fig, axs = plt.subplots(1, 3, figsize=(10.5, 3.2), layout="constrained")
+    title = "Large file, small edits (L100, L10, I10, A5, L500)"
+    fig, axs = plt.subplots(1, 2, figsize=(10.5, 3.2), layout="constrained")
     g = json.loads((HERE / "results" / "layerfs-L10.growth" / "state.json").read_text())
     o = json.loads((HERE / "results" / "ovnfs-L10.run1" / "state.json").read_text())
     oprobe = {p["label"]: p["allocated_bytes"] for p in o["probes"]}
@@ -121,19 +132,20 @@ def main():
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     bars(axs[1], "Stored at end, % of every version in full", edits, *pct_of_raw(d, edits), lambda v: f"{v:.0f}%")
-    bars(axs[2], "Commit, cold (ms)", edits, *collect(d, edits, "commit_ms"), lambda v: f"{v:.0f}")
-    fig.suptitle("Large file, small edits (L100, L10, I10, A5, L500)", x=0.01, ha="left", fontsize=11)
+    fig.suptitle(title + ": storage", x=0.01, ha="left", fontsize=11)
     legend(fig)
-    save(fig, "large-file.svg")
+    save(fig, "large-file-storage.svg")
+    speed(d, edits, title, "large-file-speed.svg")
 
     big = list(tables.LARGE[:4])
-    fig, axs = plt.subplots(1, 2, figsize=(10.5, 2.9), layout="constrained")
-    bars(axs[0], "Stored by the commit (MB)", big, *collect(d, big, "stored_by_commits", 1e-6),
+    title = "500 MiB create, append, remove, cut"
+    fig, ax = plt.subplots(1, 1, figsize=(5.4, 0.55 * len(big) + 1.3), layout="constrained")
+    bars(ax, "Stored by the commit (MB)", big, *collect(d, big, "stored_by_commits", 1e-6),
          lambda v: f"{v:,.0f}" if v >= 1 else f"{v * 1e3:.0f} KB")
-    bars(axs[1], "Commit, cold (ms)", big, *collect(d, big, "commit_ms"), lambda v: f"{v:,.0f}")
-    fig.suptitle("500 MiB create, append, remove, cut", x=0.01, ha="left", fontsize=11)
+    fig.suptitle("500 MiB cases: storage", x=0.01, ha="left", fontsize=11)
     legend(fig)
-    save(fig, "big500.svg")
+    save(fig, "big500-storage.svg")
+    speed(d, big, title, "big500-speed.svg")
 
 
 if __name__ == "__main__":
