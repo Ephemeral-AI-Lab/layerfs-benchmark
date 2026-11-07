@@ -74,7 +74,9 @@ scope and cleanup requirements are in [AGENTS.md](AGENTS.md) and the root
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS | [report](../result/2026-11-06/mdtest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
+| 2026-11-06 | `76a32a9a10` (pgr2-six) | Diagnostic terminal: INCOMPLETE. 18 registered rows; execution {'PASS': 4, 'NOT_RUN': 14}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/mdtest/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-six/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-six) | Diagnostic terminal: INCOMPLETE. 18 registered rows; execution {'PASS': 4, 'NOT_RUN': 14}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/mdtest/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-six/report.md) |
+| 2026-11-06 | `b919f50eaf` | Diagnostic terminal: PASS. 16 registered rows; execution {'PASS': 16}. Final infrastructure cleanup: COMPLETE | [report](../result/2026-11-06/mdtest/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->
 
 mdtest v1 (retired): 4 PASS, 1 FAIL, 11 NOT_RUN; superseded by the launcher v2 run above.

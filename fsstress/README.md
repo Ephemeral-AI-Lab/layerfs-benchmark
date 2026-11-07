@@ -66,7 +66,9 @@ timeout of at most 120 seconds.
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-06 | `b9ad9edd7e` | Diagnostic terminal: PASS | [report](../result/2026-11-06/fsstress/b9ad9edd7ea3a9314625dee53466aa59a7ea69c7/report.md) |
+| 2026-11-06 | `76a32a9a10` (pgr2-six) | Diagnostic terminal: INCOMPLETE. 9 registered rows; execution {'PASS': 2, 'FAIL': 7}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fsstress/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-six/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-six) | Diagnostic terminal: INCOMPLETE. 9 registered rows; execution {'PASS': 2, 'FAIL': 7}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fsstress/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-six/report.md) |
+| 2026-11-06 | `b9ad9edd7e` | Diagnostic terminal: PASS. 8 registered rows; execution {'PASS': 8}. Final infrastructure cleanup: COMPLETE | [report](../result/2026-11-06/fsstress/b9ad9edd7ea3a9314625dee53466aa59a7ea69c7/report.md) |
 | 2026-11-06 | `b919f50eaf` | Superseded by the corrected-product checkpoint | [report](../result/2026-11-06/fsstress/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->
 

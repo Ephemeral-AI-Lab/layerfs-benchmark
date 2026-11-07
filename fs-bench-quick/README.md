@@ -185,5 +185,8 @@ python3 -c 'import subprocess,sys; sys.exit(subprocess.run([sys.executable,"-m",
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-06 | `76a32a9a10` (pgr2-final) | Diagnostic terminal: INCOMPLETE. 162 registered rows; execution {'PASS': 162}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fs-bench-quick/76a32a9a10e7b7b1379699ece52d45e233da5a50/pgr2-final/report.md) |
+| 2026-11-06 | `ddd1bc83cd` (pg71-final) | Diagnostic terminal: INCOMPLETE. 162 registered rows; execution {'PASS': 162}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fs-bench-quick/ddd1bc83cda03d223c9dde6be86b08024db0c5e5/pg71-final/report.md) |
+| 2026-11-06 | `b919f50eaf` (pg62-baseline) | Diagnostic terminal: INCOMPLETE. 162 registered rows; execution {'PASS': 160, 'FAIL': 1, 'NOT_RUN': 1}. Final infrastructure cleanup: INCOMPLETE | [report](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/pg62-baseline/report.md) |
 | 2026-11-06 | `b919f50eaf` | 96/96 CLI execution checks passed. Case and final runtime cleanup: COMPLETE | [report](../result/2026-11-06/fs-bench-quick/b919f50eaf9cce79671f8501a580279d23cc5f3c/report.md) |
 <!-- runs:end -->
