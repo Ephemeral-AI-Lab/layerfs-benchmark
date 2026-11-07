@@ -326,5 +326,48 @@ class ReportWithHost(unittest.TestCase):
         self.assertIn("| create 1000 files | self-contained | UNAVAILABLE |", text)
 
 
+class ReportOfPartialCampaigns(unittest.TestCase):
+    """A quick verification runs one row and must not claim more than it measured."""
+
+    def state(self, rows):
+        return {
+            "source_sha": "a" * 40,
+            "rows": rows,
+            "campaigns": [
+                {"campaign_id": "quick", "harness_commit": "c" * 40, "rows": ["native SQLite"]}
+            ],
+        }
+
+    def native_row(self):
+        return {
+            "execution": "PASS",
+            "cleanup": "COMPLETE",
+            "tool_metrics": cases.parse_result("B01", json.dumps(script_payload())),
+            "commit": {"kind": "UpToDate"},
+        }
+
+    def test_one_complete_row_is_stated_as_one(self):
+        text = report.render(self.state({"B01/native/sqlite": self.native_row()}), {"cleanup": "COMPLETE"}, {})
+        self.assertIn("- The one complete row summed to 0.0 ms (native SQLite).", text)
+        self.assertNotIn("ranged from", text)
+
+    def test_no_linux_row_means_no_bundle_claim(self):
+        text = report.render(self.state({"B01/native/sqlite": self.native_row()}), {"cleanup": "COMPLETE"}, {})
+        self.assertIn("All campaigns use the same CLI and daemon.", text)
+        self.assertNotIn("Linux bundle and image", text)
+        docker = report.render(
+            self.state({"B01/native/sqlite": self.native_row(), "B01/docker/sqlite": self.native_row()}),
+            {"cleanup": "COMPLETE"},
+            {},
+        )
+        self.assertIn("All campaigns use the same CLI and daemon, Linux bundle and image.", docker)
+
+    def test_unattempted_row_carries_the_machine_reason(self):
+        config = {"machines": {"docker": {"unavailable_reason": "not run in this quick verification"}}}
+        text = report.render(self.state({"B01/native/sqlite": self.native_row()}), {"cleanup": "COMPLETE"}, config)
+        self.assertIn("Docker SQLite, Docker PostgreSQL", text)
+        self.assertIn("not run in this quick verification", text)
+
+
 if __name__ == "__main__":
     unittest.main()

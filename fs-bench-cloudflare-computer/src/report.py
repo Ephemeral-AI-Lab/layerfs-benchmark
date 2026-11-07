@@ -62,6 +62,16 @@ def render(state, cleanup, config, host_baseline=None):
     }
     counts = Counter(row.get("execution", "NOT_RUN") for row in rows.values())
     passed = counts.get("PASS", 0)
+    # Only claim a shared Linux bundle and image when a Linux row actually ran.
+    linux_rows = any(
+        rows[(machine, backend)].get("execution") == "PASS"
+        for machine in DISPLAY
+        if machine != "native"
+        for backend in BACKENDS
+    )
+    shared_identity = "All campaigns use the same CLI and daemon" + (
+        ", Linux bundle and image" if linux_rows else ""
+    )
     cleanup_state = cleanup.get("cleanup", "NOT_RUN")
     lines = [
         "# fs-bench-cloudflare-computer — Cloudflare's fs-bench.sh on LayerFS",
@@ -79,7 +89,7 @@ def render(state, cleanup, config, host_baseline=None):
                 f"`{c['campaign_id']}` (harness `{c['harness_commit'][:10]}`): "
                 + (", ".join(c["rows"]) or "no executed rows")
                 for c in state["campaigns"]
-            ) + ". All campaigns use the same CLI, daemon, Linux bundle and image. "
+            ) + f". {shared_identity}. "
             if state.get("campaigns")
             else f"Harness `{config.get('harness_commit', 'working tree')}`. "
         )
@@ -185,6 +195,11 @@ def render(state, cleanup, config, host_baseline=None):
     for (machine, backend), row in rows.items():
         if row.get("execution") != "PASS" and row.get("reason"):
             reason = row["reason"]
+            if reason == "not attempted":
+                machine_reason = (
+                    (config.get("machines") or {}).get(machine) or {}
+                ).get("unavailable_reason")
+                reason = machine_reason or reason
             if row.get("reason") == "exec: CLI/process exit -9":
                 reason = (
                     "the Exec was stopped at the row's 25 s budget (CLI killed, exit -9), so the "
@@ -266,9 +281,18 @@ def render(state, cleanup, config, host_baseline=None):
         lines += [
             "## Main observations",
             "",
-            f"- Sum of scenario times ranged from {ms(sums[0][0])} ms ({TITLES[sums[0][1]]} "
-            f"{DATABASES[sums[0][2]]}) to {ms(sums[-1][0])} ms ({TITLES[sums[-1][1]]} "
-            f"{DATABASES[sums[-1][2]]}).",
+        ] + (
+            [
+                f"- The one complete row summed to {ms(sums[0][0])} ms "
+                f"({TITLES[sums[0][1]]} {DATABASES[sums[0][2]]})."
+            ]
+            if len(sums) == 1
+            else [
+                f"- Sum of scenario times ranged from {ms(sums[0][0])} ms ({TITLES[sums[0][1]]} "
+                f"{DATABASES[sums[0][2]]}) to {ms(sums[-1][0])} ms ({TITLES[sums[-1][1]]} "
+                f"{DATABASES[sums[-1][2]]})."
+            ]
+        ) + [
             f"- Longest complete row: {ms(e2e)} ms.",
             "- LayerFS Commit results: "
             + ", ".join(f"{n} {k}" for k, n in sorted(kinds.items()))
