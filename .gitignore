@@ -16,3 +16,7 @@ __pycache__/
 # backup-verify: the pinned CLI binary and local receipts
 backup-verify/bin/
 backup-verify/receipts/
+
+# store-transfer: the pinned CLI/daemon and local receipts
+store-transfer/bin/
+store-transfer/receipts/

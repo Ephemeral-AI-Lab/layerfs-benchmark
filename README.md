@@ -37,6 +37,7 @@ Connect: moving Stores between a home and a bucket.
 | Benchmark | Measures | What it checks | Latest run |
 | --- | --- | --- | --- |
 | [backup-verify](backup-verify/) | correctness, recovery | backup and restore on MinIO and R2 under failures | 2026-11-06 · `7691ac20` · Outcome: PASS on MinIO, 51 of 51 checks: schema v2 Stores round-trip, and a schema v1 backup is refused at open until migrated · [report](result/2026-11-06/backup-verify/7691ac20b0a8c8b741dd2b701e7aa77b63aaa8a3/report.md) |
+| [store-transfer](store-transfer/) | correctness, recovery, speed | moving a SQLite Store between a home and a machine | 2026-11-08 · `d8dddd50` · Outcome: PASS on every Store-transfer route, refusal and recovery path of layerfs-project #8–#13 at the fixed build · [report](result/2026-11-08/store-transfer/d8dddd50d04c92e4656131e71273fbe0bac0daae/report.md) |
 <!-- index:end -->
 
 ## Layout
