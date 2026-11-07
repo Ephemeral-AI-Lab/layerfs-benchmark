@@ -36,6 +36,12 @@
 > [rerun-2026-11-07/report.md](rerun-2026-11-07/report.md). The tables below are the
 > 2026-11-06 run, and the design summary below describes ovnfs before that change; see
 > [rerun-2026-11-07/design.md](rerun-2026-11-07/design.md) for the current design comparison.
+>
+> **Large files, 2026-11-07:** on small edits to incompressible 10 and 100 MiB files,
+> LayerFS `751b6b83` added 1–11 KB per commit while ovnfs `5d54cb0` stored a full copy each
+> time: 10 edits to a 100 MiB file left 1.15 GB on ovnfs and 106.3 MB on LayerFS. Appends
+> to a 5 MiB file cost both about 17 KB until ovnfs's chain cap forced full copies (36×).
+> See [largefile-2026-11-07/report.md](largefile-2026-11-07/report.md).
 
 **LayerFS v2.0.0 (Docker machine, SQLite Store) held the same histories in 3.8–4.4× less
 space than ovnfs. It added about 3.6 KB per commit against ovnfs's 212 KB to 2.2 MB per
@@ -227,6 +233,13 @@ comparision/ovnfs/
     <arm>-<case>/
       state.json           probes, per-step timings and new_stored, verification, load
       events.jsonl         every command: argv (first 6 items), exit, wall_ns, trimmed output
+  rerun-2026-11-07/        LayerFS 751b6b83 vs ovnfs 5d54cb0 on S1–S4; design.md compares the designs
+  largefile-2026-11-07/    large-file, small-edit cases on both
+    largefile.py           the workload (gen / apply / expect / sha), runs unchanged in either system
+    lf_ovnfs.py            ovnfs driver
+    lf_layerfs.py          LayerFS driver (public CLI: mount, exec, commit)
+    diag_delta_size.sh     where ovnfs deltas stop working, by file size
+    results/<arm>-<case>/  state.json, events.jsonl
 ```
 
 `compare.py` ran from a private campaign directory (`~/.cache/fsh-ovnfs-cmp`). It reads

@@ -189,7 +189,11 @@ of a pack.
   size and depth.
 - For **large files**, LayerFS's content-defined chunks share unchanged ranges.
   ovnfs relies on a whole-file delta capped at 16 MiB. Larger files are stored whole (and
-  reflinked where possible). Not measured here; this tree's largest file is about 1.2 MB.
+  reflinked where possible). Measured in
+  [../largefile-2026-11-07/report.md](../largefile-2026-11-07/report.md). A 100-byte edit to
+  an incompressible 10 or 100 MiB file cost LayerFS 1–11 KB per commit, while ovnfs stored a
+  full copy every time. Its delta matcher misses matches on incompressible content over about
+  4 MiB, well below the 16 MiB design limit.
 - For **branches**, LayerFS forks are free. An ovnfs `new` checkout costs about 115 KB plus
   a full stat pass over the folder. `fork` is cheaper.
 - For **integrity and retention**, LayerFS authenticates every read and keeps all history.

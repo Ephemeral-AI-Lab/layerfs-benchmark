@@ -1,0 +1,468 @@
+{
+ "arm": "layerfs",
+ "calls": [
+  {
+   "exit": 0,
+   "label": "store_create",
+   "seq": 1,
+   "wall_ns": 11356167
+  },
+  {
+   "exit": 0,
+   "label": "init_floor",
+   "seq": 2,
+   "wall_ns": 14768292
+  },
+  {
+   "exit": 0,
+   "label": "store_push",
+   "seq": 3,
+   "wall_ns": 33192625
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor",
+   "seq": 4,
+   "wall_ns": 7944167
+  },
+  {
+   "exit": 0,
+   "label": "probe_floor_alloc",
+   "seq": 5,
+   "wall_ns": 265770750
+  },
+  {
+   "exit": 0,
+   "label": "import",
+   "seq": 6,
+   "wall_ns": 6023896708
+  },
+  {
+   "exit": 0,
+   "label": "probe_import",
+   "seq": 7,
+   "wall_ns": 8289125
+  },
+  {
+   "exit": 0,
+   "label": "probe_import_alloc",
+   "seq": 8,
+   "wall_ns": 247626542
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_create",
+   "seq": 9,
+   "wall_ns": 71930042
+  },
+  {
+   "exit": 0,
+   "label": "fork",
+   "seq": 10,
+   "wall_ns": 11223416
+  },
+  {
+   "exit": 0,
+   "label": "mount",
+   "seq": 11,
+   "wall_ns": 14004625
+  },
+  {
+   "exit": 0,
+   "label": "apply_1",
+   "seq": 12,
+   "wall_ns": 87054875
+  },
+  {
+   "exit": 0,
+   "label": "commit_1",
+   "seq": 13,
+   "wall_ns": 21762417
+  },
+  {
+   "exit": 0,
+   "label": "apply_2",
+   "seq": 14,
+   "wall_ns": 172611541
+  },
+  {
+   "exit": 0,
+   "label": "commit_2",
+   "seq": 15,
+   "wall_ns": 17950875
+  },
+  {
+   "exit": 0,
+   "label": "apply_3",
+   "seq": 16,
+   "wall_ns": 105124583
+  },
+  {
+   "exit": 0,
+   "label": "commit_3",
+   "seq": 17,
+   "wall_ns": 17007291
+  },
+  {
+   "exit": 0,
+   "label": "apply_4",
+   "seq": 18,
+   "wall_ns": 98802666
+  },
+  {
+   "exit": 0,
+   "label": "commit_4",
+   "seq": 19,
+   "wall_ns": 14983250
+  },
+  {
+   "exit": 0,
+   "label": "apply_5",
+   "seq": 20,
+   "wall_ns": 87211333
+  },
+  {
+   "exit": 0,
+   "label": "commit_5",
+   "seq": 21,
+   "wall_ns": 15272125
+  },
+  {
+   "exit": 0,
+   "label": "apply_6",
+   "seq": 22,
+   "wall_ns": 125281583
+  },
+  {
+   "exit": 0,
+   "label": "commit_6",
+   "seq": 23,
+   "wall_ns": 23359583
+  },
+  {
+   "exit": 0,
+   "label": "apply_7",
+   "seq": 24,
+   "wall_ns": 82869625
+  },
+  {
+   "exit": 0,
+   "label": "commit_7",
+   "seq": 25,
+   "wall_ns": 14512125
+  },
+  {
+   "exit": 0,
+   "label": "apply_8",
+   "seq": 26,
+   "wall_ns": 86454625
+  },
+  {
+   "exit": 0,
+   "label": "commit_8",
+   "seq": 27,
+   "wall_ns": 14169875
+  },
+  {
+   "exit": 0,
+   "label": "apply_9",
+   "seq": 28,
+   "wall_ns": 92567625
+  },
+  {
+   "exit": 0,
+   "label": "commit_9",
+   "seq": 29,
+   "wall_ns": 15220792
+  },
+  {
+   "exit": 0,
+   "label": "apply_10",
+   "seq": 30,
+   "wall_ns": 99563667
+  },
+  {
+   "exit": 0,
+   "label": "commit_10",
+   "seq": 31,
+   "wall_ns": 17179834
+  },
+  {
+   "exit": 0,
+   "label": "unmount",
+   "seq": 32,
+   "wall_ns": 12739458
+  },
+  {
+   "exit": 0,
+   "label": "vmount",
+   "seq": 33,
+   "wall_ns": 11418333
+  },
+  {
+   "exit": 0,
+   "label": "vsha",
+   "seq": 34,
+   "wall_ns": 686317958
+  },
+  {
+   "exit": 0,
+   "label": "vunmount",
+   "seq": 35,
+   "wall_ns": 18199208
+  },
+  {
+   "exit": 0,
+   "label": "sandbox_close",
+   "seq": 36,
+   "wall_ns": 62789667
+  },
+  {
+   "exit": 0,
+   "label": "probe_final",
+   "seq": 37,
+   "wall_ns": 9286083
+  },
+  {
+   "exit": 0,
+   "label": "probe_final_alloc",
+   "seq": 38,
+   "wall_ns": 239580417
+  },
+  {
+   "exit": 0,
+   "label": "store_remove",
+   "seq": 39,
+   "wall_ns": 24292834
+  }
+ ],
+ "case": "L100",
+ "fork_ns": 11223416,
+ "import_ns": 6023896708,
+ "load_1m": [
+  {
+   "load": 8.63,
+   "unit": "open"
+  },
+  {
+   "load": 9.82,
+   "unit": "steps 1 1"
+  },
+  {
+   "load": 9.82,
+   "unit": "steps 2 10"
+  },
+  {
+   "load": 9.82,
+   "unit": "verify"
+  },
+  {
+   "load": 9.82,
+   "unit": "close"
+  }
+ ],
+ "mount_ns": 14004625,
+ "probes": [
+  {
+   "allocated_bytes": 217088,
+   "file_bytes": 217088,
+   "label": "floor",
+   "state": "idle",
+   "total_bytes": 217088,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 106250240,
+   "file_bytes": 106250240,
+   "label": "import",
+   "state": "idle",
+   "total_bytes": 106250240,
+   "wal_bytes": 0
+  },
+  {
+   "allocated_bytes": 106303488,
+   "file_bytes": 106303488,
+   "label": "final",
+   "state": "idle",
+   "total_bytes": 106303488,
+   "wal_bytes": 0
+  }
+ ],
+ "sandbox_create_ns": 71930042,
+ "spec": {
+  "bytes": 100,
+  "commits": 10,
+  "op": "overwrite",
+  "size": 104857600
+ },
+ "status": "closed",
+ "steps": [
+  {
+   "apply_ns": 87054875,
+   "commit_ns": 21762417,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 21360726,
+    "op": "overwrite",
+    "step": 1
+   },
+   "new_canonical": 18334,
+   "new_metadata": 5266,
+   "new_stored": 5419,
+   "step": 1
+  },
+  {
+   "apply_ns": 172611541,
+   "commit_ns": 17950875,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 16020707,
+    "op": "overwrite",
+    "step": 2
+   },
+   "new_canonical": 17302,
+   "new_metadata": 3766,
+   "new_stored": 3919,
+   "step": 2
+  },
+  {
+   "apply_ns": 105124583,
+   "commit_ns": 17007291,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 59068537,
+    "op": "overwrite",
+    "step": 3
+   },
+   "new_canonical": 18430,
+   "new_metadata": 6032,
+   "new_stored": 6185,
+   "step": 3
+  },
+  {
+   "apply_ns": 98802666,
+   "commit_ns": 14983250,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 13072958,
+    "op": "overwrite",
+    "step": 4
+   },
+   "new_canonical": 15678,
+   "new_metadata": 3197,
+   "new_stored": 3350,
+   "step": 4
+  },
+  {
+   "apply_ns": 87211333,
+   "commit_ns": 15272125,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 73662573,
+    "op": "overwrite",
+    "step": 5
+   },
+   "new_canonical": 18526,
+   "new_metadata": 5619,
+   "new_stored": 5772,
+   "step": 5
+  },
+  {
+   "apply_ns": 125281583,
+   "commit_ns": 23359583,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 89687399,
+    "op": "overwrite",
+    "step": 6
+   },
+   "new_canonical": 18574,
+   "new_metadata": 1669,
+   "new_stored": 1822,
+   "step": 6
+  },
+  {
+   "apply_ns": 82869625,
+   "commit_ns": 14512125,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 102759594,
+    "op": "overwrite",
+    "step": 7
+   },
+   "new_canonical": 15090,
+   "new_metadata": 6226,
+   "new_stored": 6379,
+   "step": 7
+  },
+  {
+   "apply_ns": 86454625,
+   "commit_ns": 14169875,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 87413209,
+    "op": "overwrite",
+    "step": 8
+   },
+   "new_canonical": 18894,
+   "new_metadata": 4722,
+   "new_stored": 4875,
+   "step": 8
+  },
+  {
+   "apply_ns": 92567625,
+   "commit_ns": 15220792,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 101043665,
+    "op": "overwrite",
+    "step": 9
+   },
+   "new_canonical": 15170,
+   "new_metadata": 2101,
+   "new_stored": 2254,
+   "step": 9
+  },
+  {
+   "apply_ns": 99563667,
+   "commit_ns": 17179834,
+   "edit": {
+    "bytes": 100,
+    "case": "L100",
+    "offset": 86456188,
+    "op": "overwrite",
+    "step": 10
+   },
+   "new_canonical": 14210,
+   "new_metadata": 3279,
+   "new_stored": 3432,
+   "step": 10
+  }
+ ],
+ "store_removed": true,
+ "verification": {
+  "expected": {
+   "sha256": "4585d40d8c6ddca9900e9f9258b425815e826f4adefccfe3fb20a621f466657e",
+   "size": 104857600,
+   "step": 10
+  },
+  "got": {
+   "sha256": "4585d40d8c6ddca9900e9f9258b425815e826f4adefccfe3fb20a621f466657e",
+   "size": 104857600
+  },
+  "result": "PASS"
+ },
+ "verify_open_ns": 11418333,
+ "verify_read_ns": 686317958,
+ "workload": "fsh-ovnfs-largefile-v0",
+ "ws": "lf-l100-sb:wb01"
+}
