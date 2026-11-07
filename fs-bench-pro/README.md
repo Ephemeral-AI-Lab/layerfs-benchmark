@@ -122,5 +122,6 @@ python3 -m unittest discover -s tests -v
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-08 | `97fac452bd` | All 8 export samples QUALIFIED: every machine exported both fixtures into a host folder with exact content, from a cold Store, within budget | [report](../result/2026-11-08/fs-bench-pro/97fac452bd4c1f834bdc2df005cf01caf8b415d0/report.md) |
 | 2026-11-08 | `4cd63f16dd` | Export works from all four machines into a host folder: 7 of 8 samples completed with exact content (6 QUALIFIED, native E01 OVER_BUDGET under the first harness rule); Apple Container E01 FAILED mid-stream | [report](../result/2026-11-08/fs-bench-pro/4cd63f16ddbea5791c88fe34be369de27bcfff81/report.md) |
 <!-- runs:end -->
