@@ -2,7 +2,7 @@
 
 **Speed here is the exec of each file operation plus the commit, with caches inside the Docker VM emptied before every commit. On multi-branch histories LayerFS ran the file operation 1.3–1.7× faster and committed 1.5–2.2× faster than ovnfs; on large files, 1.5–4.9× and 7.4–21× faster. On storage, ovnfs needed 7.6–10% more space on the histories and 3–20× more on large files. ovnfs was faster with 500 MiB of new data: writing and committing a brand-new file took it 1.8 s and 1.0 s, against LayerFS's 2.7 s and 1.4 s. In the separate cold read cases, ovnfs read 1.3–1.5× faster on the many-file tree and about 6× faster on a 500 MiB file.**
 
-All 78 runs passed: 13 cases × 3 samples × 2 systems, and every head matched its oracle. Each of the 990 cache evictions was checked afterwards: 0 bytes of the evicted files were left in memory. Storage numbers are exact bytes; a cold timing is the median of 3 samples. Cold applies inside the Docker VM only (see [Cold method](#cold-method)).
+All 78 edit runs passed: 13 cases × 3 samples × 2 systems, and every head matched its oracle. All 24 cold reads passed too: 4 cases × 3 reads × 2 systems. Each of the 1,014 cache evictions (990 in the edit runs, 24 in the read cases) was checked afterwards: 0 bytes of the evicted files were left in memory. Storage numbers are exact bytes; a cold timing is the median of 3 samples. Cold applies inside the Docker VM only (see [Cold method](#cold-method)).
 
 ## Configuration
 
@@ -13,7 +13,7 @@ All 78 runs passed: 13 cases × 3 samples × 2 systems, and every head matched i
 | Persistence | SQLite Store, Disposable, on the worker's Docker volume; `LAYERFS_CONSTRUCTION_WORKERS=1` | state directory on an ext4 Docker volume |
 | Host | macOS; Docker Desktop VM (Apple Virtualization framework, 8 CPUs, 8 GiB) | same |
 | Ran (+08) | 2026-11-08 02:03–02:41, both systems interleaved per case; LayerFS first in samples 1 and 3, ovnfs first in sample 2. L10 storage-growth run: 02:56. Read cases: 03:38–03:42 | same |
-| Host 1-minute load | 7.4–16.4 | same |
+| Host 1-minute load | edit runs 7.4–16.4; read cases 5.5–12.7 | same |
 
 The workloads match the earlier reruns: S1–S4 from the fs-storage-history edit model ([harness/compare.py](harness/compare.py)) and the `fsh-ovnfs-largefile-v0` file cases ([harness/largefile.py](harness/largefile.py)). This run adds the cold boundaries below and four small-edit cases (L100, L10, I10, A5).
 
@@ -27,7 +27,7 @@ A cold boundary comes **before every commit**. The final read of each head, whic
 | Before each final read | close the Sandbox, restart the machine (worker container and every LayerFS process), create a new Sandbox, mount, then evict as above | stop and start the ovnfs daemon, open a fresh checkout of the last snapshot, then evict as above |
 
 - **How eviction works:** [harness/evict.py](harness/evict.py) runs in a throwaway read-only helper container on the system's own volume. For each file it calls `fsync` then `posix_fadvise(DONTNEED)`, and records resident bytes before and after with util-linux `fincore`. A boundary counts as cold only if 0 bytes remain.
-- **Evidence:** every one of the 990 boundaries ended at 0 bytes, and 76.4 GB of evicted pages were dropped in total. Each sample keeps its record in `results/*/state.json`. Evictions took 0.19–3.26 s, outside every timer. The only exception is a 32 KiB `-shm` file that LayerFS keeps memory-mapped, which is reported but not counted.
+- **Evidence:** every one of the 990 edit-run boundaries ended at 0 bytes, and 76.4 GB of evicted pages were dropped in total; the read cases' 24 boundaries also ended at 0 bytes, after dropping 9.9 GB. Each sample keeps its record in `results/*/state.json`. Evictions took 0.19–3.26 s, outside every timer. The only exception is a 32 KiB `-shm` file that LayerFS keeps memory-mapped, which is reported but not counted.
 - **Not controlled:**
   - *Daemon memory during commits.* Both daemons keep running between the edit and the commit, so their own in-memory caches stay warm there.
   - *Filesystem metadata caches* in the VM. Only a VM-wide drop can clear them, and that would touch other owners' containers.
@@ -151,7 +151,7 @@ The timed exec walks the tree and reads every regular file in 1 MiB blocks; its 
 
 - **ovnfs reads faster in all four cases:** 1.3–1.5× on the many-file tree, and about 6× on the 500 MiB file.
 - **LayerFS's large-file read tops out near 158 MB/s cold.** ovnfs reads the same file at 906–943 MB/s.
-- **History doesn't slow either system's reads:** RT40 vs RT0 and RF5 vs RF0 differ by at most 12% on ovnfs (RT40) and under 1% on LayerFS.
+- **History barely changes LayerFS's reads:** RT40 vs RT0 and RF5 vs RF0 differ by under 1%. On ovnfs, the tree read is 12% slower after 40 commits (3.96 vs 3.53 s) and the file read 4% slower after 5 (0.58 vs 0.56 s). So LayerFS's slow large-file read isn't caused by reading through stored changes.
 - **Times include the route into each system**, as all speed numbers here do (the CLI to the worker, or `docker exec`). A route costs tens of ms, small next to these reads.
 - **Every read verified, every eviction at 0 bytes.** The cases ran 2026-11-08 03:38–03:42 (+08) at host load 5.5–12.7, with systems alternating which went first per case.
 
@@ -167,7 +167,8 @@ Import is a diagnostic, not cold. LayerFS sends the data from the Mac to its wor
 
 ## Limits
 
-- **Three samples per case**, on a shared host at load 7.4–16.4.
+- **Three samples per case** (three reads per read case), on a shared host at load 5.5–16.4.
+- **The read cases cover two shapes only:** a 65 MB tree of about 9,400 small files and a single 500 MiB file. They don't cover partial reads, random access or mid-size files.
 - **Cold covers the guest page cache only**, within the limits listed under [Cold method](#cold-method).
 - **Stored bytes are measured differently:** LayerFS as SQLite file + WAL bytes, ovnfs as allocated bytes of its state folder. The L10 line uses allocated bytes for both.
 - **The routes into each system differ:** the LayerFS CLI to its worker, and `docker exec` into ovnfs. This matters most for the small-history commits.
