@@ -172,9 +172,12 @@ class Unit:
                                                   "--name", "vb01")
         got, self.state["verify_read_ns"] = self.exec_py("vsha", m["ws"], "sha", ".")
         self.lf("vunmount", "workspace", "unmount", m["ws"])
-        got = got.get(f"{self.case}.bin", {})
-        self.state["verification"] = {"expected": expected, "got": got,
-                                      "result": "PASS" if got.get("sha256") == expected["sha256"] else "FAIL"}
+        if largefile.CASES[self.case].get("tree"):
+            ok = got == expected["files"]
+        else:
+            got = got.get(f"{self.case}.bin", {})
+            ok = got.get("sha256") == expected["sha256"]
+        self.state["verification"] = {"expected": expected, "got": got, "result": "PASS" if ok else "FAIL"}
 
     def close(self):
         self.lf("sandbox_close", "sandbox", "close", f"{self.store}-sb")

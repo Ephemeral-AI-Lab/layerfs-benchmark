@@ -7,7 +7,9 @@ fell from 99–114 ms to 59–71 ms. On a 500 MiB file, LayerFS's import fell fr
 5.0 s. Its commits took 18–33 ms against ovnfs's 0.77–1.14 s, and it stored 3–8 KB per
 commit where ovnfs stored a full 525 MB copy. Cutting 500 MiB from a 1000 MiB file took
 LayerFS a 22 ms commit and 8 KB, against 1.1 s and a 500 MiB copy on ovnfs. Appending 500 MiB
-took LayerFS 6.9 s to commit, 5× slower than ovnfs, though it stored half as much. ovnfs read
+took LayerFS 6.9 s to commit, 5× slower than ovnfs, though it stored half as much. Creating a
+brand-new 500 MiB file took LayerFS a 3.9 s commit against ovnfs's 0.84 s (both stored it
+once); removing one was cheap on both (11 ms vs 75 ms, the latter mostly route). ovnfs read
 files 2–6× faster.** Every branch
 head matched its oracle on both systems: S1–S4, 15 heads per arm, and the 500 MiB file's
 final SHA-256. Storage numbers are exact bytes. Timings are warm, with one sample per case,
@@ -161,12 +163,47 @@ oracle in both cases.
   Both still hold the starting version. ovnfs adds a whole copy of the file each commit;
   LayerFS adds only new chunks.
 
+## Create and remove a 500 MiB file: NEW500, RM500
+
+Two separate one-commit tests, run 19:32–19:33 at host load 5.2–8.6, both systems back to
+back:
+- **NEW500:** the tree holds one 1 MiB file (`keep.bin`); the commit creates a brand-new
+  500 MiB file (`big.bin`).
+- **RM500:** the tree holds `keep.bin` and an existing 500 MiB `big.bin`; the commit
+  removes `big.bin`.
+
+`big.bin` has the same bytes in both tests: 500 MiB from the seeded 1 MiB-block generator.
+Verification compares every file in the final tree (name, size, SHA-256) against the
+oracle. All four passed.
+
+| | NEW500 ovnfs | NEW500 LayerFS | RM500 ovnfs | RM500 LayerFS |
+| --- | ---: | ---: | ---: | ---: |
+| Starting tree into the system, ms | copy 36 + import 81 | import 137 | copy 5,038 + import 1,061 | import 5,128 |
+| Edit (write / delete the file), ms | 1,669 | 2,136 | 88 | 48 |
+| Commit, ms | **841** | 3,928 | 75 | 11 |
+| Bytes the commit added to storage | 524,316,672 | 530,247,680 | 24,576 | 0 (290 B of metadata, within free pages) |
+| Stored at end | 526,520,320 | 531,521,536 | 526,520,320 | 531,521,536 |
+| Read the final tree, ms | 576 | 2,626 | 82 | 48 |
+
+- **Create:** both systems store the new 500 MiB once, about 525–530 MB. LayerFS's commit
+  is **4.7× slower** (3.9 s vs 0.84 s). As in ADD500, the time is inside the Sandbox daemon's
+  commit. Creating a new file (3.9 s) is faster than appending to an existing one (6.9 s),
+  so part of the append cost seems tied to the existing file.
+- **Remove:** both are cheap and store almost nothing; neither copies the remaining tree.
+  LayerFS commits in 11 ms, ovnfs in 75 ms. ovnfs's figure includes its ~50–100 ms
+  `docker exec` route, so this doesn't show which system removes faster.
+- **Storage:** after the remove, both still hold `big.bin` in history, so the totals
+  don't fall. LayerFS ends about 1% larger than ovnfs here.
+- The grow/shrink pair above (ADD500/DEL500) is a different test: it changes the size of
+  one existing file instead of creating or removing one.
+
 ## Observations
 
 - The speed work helped where it aimed: imports and the Python edit step. Commit,
   branch open, storage and reads stayed where they were.
-- A commit that adds a lot of new data is now LayerFS's slowest path: 6.9 s for 500 MiB in
-  the Sandbox daemon, against 1.35 s for ovnfs.
+- A commit that adds a lot of new data is now LayerFS's slowest path: 3.9 s to commit a new
+  500 MiB file and 6.9 s to commit 500 MiB appended to one, against 0.84 s and 1.35 s for
+  ovnfs. The time is inside the Sandbox daemon's commit.
 - ovnfs still leads on import (6–8× on 65 MB, ~4× on 500 MiB when its copy-in is left out)
   and on reading whole files (2–6×).
 - What's left in LayerFS's import, from a profile of the storing thread before the queue
@@ -191,9 +228,10 @@ local cache.
 
 ## Files
 
-- [results/](results/): `layerfs-{S1..S4,L500,ADD500,DEL500}` (merged),
-  `layerfs-before-{S1..S4,L500}` and `ovnfs-{L500,ADD500,DEL500}`, each with `state.json` and
-  `events.jsonl`.
+- [results/](results/): `layerfs-{S1..S4,L500,ADD500,DEL500,NEW500,RM500}` (merged),
+  `layerfs-before-{S1..S4,L500}` and `ovnfs-{L500,ADD500,DEL500,NEW500,RM500}`, each with
+  `state.json` and `events.jsonl`.
 - [tables.py](tables.py) prints every number above from `results/` and
   `../rerun-2026-11-07/results/ovnfs-*`.
-- [harness/](harness/): `largefile.py`, `lf_layerfs.py` and `lf_ovnfs.py` for L500, ADD500 and DEL500.
+- [harness/](harness/): `largefile.py`, `lf_layerfs.py` and `lf_ovnfs.py` for L500, ADD500,
+  DEL500, NEW500 and RM500.

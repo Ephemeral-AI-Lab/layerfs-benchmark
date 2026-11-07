@@ -117,8 +117,12 @@ class Unit:
         self.call("copy_script", ["docker", "cp", str(HERE / "largefile.py"), f"{self.ctr}:{SCRIPT}"])
         # the container's Python 3.11 cannot generate 500 MiB in one randbytes call; the host made
         # the same seeded bytes (largefile.py gen), so they are copied in instead (not timed as gen)
-        src = Path(os.environ["LF_BASE"]) / self.case / f"{self.case}.bin"
-        _, self.state["copy_base_ns"] = self.call("copy_base", ["docker", "cp", str(src), f"{self.ctr}:/data/src/{self.case}.bin"])
+        src = Path(os.environ["LF_BASE"]) / self.case
+        if largefile.CASES[self.case].get("tree"):  # the whole starting tree
+            copy = ["docker", "cp", f"{src}/.", f"{self.ctr}:/data/src"]
+        else:
+            copy = ["docker", "cp", str(src / f"{self.case}.bin"), f"{self.ctr}:/data/src/{self.case}.bin"]
+        _, self.state["copy_base_ns"] = self.call("copy_base", copy)
         self.ov("daemon_start", "ovnfs", "start")
         self.probe("floor")
         out, self.state["import_ns"] = self.ov("import", "ovnfs", "--json", "new", "--name", "main",
@@ -155,10 +159,14 @@ class Unit:
                                                   "--from", snap)
         out, self.state["verify_read_ns"] = self.ov("vsha", "python3", SCRIPT, "sha", ".",
                                                     cwd="/root/checkouts/v")
-        got = json.loads(out).get(f"{self.case}.bin", {})
+        got = json.loads(out)
         self.ov("vrm", "ovnfs", "rm", "v")
-        self.state["verification"] = {"expected": expected, "got": got,
-                                      "result": "PASS" if got.get("sha256") == expected["sha256"] else "FAIL"}
+        if largefile.CASES[self.case].get("tree"):
+            ok = got == expected["files"]
+        else:
+            got = got.get(f"{self.case}.bin", {})
+            ok = got.get("sha256") == expected["sha256"]
+        self.state["verification"] = {"expected": expected, "got": got, "result": "PASS" if ok else "FAIL"}
 
     def close(self):
         self.ov("daemon_stop", "ovnfs", "stop")

@@ -10,6 +10,11 @@ cannot hide whole-file copies) and a sequence of small edits:
     A5    5 MiB,   20 commits, append 16 KiB
     ADD500  500 MiB (the L500 file), 1 commit, append 500 MiB of new bytes
     DEL500  1000 MiB (ADD500's result), 1 commit, cut the last 500 MiB (back to L500)
+    NEW500  tree of keep.bin (1 MiB), 1 commit, create a brand-new 500 MiB big.bin
+    RM500   tree of keep.bin and an existing 500 MiB big.bin, 1 commit, remove big.bin
+
+NEW500 and RM500 are tree cases: `gen` writes the starting tree into DIR, `apply`
+works in DIR, and `expect` gives every file's size and sha256 per step.
 
     largefile.py gen CASE DIR       write the starting file DIR/<case>.bin
     largefile.py apply CASE K DIR   apply edit K (1-based) to DIR/<case>.bin
@@ -34,7 +39,10 @@ CASES = {
     "A5": {"size": 5 * MiB, "commits": 20, "op": "append", "bytes": 16 * 1024},
     "ADD500": {"size": 500 * MiB, "commits": 1, "op": "grow", "bytes": 500 * MiB},
     "DEL500": {"size": 1000 * MiB, "commits": 1, "op": "shrink", "bytes": 500 * MiB},
+    "NEW500": {"size": MiB, "commits": 1, "op": "create", "bytes": 500 * MiB, "tree": True},
+    "RM500": {"size": 501 * MiB, "commits": 1, "op": "delete", "bytes": 500 * MiB, "tree": True},
 }
+BIG, KEEP = "big.bin", "keep.bin"
 GROWTH = 500 * MiB
 VERSION = "fsh-ovnfs-largefile-v0"
 
@@ -69,6 +77,46 @@ def edit(case, k, size):
     if c["op"] == "append":
         return size, payload
     return r.randrange(size - c["bytes"]), payload
+
+
+def keep_bytes():
+    return random.Random(f"{VERSION}/keep").randbytes(MiB)
+
+
+def base_tree(case):
+    """{name: block iterator} of a tree case's starting tree."""
+    tree = {KEEP: iter([keep_bytes()])}
+    if case == "RM500":
+        tree[BIG] = growth_blocks()
+    return tree
+
+
+def digest(blocks):
+    h, n = hashlib.sha256(), 0
+    for block in blocks:
+        h.update(block)
+        n += len(block)
+    return {"size": n, "sha256": h.hexdigest()}
+
+
+def expect_tree(case):
+    keep = digest([keep_bytes()])
+    small = {KEEP: keep}
+    large = {KEEP: keep, BIG: digest(growth_blocks())}
+    first, last = (small, large) if case == "NEW500" else (large, small)
+    return [{"step": 0, "files": first}, {"step": 1, "files": last}]
+
+
+def apply_to_tree(case, k, root):
+    op = CASES[case]["op"]
+    path = os.path.join(root, BIG)
+    if op == "create":
+        with open(path, "xb") as f:
+            for block in growth_blocks():
+                f.write(block)
+    else:
+        os.remove(path)
+    return {"case": case, "step": k, "op": op, "path": BIG, "bytes": GROWTH}
 
 
 def apply_to_file(case, k, path):
@@ -110,6 +158,8 @@ def apply_to_bytes(case, k, data):
 
 
 def expect(case):
+    if CASES[case].get("tree"):
+        return expect_tree(case)
     if CASES[case]["op"] in ("grow", "shrink"):
         small = hashlib.sha256(base_bytes("L500"))
         large = small.copy()
@@ -141,12 +191,20 @@ def sha_dir(root):
 
 
 def main(argv):
-    if len(argv) == 3 and argv[0] == "gen" and argv[1] in CASES:
+    if len(argv) == 3 and argv[0] == "gen" and CASES.get(argv[1], {}).get("tree"):
+        for name, blocks in base_tree(argv[1]).items():
+            with open(os.path.join(argv[2], name), "wb") as f:
+                for block in blocks:
+                    f.write(block)
+        print(json.dumps(sha_dir(argv[2])))
+    elif len(argv) == 3 and argv[0] == "gen" and argv[1] in CASES:
         path = os.path.join(argv[2], f"{argv[1]}.bin")
         with open(path, "wb") as f:
             for block in base_blocks(argv[1]):
                 f.write(block)
         print(json.dumps({"case": argv[1], "path": path, "size": os.path.getsize(path)}))
+    elif len(argv) == 4 and argv[0] == "apply" and CASES.get(argv[1], {}).get("tree"):
+        print(json.dumps(apply_to_tree(argv[1], int(argv[2]), argv[3])))
     elif len(argv) == 4 and argv[0] == "apply" and argv[1] in CASES:
         print(json.dumps(apply_to_file(argv[1], int(argv[2]), os.path.join(argv[3], f"{argv[1]}.bin"))))
     elif len(argv) == 2 and argv[0] == "expect" and argv[1] in CASES:

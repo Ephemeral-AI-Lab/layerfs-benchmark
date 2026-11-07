@@ -7,7 +7,8 @@
 > its edit step drops 39–46 ms, and a 500 MiB file imports in 5.0 s (was 32.1 s) and commits
 > about 35× faster than ovnfs, storing 3–8 KB per commit against a full copy. Cutting 500 MiB
 > from a file commits in 22 ms (ovnfs 1.1 s); appending 500 MiB commits 5× slower than ovnfs
-> (6.9 s vs 1.35 s) while storing half as much. See
+> (6.9 s vs 1.35 s) while storing half as much. Creating a new 500 MiB file commits 4.7× slower
+> than ovnfs (3.9 s vs 0.84 s); removing one is cheap on both. See
 > [rerun-2026-11-07-v2-speed/report.md](rerun-2026-11-07-v2-speed/report.md).
 >
 > **Update 2026-11-07:** rerun with ovnfs `5d54cb0` (now packs, compresses and
