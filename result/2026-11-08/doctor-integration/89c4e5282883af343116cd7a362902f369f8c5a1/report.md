@@ -48,6 +48,7 @@ After the backend proof, targetdbd12393 imported migration/npm metadata without 
 | Doctor/legacy/rendering build | PASS; machine/PostgreSQL/TLS | `cargo-macos-17114c2dbbed49dfb0ba722f80e417dd` |
 | Existing doctor,doctor_targets,rendering tests |8 passed,0 failed; built first,90-second bound | `cargo-macos-0a3c8a6135ca4ae396a50b6a43f1608f` |
 | CLI all-target Clippy | PASS; warnings denied | `cargo-macos-e916f357311e4ce5a31c969db877ed18` |
+| Final CLI no-default-features check | PASS; PostgreSQL/TLS without host machine adapters, sourcec4fbf039 | `cargo-macos-adedaa44e10843ac8ada7dcfb9e441a8` |
 | Final scoped formatting/whitespace | PASS; final change formats one help tuple only, preserving Rust tokens | rustfmt1.85.1 skip_children=true |
 | Final source boundary guard | PASS;1332 production files | `tools/check_product_boundary.py` |
 
