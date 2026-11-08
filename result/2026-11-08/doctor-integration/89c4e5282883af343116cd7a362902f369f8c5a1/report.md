@@ -38,3 +38,22 @@ Production LOC against the current targetd1be0714:146640→154882 (+8242), scope
 Matching macOS CLI SHA256 `2c86f455f8e679a3a5856063e643a86679214ded21ab4bc1327a709c697d3985`, daemon `a894ecb594779492b2a2d2ca74e5f7869b3d5c391d25e336cd884eabbfa4355d`, Linux bundle `aacc5f3242c1a164bcca3aead6f5d5ba7eae21380ab47ce5740ec5f0729487b7`.
 
 Actual owned Docker machine compatibility/ping, new-daemon registry/session and full/quick same-kernel SQLite passed. The requalification created no credential copies. The workspace was publicly unmounted, Sandbox closed and provider stopped afterward. No operation was replayed; old native#136 custody remained untouched. Detailed target-update receipts and final cache releases are recorded in the runtime ledger.
+
+## Final concurrent CLI integration supplement
+
+After the backend proof, targetdbd12393 imported migration/npm metadata without backend changes, then target `52ec0b5dbb62406f166f248d135def8e8d669501` added a CLI library entry and terminal rendering. Final candidate `c4fbf039fab5308b64c1dcd2346fbf7833e77328` integrates both. Shared `main.rs`/`run.rs` conflicts were resolved by using the target library entry, declaring the existing private Doctor module there and retaining the targeted Doctor dispatcher. The obsolete legacy dispatcher copy was removed. No Doctor family/selector/default or backend algorithm changed.
+
+| Final CLI check | Result | Exact proof |
+| --- | --- | --- |
+| Doctor/legacy/rendering build | PASS; machine/PostgreSQL/TLS | `cargo-macos-17114c2dbbed49dfb0ba722f80e417dd` |
+| Existing doctor,doctor_targets,rendering tests |8 passed,0 failed; built first,90-second bound | `cargo-macos-0a3c8a6135ca4ae396a50b6a43f1608f` |
+| CLI all-target Clippy | PASS; warnings denied | `cargo-macos-e916f357311e4ce5a31c969db877ed18` |
+| Final CLI no-default-features check | PASS; PostgreSQL/TLS without host machine adapters, sourcec4fbf039 | `cargo-macos-adedaa44e10843ac8ada7dcfb9e441a8` |
+| Final scoped formatting/whitespace | PASS; final change formats one help tuple only, preserving Rust tokens | rustfmt1.85.1 skip_children=true |
+| Final source boundary guard | PASS;1332 production files | `tools/check_product_boundary.py` |
+
+CLI execution proof source is `7656db1c172aaa6c7fa9c229778fca89b7406b25`; compiled CLI SHA256 `c90f491ae8b1e4d526e7853a00c37e0c525c1b45da86b70b6fcce6b453d010a2`. Final c4fbf039 changes only that tuple's formatting. JSON remains default in this exact source; `--text` is explicit, no `--json` flag was introduced. Legacy Doctor exit0 despite findings, bad-usage2 and targeted refusal125 stay covered.
+
+Exact comparison confirms Core, Engine, Control, API Rust library/bindings, dependency lock and `worker.rs` unchanged from qualified89c. The worker guard and UTF-8 argument loop retain their behavior across the module move. No new PostgreSQL/runtime matrix was required for this frontend-entry integration; original150/PG31 and final89c live-worker proof retain their original source pins. New frontend features, npm package publication and rebuilding the imported prebuilt CLI artifact remain outside the accepted Doctor completion scope. The existing8 tests verify compatibility of the already-delivered Doctor wiring.
+
+Final source count against target52ec0b5d:146867→155114 (+8247), API4680/Control37983/Core39671/Engine72780. CLI target import first-parent154882→155109 (+227); final formatting155109→155114 (+5 line layout only). Same pinned exact-tree counter and exclusions. No new performance/cold-cache claim. Implementation merge and issue-closure receipts are recorded in [layerfs#623](https://github.com/Ephemeral-AI-Lab/layerfs/pull/623) and [layerfs-project#116](https://github.com/Ephemeral-AI-Lab/layerfs-project/issues/116).
