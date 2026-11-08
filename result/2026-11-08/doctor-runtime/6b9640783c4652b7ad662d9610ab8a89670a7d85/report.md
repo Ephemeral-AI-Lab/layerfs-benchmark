@@ -162,3 +162,29 @@ in `qualification/integrated-native-home` (no workspace); MinIO container
 `doctor-b6-minio-116-42658`. Use public Workspace unmount/Sandbox close/Machine
 stop/remove for normal owned lifecycle cleanup; preserve the old native #136
 custody. No user resource is included in the release selection.
+
+## Final resource cleanup addendum — 2026-11-08T13:09Z
+
+The earlier warm handoff is now superseded for normal active fixtures. All seven
+public cleanup commands passed: Docker/Lima workspaces unmounted, both Sandboxes
+closed, both owned providers stopped, and the independent zero-workspace native
+Sandbox closed. The owned MinIO container was removed by exact recorded ID after
+one last unchanged three-version inventory check. Docker is Exited; the owned VM
+is Stopped; the user's separate VM remains Stopped. Provider data remains idle;
+this does not claim that every retained byte or resource was deleted.
+
+Pinned binaries/bundles and private evidence remain outside disposable targets.
+The exact two idle Linux cache volumes were owner-released in
+`qualification/cache-release-scope.json`; no cache deletion was applied. The
+macOS debug target remains protected because PID49942 still maps its daemon
+executable. Old native #136 custody, records, keys and runtime state were not
+retried, forced, deleted or changed.
+
+Copied R2/MinIO child-environment values were redacted and `minio.env` removed.
+A bounded audit of123 owned metadata/receipt files found no additional copied
+R2 credential values. Operator configuration was unchanged; protected old-native
+recovery keys were preserved. Final receipts: `cleanup-receipts/`,
+`cleanup-minio.json`, `cleanup-final-provider-state.json`,
+`copied-credential-release.json`, `copied-credential-audit.json` and the cache
+release scope. Host free space was362.2GB after cleanup; no300GB recovery or
+global cleanup was required or claimed.
