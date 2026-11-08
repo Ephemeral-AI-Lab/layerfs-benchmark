@@ -10,5 +10,6 @@ Frontend additions, GC and unrelated filesystem lifecycle work are outside this 
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-08 | `89c4e52828` | Outcome: PASS for Doctor integration on the current v2 target | [report](../result/2026-11-08/doctor-integration/89c4e5282883af343116cd7a362902f369f8c5a1/report.md) |
 | 2026-11-08 | `6b9640783c` | Outcome: PASS for the specified Doctor backend contract | [report](../result/2026-11-08/doctor-integration/6b9640783c4652b7ad662d9610ab8a89670a7d85/report.md) |
 <!-- runs:end -->

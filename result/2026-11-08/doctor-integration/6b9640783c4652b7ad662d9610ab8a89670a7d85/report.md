@@ -60,3 +60,5 @@ The old native fixture's one public unmount attempt failed after about66 seconds
 The owned PostgreSQL primary/standby containers, volumes and network were removed through their exact-label harness and independently verified absent. Credentials and certificate keys were removed; secrets-free receipts remain. Cache releases identify exact completed targets and protect source/evidence/pinned binaries. No cache deletion or recovered-space claim is made.
 
 Detailed environment ledgers: [PostgreSQL31 and owned teardown](../../doctor-postgresql/eca5ca749608b1b9f8e63a9ac8b41dd309772727/report.md), [same-pin real runtime/S3 qualification and retained custody](../../doctor-runtime/6b9640783c4652b7ad662d9610ab8a89670a7d85/report.md).
+
+Subsequent target advancement is qualified in the [final89c4e528 integration report](../89c4e5282883af343116cd7a362902f369f8c5a1/report.md); original run source pins above remain unchanged.
