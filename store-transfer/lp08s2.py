@@ -43,7 +43,7 @@ GIB = 1 << 30
 MIB = 1 << 20
 MACHINE = {"docker": "docker", "lima": "lm-s2", "ac": "ac-s2"}
 PLATFORM = {"docker": "docker", "lima": "lima", "ac": "apple-container"}
-DISK = {"lima": "4G", "ac": "4G"}
+DISK = {"lima": os.environ.get("LP08_DISK", "4G"), "ac": os.environ.get("LP08_DISK", "4G")}
 STORE = {"256": "cap256", "512": "cap512", "quiet": "quiet-s"}
 
 CASES = {}
@@ -934,11 +934,14 @@ def ac_pull_sweep(cid="R11-A-PULL-SWEEP"):
     large = [row for row in rows if row["bytes"] > 40 * MIB]
     check(cid, "every push to the Apple Container succeeded", all(row["push_exit"] == 0 for row in rows),
           json.dumps(rows))
+    # PR #617: v2's worker waits for the client to close (97fac452bd) and the
+    # product reads each piece once, so every size must pull on its first attempt
     check(cid, "Stores up to 32 MiB pull on their first attempt",
           bool(small) and all(row["pull_exit"] == 0 and row["pull_attempts"] == 1 for row in small),
           json.dumps(small))
-    check(cid, "above 32 MiB a pull needs retries or never succeeds",
-          all(row["pull_attempts"] > 1 for row in large), json.dumps(large))
+    check(cid, "Stores above 32 MiB pull on their first attempt too",
+          bool(large) and all(row["pull_exit"] == 0 and row["pull_attempts"] == 1 for row in large),
+          json.dumps(large))
     check(cid, "a failed pull never reports success and never damages the source",
           all(row["pull_exit"] in (0, 125) for row in rows), json.dumps(rows))
     return rows
@@ -1085,7 +1088,7 @@ def setup():
     closed = close_sandboxes()
     print("closed sandboxes:", closed)
     steps = [
-        (["machine", "update", "docker", "--docker", str(Path.home() / ".colima/default/docker.sock")], 600),
+        (["machine", "update", "docker", "--docker", os.environ.get("LP08_DOCKER_SOCK", str(Path.home() / ".colima/default/docker.sock"))], 600),
         (["machine", "update", "native", "--daemon", DAEMON], 600),
         (["machine", "start", "docker"], 1800),
     ]

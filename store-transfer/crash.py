@@ -1343,7 +1343,7 @@ def lost_retire_case(rid):
 def setup():
     HOME.mkdir(mode=0o700, parents=True, exist_ok=True)
     (BASE / "receipts").mkdir(parents=True, exist_ok=True)
-    steps = [(["machine", "update", "docker", "--docker", str(Path.home() / ".colima/default/docker.sock")], 300),
+    steps = [(["machine", "update", "docker", "--docker", os.environ.get("LP08_DOCKER_SOCK", str(Path.home() / ".colima/default/docker.sock"))], 300),
              (["machine", "update", "native", "--daemon", DAEMON], 300)]
     for argv, timeout in steps:
         result = call(argv, timeout=timeout)
