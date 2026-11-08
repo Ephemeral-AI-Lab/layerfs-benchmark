@@ -95,9 +95,41 @@ qualified by the separate runtime lane and is not double-counted here. Shared
 history/acquisition and combined root integration have separate receipts.
 No performance/coldness or full CLI/SDK parity claim.
 
-Original acceptance primary/standby resources and private credentials remain
-protected for root integrated reruns. Per-test databases, lock-holding processes
+At this local qualification point the original acceptance primary/standby
+resources and private credentials remained protected for root integrated reruns.
+The integrated completion and release below supersede that retained state. Per-test databases, lock-holding processes
 and proxy threads are cleaned/joined by their fixtures. The fresh harness
 up/run/down proof already removed only its exact labelled resources, as in the
 baseline report. Private product target stays warm. No unrelated cleanup or
 reclaimed-space claim.
+
+
+## Parent integrated qualification and final cleanup
+
+The parent subsequently built frozen integrated source
+`6b9640783c4652b7ad662d9610ab8a89670a7d85` first (no-run receipt
+`cargo-macos-dce3e7bb0c60452d9eea157302895bbe`) and completed the combined
+backend suite: **150 passed, 0 failed**, including all31 actual PostgreSQL
+fixtures using the private environment loader. Runtime receipt:
+`cargo-macos-c4e6677a7eea4480bce1fcc6ac253f28`; outer loader receipt
+`run-1794142395997756.json`. Warning-denying Clippy across eight affected
+packages passed: `cargo-macos-7e2bd886986b4c768dab46b6c7f7b13f`.
+These are parent integrated receipts, distinct from the locally executed
+31-test pin and its executable hashes above. Shared backend changes therefore
+received actual PostgreSQL regression coverage after integration.
+
+After this integrated pass, the owner released and the harness removed exactly
+the original two acceptance containers, two labelled volumes and network.
+Independent Docker inspection confirmed all five resources absent. The earlier
+fresh harness-validation pair was already removed. Private environment files,
+certificate keys and password fields in retained metadata were removed; local
+run receipts and secrets-free fixture identities/cleanup receipts remain.
+No user service or unrelated resource was removed, and no operation was replayed.
+
+Final cleanup receipt: private
+`layerfs-doctor-pg116/acceptance-20261108/cleanup-receipt.json`. Exact idle-cache
+release scope: private `layerfs-doctor-pg116/cache-release-final.json`, selecting
+only the completed PG worktree's `target/debug` and protecting source/receipts.
+The cache was exported as owner-released, not deleted by this task. Host free
+space at handoff was365.61GB (decimal); no net reclaimed-space claim is made.
+No issues were closed by this lane.
