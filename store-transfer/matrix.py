@@ -787,7 +787,9 @@ def refusals():
     password = subprocess.run(["docker", "exec", "lp08-pg", "printenv", "POSTGRES_PASSWORD"],
                               capture_output=True, text=True, timeout=60).stdout.strip()
     url = os.environ.get("LP08_PG_URL") or "postgres://postgres@127.0.0.1:55432/postgres"
-    os.environ["LP08_PG_PASSWORD"] = password
+    # without an lp08-pg server a placeholder still reaches the engine check:
+    # a build without the PostgreSQL engine refuses before it connects
+    os.environ["LP08_PG_PASSWORD"] = password or "no-server-placeholder"
     connected = call(["store", "connect", "ref-pg", url, "--password", "env:LP08_PG_PASSWORD"], timeout=300)
     ran(cid, connected)
     check(cid, "store connect is refused in this build without the PostgreSQL engine",
@@ -997,6 +999,8 @@ def refusals():
         battery = [
             (["machine", "start", machine], "Unsupported"),
             (["machine", "update", machine, "--cpus", "2"], "Unsupported"),
+            # a removed platform's record answers only machine list and get
+            (["machine", "status", machine], "Unsupported"),
             (["store", "push", native, machine], "Unsupported"),
             (["store", "pull", store], "Unsupported"),
             (["sandbox", "create", f"{store}/p1", f"newsb-{machine}", machine], "Unsupported"),
@@ -1017,7 +1021,7 @@ def refusals():
             check(cid, f"layerfs {' '.join(argv)} carries the authoritative text",
                   bad.get("message") == text, str(bad.get("message"))[:200])
         kept = [
-            ["machine", "list"], ["machine", "get", machine], ["machine", "status", machine],
+            ["machine", "list"], ["machine", "get", machine],
             ["store", "list"], ["store", "get", store], ["store", "status", store], ["doctor"],
         ]
         for argv in kept:

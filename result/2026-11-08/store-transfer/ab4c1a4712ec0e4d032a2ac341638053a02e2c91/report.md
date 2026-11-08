@@ -2,11 +2,10 @@
 
 > Status: verification outcomes; timings are diagnostic and performance-ineligible.
 
-**Outcome: PASS on every Store-transfer route and recovery path at layerfs
-`ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the
-same tree), and every Apple Container pull now succeeds on its first attempt;
-the only checks that did not pass expect behaviour layerfs#616/#617 changed on purpose
-or infrastructure this host lacks.**
+**Outcome: PASS on every Store-transfer route, refusal, recovery path and the
+guide at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into
+`layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container
+pull now succeeds on its first attempt.**
 
 This re-runs the [first report](../d8dddd50d04c92e4656131e71273fbe0bac0daae/report.md)
 on the code that landed. Three things changed in the product since then:
@@ -30,7 +29,7 @@ on the code that landed. Three things changed in the product since then:
 | Linux bundle | release, `linux-aarch64`, hash `723629fa0dbfa43c…`, `source.head ab4c1a4712`; guest `layerfs` sha256 `af9e26ee2ef115d5…`; Sandbox image `afa1ef9c2729` (2.7 GB). Installed in a private folder through `LAYERFS_BUNDLE`, not the shared cache |
 | Host | macOS 26.4.1, Apple silicon, 36 GiB; Docker Desktop 29.5.2 (8 CPUs, 7.75 GiB); `limactl` 2.2.1; `container` 1.6.1 |
 | Guests | `docker` = Docker Desktop's engine (not colima); Lima and Apple Container 2 CPU / 2 GiB / 8 GiB disk |
-| Suite | this folder at `e79289d` plus the changes in the same commit as this report |
+| Suite | this folder at `e79289d` plus the changes in this report's PR (two commits; see "Suite fixes and re-run") |
 | Stores | #9/#12 fixture 21.4 MB; #11 `cap256` 271.7 MB, `cap512` 543.1 MB, `quiet-s` 17.2 MB; #13 64 MiB fixture |
 | Duration | 2026-11-08 09:03–09:36 CST; every driver step was its own command, at most 290 s |
 
@@ -135,6 +134,9 @@ CLI progress: `R12-PROGRESS` 64/64 on each route and `R12-RAW` 2/2. Quiet
 path: `R12-*-QUIET` 6/6 on each platform. Node SDK `on_progress`
 (`R12-D-SDK-ONPROGRESS`): 14/14.
 
+The three rows above are the first refusal run. See "Suite fixes and re-run"
+below: with the expectations corrected, all 16 refusals pass.
+
 ### #13 — interruption, ownership and cleanup
 
 `crash.py only …`, one case per command; `R13-A-AC-PULL` was run on its own
@@ -157,7 +159,21 @@ the first report. `R13-A-AC-PULL` saw no lost answer: 0 of 1 pulls failed.
 records. The five misses are blocks 11 and 12, which teach recovering from an
 Apple Container lost answer and assume one occurs within ten pulls: all ten
 succeeded (`attempt N: pull ok`), so there was no unresolved pull to show or to
-refuse. Block 13 and every other block passed.
+refuse. Block 13 and every other block passed. See "Suite fixes and re-run"
+for the rewritten section and its 76 / 76 replay.
+
+## Suite fixes and re-run
+
+The first run's non-passing checks tested the suite, not the product, so the
+suite was corrected and only the affected drivers re-run on the same binaries
+and bundle (1-minute load 5.5). The first runs' receipts are kept locally.
+
+| Fix | Re-run |
+| --- | --- |
+| `REF-FC-RECORD` / `REF-SSH-RECORD`: `machine status` on a removed-platform record moves from "stays available" to the refusal battery (`Unsupported` with the removal text); `machine list`/`get` stay available | 31 / 31 each |
+| `REF-PG`: with no `lp08-pg` server the driver now passes a placeholder password, so `store connect` reaches the engine check | 9 / 9: `Unsupported`, "this LayerFS build has no PostgreSQL engine" |
+| Refusal matrix as a whole (second re-run, after the `REF-PG` fix) | **16 / 16 PASS** |
+| `GUIDE-zh.md` §9 rewritten: block 11 is ten pull + push round trips that must all succeed, block 12 the push to another machine refused `InvalidInput` while the Store is on `ac`, block 13 the pull back; a lost answer's text and the same-command recovery stay as prose pointing at §10's deterministic demo | `guide_repro.py` in a new home: 21 blocks, **76 / 76**, 86.2 s, no leftover records |
 
 ## Main observations
 
@@ -174,12 +190,10 @@ refuse. Block 13 and every other block passed.
 
 ## Limitations
 
-- The three non-passing refusal checks and the five guide checks test
-  behaviour that changed on purpose; the suite still encodes the old
-  expectation and needs a follow-up (status on a removed record; a guide
-  section for a loss that no longer happens).
-- NOT_RUN: `REF-PG`'s `store connect` (no `lp08-pg` server),
-  `R11-ENOSPC-MID-SYNC-A`, `R13-D-LOST-RETIRE`.
+- The refusal matrix ran three times and the guide twice: the first runs
+  exposed outdated suite expectations, and the re-runs changed only those
+  expectations, not the product, binaries or workload.
+- NOT_RUN: `R11-ENOSPC-MID-SYNC-A`, `R13-D-LOST-RETIRE`.
 - Timings are diagnostic: warm host cache, one sample, other agents' Docker
   containers running (1-minute load 7.7–21.3 during the run).
 - Docker Desktop replaced colima, so docker numbers are not comparable with

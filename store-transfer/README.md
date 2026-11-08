@@ -152,17 +152,17 @@ stayed within 0.2 %.
 - apple-container 1.6.1 used to lose the tail of large answers. Since
   layerfs `97fac452bd` the worker waits for the client to close first and
   the product reads each piece once (no retry); every pull in the
-  `ab4c1a4712` run succeeded first time. Guide blocks 11–12 still teach the
-  recovery from such a loss and fail when none occurs.
+  `ab4c1a4712` run succeeded first time. The guide's §9 shows stable round
+  trips; a lost answer's recovery is prose there and demonstrated by §10.
 - A record of a removed platform (firecracker, ssh, microsandbox) answers
-  only `machine list`/`get`; `REF-*-RECORD` still expects `machine status`
-  to answer, as for the old *disabled* platforms.
+  only `machine list`/`get`; `REF-*-RECORD` checks that every other call,
+  `machine status` included, is refused with the removal text.
 - `store connect` needs a quoted password (`env:NAME` or `file:/path`); the
   drivers read it from the server's environment and never write it down.
 
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-08 | `ab4c1a4712` | Outcome: PASS on every Store-transfer route and recovery path at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container pull now succeeds on its first attempt; the only checks that did not pass expect behaviour layerfs#616/#617 changed on purpose or infrastructure this host lacks | [report](../result/2026-11-08/store-transfer/ab4c1a4712ec0e4d032a2ac341638053a02e2c91/report.md) |
+| 2026-11-08 | `ab4c1a4712` | Outcome: PASS on every Store-transfer route, refusal, recovery path and the guide at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container pull now succeeds on its first attempt | [report](../result/2026-11-08/store-transfer/ab4c1a4712ec0e4d032a2ac341638053a02e2c91/report.md) |
 | 2026-11-08 | `d8dddd50d0` | Outcome: PASS on every Store-transfer route, refusal and recovery path of layerfs-project #8–#13 at the fixed build | [report](../result/2026-11-08/store-transfer/d8dddd50d04c92e4656131e71273fbe0bac0daae/report.md) |
 <!-- runs:end -->

@@ -38,7 +38,7 @@ Connect: moving Stores between a home and a bucket.
 | Benchmark | Measures | What it checks | Latest run |
 | --- | --- | --- | --- |
 | [backup-verify](backup-verify/) | correctness, recovery | backup and restore on MinIO and R2 under failures | 2026-11-06 · `7691ac20` · Outcome: PASS on MinIO, 51 of 51 checks: schema v2 Stores round-trip, and a schema v1 backup is refused at open until migrated · [report](result/2026-11-06/backup-verify/7691ac20b0a8c8b741dd2b701e7aa77b63aaa8a3/report.md) |
-| [store-transfer](store-transfer/) | correctness, recovery, speed | moving a SQLite Store between a home and a machine | 2026-11-08 · `ab4c1a47` · Outcome: PASS on every Store-transfer route and recovery path at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container pull now succeeds on its first attempt; the only checks that did not pass expect behaviour layerfs#616/#617 changed on purpose or infrastructure this host lacks · [report](result/2026-11-08/store-transfer/ab4c1a4712ec0e4d032a2ac341638053a02e2c91/report.md) |
+| [store-transfer](store-transfer/) | correctness, recovery, speed | moving a SQLite Store between a home and a machine | 2026-11-08 · `ab4c1a47` · Outcome: PASS on every Store-transfer route, refusal, recovery path and the guide at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container pull now succeeds on its first attempt · [report](result/2026-11-08/store-transfer/ab4c1a4712ec0e4d032a2ac341638053a02e2c91/report.md) |
 <!-- index:end -->
 
 ## Layout

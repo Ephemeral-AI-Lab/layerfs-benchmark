@@ -191,29 +191,23 @@ def main():
 
     i = 11
     out, err = read_block(i)
-    check(i, "one pull lost the worker's answer", "lost the worker's answer" in out, out[-600:])
-    check(i, "the loss is Unknown at send with the documented text",
-          '"code":"Unknown"' in err and '"phase":"send"' in err and "answer was lost" in err, err[-600:])
-    check(i, "status reads unresolved with an uncertain pull at send",
-          '"state":"unresolved"' in out and '"name":"store.pull"' in out
-          and '"phase":"send"' in out and '"uncertain":true' in out, out[-1200:])
-    check(i, "the store still points at apple-container and keeps its copy",
-          '"machine":"ac"' in out and '"bytes":68046848' in out.replace(" ", ""), out[-900:])
-    check(i, "doctor reports it as an error and names the same pull as the fix",
-          "unresolved store.pull" in out and "store pull acshop" in out, out[-1400:])
+    check(i, "ten round trips to apple-container succeed",
+          all(f"round trip {n} ok" in out for n in range(1, 11)) and "failed" not in out, out[-600:])
+    check(i, "status is idle on ac with no op",
+          '"state":"idle"' in out and '"machine":"ac"' in out and '"op":null' in out.replace(" ", ""), out[-900:])
     check(i, "the block exits 0", exits[i] == 0, exits[i])
 
     i = 12
     out, err = read_block(i)
     refusal = last_json(err) or {}
-    check(i, "the opposite direction is refused with exit 125", exits[i] == 125, exits[i])
-    check(i, "the refusal is Unresolved and names the same pull as the clearing call",
-          refusal.get("code") == "Unresolved" and "store pull acshop" in (refusal.get("message") or ""),
-          json.dumps(refusal)[:600])
+    check(i, "the push to another machine is refused with exit 125", exits[i] == 125, exits[i])
+    check(i, "the refusal is InvalidInput at check and names the pull to native first",
+          refusal.get("code") == "InvalidInput" and "store pull acshop" in (refusal.get("message") or "")
+          and (refusal.get("detail") or {}).get("phase") == "check", json.dumps(refusal)[:600])
 
     i = 13
     out, err = read_block(i)
-    check(i, "the same pull recovers", "recovered on attempt" in out, out[-400:])
+    check(i, "the pull comes back from ac", '"from":"ac"' in out and '"to":"native"' in out, out[-400:])
     check(i, "status is idle on native", '"machine":"native"' in out and '"state":"idle"' in out, out[-500:])
     check(i, "the block exits 0", exits[i] == 0, exits[i])
 

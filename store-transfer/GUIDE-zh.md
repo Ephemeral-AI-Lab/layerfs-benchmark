@@ -219,12 +219,12 @@ ext4 数据盘（8 GiB 盘，本次 **7.7 GB 量级**）。push/pull 都 exit 0�
 
 ---
 
-## 9. Apple Container：1.6.1 的丢应答、诊断与恢复
+## 9. Apple Container：稳定往返，以及丢应答时怎么办
 
-Apple Container 1.6.1 的端口转发在“机器 → 宿主的大块应答”上会丢连接：
-`store pull` 在 `send` 阶段报 `Unknown`。**它不是数据损坏，也不是 bundle 旧**；
-正确反应是**同一条命令再跑一次**（先删不可信的那半份，再重来），不要手工删文件、
-不要改用 `push`。这一段同时演示 `Unresolved` 状态的诊断、异向拒绝和恢复。
+早先的构建在 Apple Container 1.6.1 上 `store pull` 会在 `send` 阶段丢大块应答。
+LayerFS `97fac452bd` 起 worker 写完应答后等调用方先关连接，转发层不再截掉应答尾部；
+`send` 的每个分片只读一次、不重试（`ab4c1a4712` 实测：所有 pull 第一次就成功）。
+这一段演示往返稳定、Store 在机器上时的方向规则，以及正常拉回。
 
 ```bash
 # 步骤 10：建 Apple Container 机器，把另一个 Store 推上去
@@ -235,71 +235,52 @@ layerfs project init acshop/web "$FIXTURE"
 layerfs store push acshop ac --progress
 ```
 
-**预期**：`machine create` 返回 `"state":"running"`；**push 方向稳定**（LP08-S1 的
-7/7 与 LP08-S3 全部 push 都成功），exit 0。
+**预期**：`machine create` 返回 `"state":"running"`；push exit 0。
 
 ```bash
-# 步骤 11：反复 pull，直到遇到一次丢应答（本机的 1.6.1 转发经常一次就丢）
+# 步骤 11：连续 10 次 pull + push 往返，每一次都应成功
 for attempt in 1 2 3 4 5 6 7 8 9 10; do
-  if layerfs store pull acshop; then
-    echo "attempt $attempt: pull ok, pushing again to retry"
-    layerfs store push acshop ac >/dev/null || break
+  if layerfs store pull acshop >/dev/null && layerfs store push acshop ac >/dev/null; then
+    echo "round trip $attempt ok"
   else
-    echo "attempt $attempt: lost the worker's answer"
+    echo "round trip $attempt failed"
     break
   fi
 done
 layerfs store status acshop
-layerfs doctor
 ```
 
-**预期**：某一次 `store pull` exit **125**，stderr 是
+**预期**：`round trip 1 ok` 到 `round trip 10 ok`，没有 `failed`；`store status` 是
+**`"state":"idle"`**、`machine` 为 **`ac`**、`op:null`。
 
-```text
-{"code":"Unknown","message":"store pull, send: store.file: the worker's answer was lost (worker connection: failed to fill whole buffer); it may have run, and was not resent","detail":{"phase":"send"}}
-```
-
-随后 `store status` 是 **`"state":"unresolved"`**、`op` 为
-**`{"name":"store.pull","phase":"send","uncertain":true}`**、`machine` 仍是
-**`ac`**；`doctor` 是 **error**：
-`store acshop has an unresolved store.pull (…, phase send): its outcome is not known`，
-fix 为 **`` `layerfs store status acshop` shows it; `layerfs store pull acshop` clears it ``**。
-机器上的副本完好（`store status` 的 `file.bytes` 仍是 68,046,848），native 侧没有权威副本。
-
-> 如果 10 次都没丢（转发这次健康），这一段就演示不出 `Unresolved`：可以把项目目录
-> 做大一点再试，或直接跳到步骤 15（那里演示“确定失败”的中断）。**不要**为了制造失败
-> 去手工改 `LAYERFS_HOME` 里的记录。
->
-> 反过来，如果连续多次都丢（本机 1.6.1 在负载高时会这样），只做一件环境动作：
-> `layerfs machine stop ac` + `layerfs machine start ac`，转发重新建立后再跑同一条
-> `store pull`（步骤 13 的循环就是这么写的）。**不要**手工删 `.incoming`、
-> 不要改 `store push`：数据面没问题，坏的是转发层。
+> **如果某次 pull 丢了应答**（网络或转发层的问题仍可能发生），它 exit **125**，stderr 是
+> `{"code":"Unknown","message":"store pull, send: … the worker's answer was lost …; it may have run, and was not resent","detail":{"phase":"send"}}`。
+> 这时 `store status` 是 **`"state":"unresolved"`**、`op` 为
+> `{"name":"store.pull","phase":"send","uncertain":true}`、`machine` 仍是 `ac`；
+> `doctor` 报 error 并给出 **`layerfs store pull acshop`** 作为清除命令；异向命令
+> （如 `store push acshop docker`）以 `Unresolved` 拒绝且不删任何副本。
+> 正确做法只有一个：**同一条 `store pull` 再跑一次**；连续丢就
+> `layerfs machine stop ac` + `layerfs machine start ac` 后再跑同一条命令。
+> **不要**手工删 `.incoming` 或改记录。可复现的同类演示见第 10 节（确定失败的中断）。
 
 ```bash
-# 步骤 12：异向命令必须拒绝，且不删任何副本
+# 步骤 12：Store 在 ac 上时，推往另一台机器必须拒绝（先拉回 native）
 layerfs store push acshop docker
 ```
 
 **预期**：exit **125**，
-`{"code":"Unresolved","message":"store push, check: Store acshop has an unresolved store.pull (op-…, phase send): its outcome is not known; see `layerfs store status acshop`, then clear it with `layerfs store pull acshop`","detail":{"entity":{"kind":"store","name":"acshop"},"phase":"check","op":"op-…"}}`。
-**两侧副本与 home 逐字节不变**（LP08-S3 `REVERSE` 实测：home 树、目标目录、文件 sha256 全同）。
+`{"code":"InvalidInput","message":"store push, check: Store acshop is on machine ac; `layerfs store pull acshop` brings it to native first","detail":{"phase":"check"}}`；
+不发送任何字节，`store status` 仍是 `idle`、`machine` 为 `ac`。
 
 ```bash
-# 步骤 13：同一条命令恢复；连续丢应答就把机器重启一次（转发层重新建立）
-for attempt in 1 2 3; do
-  if layerfs store pull acshop; then echo "recovered on attempt $attempt"; break; fi
-  layerfs store status acshop
-  layerfs machine stop ac
-  layerfs machine start ac
-done
+# 步骤 13：拉回 native
+layerfs store pull acshop
 layerfs store status acshop
 ```
 
-**预期**：`recovered on attempt <n>`，pull exit 0，
-`{"store":"acshop","from":"ac","to":"native",…}`；
+**预期**：pull exit 0，`{"store":"acshop","from":"ac","to":"native",…}`；
 `store status` 是 **`"state":"idle"`**、**`"machine":"native"`**、**`op:null`**；
-`last_transfer.retired` 为 **true**；native 的 `store.sqlite` 的 sha256 等于
-`last_transfer.sha256`；机器上的副本已删（`file` 为 unavailable 或不存在）。
+`last_transfer.retired` 为 **true**；机器上的副本已删。
 
 ```bash
 # 步骤 14：删掉这个 Store（两侧副本 + 记录）
