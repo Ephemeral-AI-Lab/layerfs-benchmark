@@ -1,5 +1,5 @@
 # sdk-branch-file — saved branch/file API route conformance
-> group: history · measures: correctness, compatibility
+> group: filesystem · measures: correctness
 
 The CLI-only qualifier drives public Store, branch and file calls on a private
 Disposable SQLite or synchronous_commit=off PostgreSQL Store. It checks main
@@ -29,3 +29,11 @@ Store through the CLI and stops its worker after PASS. It retains the home and
 any stopped infrastructure for exact owner-controlled release; failures preserve
 custody without replay. Record actual cleanup in the report. JSON receipts and
 per-command outputs remain local/ignored; reports go under `result/`.
+
+## Past runs
+
+<!-- runs:begin -->
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-08 | `91a5940605` | PASS: all 101 CLI-only qualification operations and 588 separate product front-end outcomes passed on final source across native SQLite, native PostgreSQL and worker SQLite | [report](../result/2026-11-08/sdk-branch-file/91a5940605576322255a722663a6b956acd0b1c5/report.md) |
+<!-- runs:end -->
