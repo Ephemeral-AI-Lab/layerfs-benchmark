@@ -31,5 +31,7 @@ before any PUT. Versioned MinIO uses only an isolated bucket and verifies
 existing versions/unrelated objects survive the owned-version probe.
 
 <!-- runs:begin -->
-No published runs yet.
+| Date | LayerFS commit | Outcome | Report |
+| --- | --- | --- | --- |
+| 2026-11-08 | `6b9640783c` | PASS — B6 Doctor expectations passed, including the integrated Linux worker and full/quick SQLite routes; an independent native NFS teardown failure remains preserved in issue #136 | [report](../result/2026-11-08/doctor-runtime/6b9640783c4652b7ad662d9610ab8a89670a7d85/report.md) |
 <!-- runs:end -->
