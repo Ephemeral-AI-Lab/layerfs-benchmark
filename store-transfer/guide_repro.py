@@ -97,8 +97,8 @@ def main():
     out, err = read_block(i)
     check(i, "layerfs is 2.0.0", "layerfs 2.0.0" in out, out[:300])
     check(i, "native/docker/apple-container are ready", out.count('"ready":true') >= 3, out[:200])
-    check(i, "firecracker and ssh are refused by product policy",
-          "permanently disabled by product policy" in out, "policy text present")
+    check(i, "removed platforms (firecracker, ssh, microsandbox) are not listed",
+          not any('"%s"' % p in out for p in ("firecracker", "ssh", "microsandbox")), out[:400])
     check(i, "the block exits 0", exits[i] == 0, exits[i])
 
     i = 2

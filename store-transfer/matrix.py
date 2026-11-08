@@ -610,7 +610,7 @@ def cleanup():
 def setup():
     HOME.mkdir(mode=0o700, parents=True, exist_ok=True)
     steps = [
-        (["machine", "update", "docker", "--docker", str(Path.home() / ".colima/default/docker.sock")], 300),
+        (["machine", "update", "docker", "--docker", os.environ.get("LP08_DOCKER_SOCK", str(Path.home() / ".colima/default/docker.sock"))], 300),
         (["machine", "update", "native", "--daemon", DAEMON], 300),
     ]
     for argv, timeout in steps:
@@ -969,13 +969,14 @@ def refusals():
     started = machine_start("lm")
     check(cid, "machine start lm brings it back", started["exit"] == 0, started["stderr"][:200])
 
-    # ---- REF-FC-CREATE / REF-SSH-CONNECT: the #7 product refusal
-    fc_text = "firecracker is permanently disabled by product policy (layerfs-project#7)"
-    ssh_text = "ssh is permanently disabled by product policy (layerfs-project#7)"
+    # ---- REF-FC-CREATE / REF-SSH-CREATE: removed platforms (owner 2026-11-08,
+    # superseding the #7 "disabled" policy); `machine connect` no longer exists
+    fc_text = "platform `firecracker` was removed in LayerFS 2.0"
+    ssh_text = "platform `ssh` was removed in LayerFS 2.0"
     result, bad = refusal_item("REF-FC-CREATE", ["machine", "create", "fctmp", "firecracker"], "Unsupported", None, None)
     check("REF-FC-CREATE", "the authoritative firecracker text is used", bad.get("message") == fc_text, bad.get("message"))
-    result, bad = refusal_item("REF-SSH-CONNECT", ["machine", "connect", "sshtmp", "10.0.0.5"], "Unsupported", None, None)
-    check("REF-SSH-CONNECT", "the authoritative ssh text is used", bad.get("message") == ssh_text, bad.get("message"))
+    result, bad = refusal_item("REF-SSH-CREATE", ["machine", "create", "sshtmp", "ssh"], "Unsupported", None, None)
+    check("REF-SSH-CREATE", "the authoritative ssh text is used", bad.get("message") == ssh_text, bad.get("message"))
 
     # ---- REF-FC-RECORD / REF-SSH-RECORD: a hand-written record cannot be used
     for cid, machine, platform, text in (("REF-FC-RECORD", "fc1", "firecracker", fc_text),
@@ -1023,7 +1024,7 @@ def refusals():
             outcome = call(argv, timeout=300)
             ran(cid, outcome)
             check(cid, f"layerfs {' '.join(argv)} stays available", outcome["exit"] == 0, outcome["stderr"][:200])
-        teardown_argv = ["machine", "remove", machine] if platform == "firecracker" else ["machine", "disconnect", machine]
+        teardown_argv = ["machine", "remove", machine]
         blocked = call(teardown_argv, timeout=300)
         ran(cid, blocked)
         note(cid, f"{' '.join(teardown_argv)} while records still name the machine: exit {blocked['exit']} "
@@ -1037,7 +1038,7 @@ def refusals():
         removed = call(teardown_argv, timeout=300)
         ran(cid, removed)
         removed_bad = refusal(removed) or {}
-        check(cid, f"layerfs {' '.join(teardown_argv)} is not refused by the #7 policy",
+        check(cid, f"layerfs {' '.join(teardown_argv)} is not refused by the removal policy",
               removed_bad.get("code") != "Unsupported",
               f"exit {removed['exit']} {json.dumps(removed_bad)[:240]}")
         note(cid, f"{' '.join(teardown_argv)} on the hand-written record: exit {removed['exit']} "

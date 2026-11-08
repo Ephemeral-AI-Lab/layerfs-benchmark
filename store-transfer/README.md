@@ -82,9 +82,12 @@ prose evidence they support is in the report.
    second, empty home.
 4. `native` needs its daemon registered before a Workspace can mount on it:
    `layerfs machine update native --daemon <abs>/layerfs-daemon`.
-5. Bring up the routing layer: `colima start` for docker, `limactl` on
-   `PATH` for lima (the first `machine create` may fetch the Ubuntu image),
-   `container system status` for apple-container.
+5. Bring up the routing layer: `colima start` (or Docker Desktop, with
+   `LP08_DOCKER_SOCK=$HOME/.docker/run/docker.sock` for the drivers and
+   `DOCKER_SOCK` for the guide) for docker, `limactl` on `PATH` for lima (the
+   first `machine create` may fetch the Ubuntu image), `container system
+   status` for apple-container. `lp08s2.py` needs `LP08_DISK=8G`: the Sandbox
+   image in the bundle leaves too little of a 4 GiB disk for the 512 MiB Store.
 6. Fixtures: `python3 make_fixture.py <dir>/p1`,
    `python3 make_fixture-s2.py <dir>` and
    `python3 make_fixture-s3.py <dir>/p1` — the same seeds every time, so a
@@ -146,15 +149,20 @@ stayed within 0.2 %.
 - `install`'s ENOSPC and a `.snapshot` temporary file are **N/A**: `snapshot`
   and `verify` hash in place, and `install` is one `rename`. The only
   temporary file in the transfer is the target's `store.sqlite.incoming`.
-- apple-container 1.6.1 answer loss is documented in the report: it is a
-  transport property of that platform, visible as extra read retries in
-  `LAYERFS_TRACE`'s `worker.connection` events, not in the transfer's
-  verdict. Do not raise a retry count to force a PASS.
+- apple-container 1.6.1 used to lose the tail of large answers. Since
+  layerfs `97fac452bd` the worker waits for the client to close first and
+  the product reads each piece once (no retry); every pull in the
+  `ab4c1a4712` run succeeded first time. Guide blocks 11–12 still teach the
+  recovery from such a loss and fail when none occurs.
+- A record of a removed platform (firecracker, ssh, microsandbox) answers
+  only `machine list`/`get`; `REF-*-RECORD` still expects `machine status`
+  to answer, as for the old *disabled* platforms.
 - `store connect` needs a quoted password (`env:NAME` or `file:/path`); the
   drivers read it from the server's environment and never write it down.
 
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-08 | `ab4c1a4712` | Outcome: PASS on every Store-transfer route and recovery path at layerfs `ab4c1a4712` (Ephemeral-AI-Lab/layerfs#617, merged into `layerfs_v2_0_0` as `716197c499` with the same tree), and every Apple Container pull now succeeds on its first attempt; the only checks that did not pass expect behaviour layerfs#616/#617 changed on purpose or infrastructure this host lacks | [report](../result/2026-11-08/store-transfer/ab4c1a4712ec0e4d032a2ac341638053a02e2c91/report.md) |
 | 2026-11-08 | `d8dddd50d0` | Outcome: PASS on every Store-transfer route, refusal and recovery path of layerfs-project #8–#13 at the fixed build | [report](../result/2026-11-08/store-transfer/d8dddd50d04c92e4656131e71273fbe0bac0daae/report.md) |
 <!-- runs:end -->

@@ -19,8 +19,8 @@
 - 做：`store remove` 删 Store（两侧副本、两块记录）。
 - 不做：PostgreSQL Store 不搬（`InvalidInput: … is a PostgreSQL database; it does not move`）。
 - 不做：两台非 native 机器之间没有直连。要 `docker → lima`，先 `pull` 回 native 再 `push`。
-- 不做：`firecracker`、`ssh` 平台从产品层永久禁用（`layerfs-project#7`），
-  任何 `machine create/connect` 都会 `Unsupported`，不需要试。
+- 不做：`firecracker`、`ssh`、`microsandbox` 平台已在 LayerFS 2.0 移除（owner 2026-11-08），
+  `machine create` 会 `Unsupported`（``platform `<name>` was removed in LayerFS 2.0``），不需要试。
 
 一次 push / pull 固定七阶段，顺序不变：
 
@@ -56,8 +56,8 @@ check → snapshot → send → verify → install → record → retire
 **按顺序、逐字**执行一次。所以请不要把多行拆开、不要改顺序。
 
 ```bash
-export LAYERFS_HOME="$HOME/LayerFS/tmp/lp08-s3/guide-home"
-export FIXTURE="$HOME/LayerFS/tmp/lp08-s3/fixture/p1"
+export LAYERFS_HOME="${LAYERFS_HOME:-$HOME/LayerFS/tmp/lp08-s3/guide-home}"
+export FIXTURE="${FIXTURE:-$HOME/LayerFS/tmp/lp08-s3/fixture/p1}"
 export PATH="${LAYERFS_BIN_DIR:-$HOME/.local/bin}:$PATH"
 mkdir -p "$LAYERFS_HOME"
 chmod 700 "$LAYERFS_HOME"
@@ -73,15 +73,15 @@ layerfs machine platforms
 ```
 
 **预期**：版本行含 **`layerfs 2.0.0`**；`machine platforms` 是 JSON，
-`native`、`docker`、`apple-container` 的 `ready` 为 **true**，
-`firecracker`、`ssh` 的 `ready` 为 **false** 且带
-**`permanently disabled by product policy`** 文案（这是产品策略，不是环境问题）。
+`native`、`docker`、`apple-container` 的 `ready` 为 **true**；
+已移除的 `firecracker`、`ssh`、`microsandbox` 不在列表里。
 
 ```bash
 # 步骤 2：登记内置机器与 native daemon
 CLI_DIR="$(cd "$(dirname "$(command -v layerfs)")" && pwd)"
 layerfs machine update native --daemon "$CLI_DIR/layerfs-daemon"
-layerfs machine update docker --docker "$HOME/.colima/default/docker.sock"
+# colima: $HOME/.colima/default/docker.sock；Docker Desktop: $HOME/.docker/run/docker.sock
+layerfs machine update docker --docker "${DOCKER_SOCK:-$HOME/.colima/default/docker.sock}"
 ```
 
 **预期**：两条都 exit 0，各打印一条机器记录，`native` 与 `docker` 的 `state`
@@ -89,8 +89,8 @@ layerfs machine update docker --docker "$HOME/.colima/default/docker.sock"
 `machine status`，此时 docker 还没起 worker）。
 
 ```bash
-# 步骤 3：启动 Docker 机器
-colima start
+# 步骤 3：启动 Docker 机器（先 `colima start` 或打开 Docker Desktop）
+docker info >/dev/null
 layerfs machine start docker
 layerfs machine status docker
 ```
@@ -473,7 +473,7 @@ exit 0（`lm`/`ac` 的 VM 与数据盘一起删除）；
 | `Busy: … runs in process <pid>` | 同一 Store 有操作在跑 | 等它结束 |
 | `Unresolved` + fix 指向同方向命令 | 上次结果未知 | 跑 fix 里的那条命令 |
 | `Unknown: … the worker's answer was lost … was not resent` | 应答丢了（Apple Container 常见） | 同一命令重跑（幂等） |
-| `Unsupported: firecracker/ssh is permanently disabled by product policy (layerfs-project#7)` | 平台被产品禁用 | 换 Docker/Lima/Apple Container |
+| ``Unsupported: platform `firecracker` was removed in LayerFS 2.0``（`ssh`、`microsandbox` 同） | 平台已移除 | 换 Docker/Lima/Apple Container；旧记录用 `machine remove` 忘掉 |
 
 ---
 
