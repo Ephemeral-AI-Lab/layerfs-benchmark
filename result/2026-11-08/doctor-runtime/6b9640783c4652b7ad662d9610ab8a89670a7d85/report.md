@@ -188,3 +188,41 @@ recovery keys were preserved. Final receipts: `cleanup-receipts/`,
 `copied-credential-release.json`, `copied-credential-audit.json` and the cache
 release scope. Host free space was362.2GB after cleanup; no300GB recovery or
 global cleanup was required or claimed.
+
+## Target advancement addendum — 2026-11-08T13:17Z
+
+Before merge, the target advanced from `716197c4999` to
+`d1be0714b48d01b9e7836b1566538f42b6d254f5` with saved-query SDK work. The
+combined candidate is `89c4e5282883af343116cd7a362902f369f8c5a1`. Review found
+the ordinary worker-client diff formatting-only; StoreService adds saved-query
+dispatch, with no Doctor-operation overlap. Doctor, diagnostic transport,
+registry, Core and Persistence production source were independently compared
+against `6b9640783c` and remain unchanged. Existing B6 qualification is retained
+with its original pins; only the affected bundle/worker compatibility was rerun.
+
+| New combined artifact | Exact identity |
+| --- | --- |
+| macOS CLI (machine/TLS/PostgreSQL) | `2c86f455f8e679a3a5856063e643a86679214ded21ab4bc1327a709c697d3985` |
+| macOS daemon (PostgreSQL; built) | `a894ecb594779492b2a2d2ca74e5f7869b3d5c391d25e336cd884eabbfa4355d` |
+| Linux bundle (exact combined source) | `aacc5f3242c1a164bcca3aead6f5d5ba7eae21380ab47ce5740ec5f0729487b7` |
+
+Exactly the owned Docker machine was restarted, with a newly created daemon and
+no mounted workspace. The following public CLI checks all passed at the new pin:
+
+| Case in `target-update-receipts/` | Result |
+| --- | --- |
+| `target-docker-machine` | Worker hello/bundle compatibility/ping pass; complete |
+| `target-docker-sandbox` | Actual worker-to-daemon registry/session pass; complete |
+| `target-docker-full` | Remote SQLite58 pass; complete; logical records/leases unchanged |
+| `target-docker-quick` | Remote SQLite55 pass/3 explicit skips; complete; logical records/leases unchanged |
+| `target-cleanup-sandbox`, `target-cleanup-machine` | Public Sandbox close and provider stop pass |
+
+All diagnostic invocations were below54ms, under their100-second outer bounds;
+setup start took34.7 seconds. No other B6 environment was rerun. Fresh child
+configuration contained only XDG cache selection, with no credential fields.
+Pinned artifacts and receipts remain outside disposable targets. The temporary
+Linux cache-release revocation during this assignment is superseded by the exact
+two confirmed-idle Linux actions in
+`qualification/cache-release-scope-target-update.json`; no cache deletion was
+applied. The macOS target and old native #136 custody remain protected. Host free
+space after this final batch was379.3GB.
