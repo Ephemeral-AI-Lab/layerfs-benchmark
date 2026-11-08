@@ -20,3 +20,6 @@ backup-verify/receipts/
 # store-transfer: the pinned CLI/daemon and local receipts
 store-transfer/bin/
 store-transfer/receipts/
+
+# SDK saved branch/file qualification receipts
+sdk-branch-file/receipts/
