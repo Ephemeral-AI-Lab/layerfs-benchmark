@@ -34,6 +34,6 @@ report pins the actual source, executable hashes, image and PostgreSQL version.
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
-| 2026-11-08 | `eca5ca7496` | PASS: all 31 actual PostgreSQL Doctor backend tests passed, including cancellation across both full-integrity admissions and bounded extraction after scalar-column type corruption | [report](../result/2026-11-08/doctor-postgresql/eca5ca749608b1b9f8e63a9ac8b41dd309772727/report.md) |
 | 2026-11-08 | `c011512bc1` | PASS: 27 PostgreSQL Doctor backend tests passed against actual owned PostgreSQL 17.11 primary/physical-standby fixtures, including TLS, corruption, privileges and cancellation | [report](../result/2026-11-08/doctor-postgresql/c011512bc129803215e33d0b7f93ac1becccc68a/report.md) |
+| 2026-11-08 | `eca5ca7496` | PASS: all 31 actual PostgreSQL Doctor backend tests passed, including cancellation across both full-integrity admissions and bounded extraction after scalar-column type corruption | [report](../result/2026-11-08/doctor-postgresql/eca5ca749608b1b9f8e63a9ac8b41dd309772727/report.md) |
 <!-- runs:end -->
