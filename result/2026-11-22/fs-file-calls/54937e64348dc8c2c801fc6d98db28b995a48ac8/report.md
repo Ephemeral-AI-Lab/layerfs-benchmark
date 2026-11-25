@@ -13,6 +13,7 @@
 | Sample sizes | reads `N=15` (F10k/H50 capped), writes `N=10`, history `H1` / `H50` |
 | Cache protocol | warm (declared preconditioning; OS page cache not dropped — labelled diagnostic) |
 | Independent proof | SQLite F100 export SHA-256 match: `True`; PG18 F100 export SHA-256 match: `True` |
+| Correction (2026-11-25) | The deep-history rows were first published as `H100`. The run seeded `--h-depth 50` Commits (this table's sample line and the suite default), so they are relabelled `H50`. The numbers are unchanged. `run.py` now derives the label from `--h-depth`. |
 
 ## Latency & Throughput by Call (p50 / p95 ms, warm diagnostic)
 
@@ -41,10 +42,10 @@
 | `file.history (H1, head)` | 3.07 / 3.91 | 14.71 / 15.12 | 10.18 / 10.99 | 64.63 / 73.35 | 310.45 |
 | `file.history (H1, pinned)` | 3.08 / 3.50 | 14.64 / 15.07 | 10.40 / 11.93 | 66.62 / 74.01 | 313.95 |
 | `commit.diff (H1, head)` | 1.52 / 2.00 | 13.04 / 13.40 | 4.65 / 5.97 | 59.27 / 66.34 | 630.59 |
-| `file.blame (H100, head)` | 45.06 / 46.77 | 65.76 / 68.31 | 146.84 / 160.27 | 282.00 / 298.94 | 22.13 |
-| `file.history (H100, head)` | 79.99 / 80.77 | 116.58 / 148.84 | 276.13 / 286.28 | 438.78 / 504.74 | 12.62 |
-| `file.history (H100, pinned)` | 79.66 / 83.41 | 108.13 / 125.81 | 283.64 / 295.50 | 417.10 / 429.23 | 12.48 |
-| `commit.diff (H100, head)` | 1.36 / 2.00 | 12.75 / 13.46 | 4.57 / 5.28 | 61.78 / 71.15 | 671.82 |
+| `file.blame (H50, head)` | 45.06 / 46.77 | 65.76 / 68.31 | 146.84 / 160.27 | 282.00 / 298.94 | 22.13 |
+| `file.history (H50, head)` | 79.99 / 80.77 | 116.58 / 148.84 | 276.13 / 286.28 | 438.78 / 504.74 | 12.62 |
+| `file.history (H50, pinned)` | 79.66 / 83.41 | 108.13 / 125.81 | 283.64 / 295.50 | 417.10 / 429.23 | 12.48 |
+| `commit.diff (H50, head)` | 1.36 / 2.00 | 12.75 / 13.46 | 4.57 / 5.28 | 61.78 / 71.15 | 671.82 |
 | `file.write (0b)` | 7.53 / 8.08 | 32.48 / 36.08 | 16.74 / 21.07 | 126.80 / 159.22 | 133.41 |
 | `file.write (1k)` | 7.44 / 7.83 | 25.54 / 36.55 | 16.95 / 18.76 | 120.45 / 124.74 | 136.44 |
 | `file.write (64k)` | 8.23 / 8.56 | 27.68 / 28.44 | 18.95 / 20.36 | 128.03 / 132.56 | 122.12 |

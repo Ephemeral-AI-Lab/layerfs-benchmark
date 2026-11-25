@@ -4,7 +4,7 @@
 Measures the 14 mountless LayerFS 2.0 `file.*` calls plus `commit.diff` across:
   - CLI (fresh process per call) vs persistent `@layerfs/node` SDK client
   - Native SQLite (ext4) vs Native PostgreSQL (with `pg_stat_statements`)
-  - Tree sizes F100 / F1k / F10k, file sizes 0B..16MiB, history H1 / H100
+  - Tree sizes F100 / F1k / F10k, file sizes 0B..16MiB, history H1 / H<--h-depth> (default 50)
   - Concurrency: 1 / 4 / 8 parallel readers & writers (separate + same branch)
   - Independent proof via `file.read`/`file.stat` and `project.export` SHA-256
 
@@ -225,11 +225,12 @@ for (const [label, P, samplePath] of [
   out.rows.push({ case: `file.grep frequent (${label})`, ...(await bench(nTree, () => c.file.grep(P, "main", "COMMON_TOKEN", "/", { limit: 50 }))) });
 }
 
-// History reads: blame, history, commit.diff at H1 & H100 (head + pinned)
+// History reads: blame, history, commit.diff at H1 & H<h_depth> (head + pinned);
+// branch "h100" holds h_depth Commits, and the label says how many
 const h1Head = (await c.branch.get(PH, "h1")).commit;
 const h100Head = (await c.branch.get(PH, "h100")).commit;
-for (const [depth, br, pinned] of [["H1", "h1", h1Head], ["H100", "h100", h100Head]]) {
-  const nH = depth === "H100" ? Math.min(cfg.n_read, 10) : cfg.n_read;
+for (const [depth, br, pinned] of [["H1", "h1", h1Head], [`H${cfg.h_depth}`, "h100", h100Head]]) {
+  const nH = br === "h100" ? Math.min(cfg.n_read, 10) : cfg.n_read;
   out.rows.push({ case: `file.blame (${depth}, head)`, ...(await bench(nH, () => c.file.blame(PH, br, "/target.txt"))) });
   out.rows.push({ case: `file.history (${depth}, head)`, ...(await bench(nH, () => c.file.history(PH, br, "/target.txt", { limit: 100 }))) });
   out.rows.push({ case: `file.history (${depth}, pinned)`, ...(await bench(nH, () => c.file.history(PH, br, "/target.txt", { at: pinned, limit: 100 }))) });
@@ -311,7 +312,7 @@ console.log(JSON.stringify(out));
         Path(cfg_path).unlink(missing_ok=True)
 
 
-def run_cli_bench(cli: CliRunner, store: str, n_read: int, n_write: int) -> dict:
+def run_cli_bench(cli: CliRunner, store: str, n_read: int, n_write: int, h_depth: int) -> dict:
     """Run the CLI (fresh process per call) arm on an already-seeded home/store."""
     S = store
     P100, P1K, P10K, PSZ, PH = f"{S}/f100", f"{S}/f1k", f"{S}/f10k", f"{S}/sizes", f"{S}/hist"
@@ -339,8 +340,8 @@ def run_cli_bench(cli: CliRunner, store: str, n_read: int, n_write: int) -> dict
 
     h1_head = cli.ok(["branch", "get", PH, "h1"])[0]["commit"]
     h100_head = cli.ok(["branch", "get", PH, "h100"])[0]["commit"]
-    for depth, br, pinned in [("H1", "h1", h1_head), ("H100", "h100", h100_head)]:
-        nh = min(n_read, 5) if depth == "H100" else n_read
+    for depth, br, pinned in [("H1", "h1", h1_head), (f"H{h_depth}", "h100", h100_head)]:
+        nh = min(n_read, 5) if br == "h100" else n_read
         bench_cli(f"file.blame ({depth}, head)", nh, lambda _i, b=br: cli.ok(["file", "blame", PH, b, "/target.txt"]))
         bench_cli(f"file.history ({depth}, head)", nh, lambda _i, b=br: cli.ok(["file", "history", PH, b, "/target.txt", "--limit", "100"]))
         bench_cli(f"file.history ({depth}, pinned)", nh, lambda _i, b=br, at=pinned: cli.ok(["file", "history", PH, b, "/target.txt", "--at", at, "--limit", "100"]))
@@ -476,7 +477,7 @@ def seed_store(cli: CliRunner, store: str, fixtures_dir: Path, h_depth: int = 10
     cli.ok(["branch", "fork", f"{store}/hist", "h1", "main"])
     cli.ok(["file", "write", f"{store}/hist", "h1", "/target.txt", "-m", "h1-1"], stdin_data="line0\nline1\n")
     cli.ok(["branch", "fork", f"{store}/hist", "h100", "main"])
-    # Seed H100 via Node SDK or CLI loop (use CLI for store independence, batched fast)
+    # Seed h_depth Commits on branch "h100" (CLI loop, for Store independence)
     for i in range(1, h_depth + 1):
         cli.ok(["file", "write", f"{store}/hist", "h100", "/target.txt", "-m", f"h-{i}"], stdin_data=f"base\nrev={i}\n")
     return {"h_depth": h_depth}
@@ -551,10 +552,10 @@ def main() -> None:
         cli_sq.ok(["store", "create", "sq"])
         seed_store(cli_sq, "sq", fixtures, h_depth=args.h_depth)
 
-        results["arms"]["sqlite_cli"] = run_cli_bench(cli_sq, "sq", args.n_read, args.n_write)
+        results["arms"]["sqlite_cli"] = run_cli_bench(cli_sq, "sq", args.n_read, args.n_write, args.h_depth)
         results["arms"]["sqlite_sdk"] = run_node_sdk_bench(
             args.node_bin, args.node_pkg, home_sq, "sq",
-            {"n_read": args.n_read, "n_write": args.n_write},
+            {"n_read": args.n_read, "n_write": args.n_write, "h_depth": args.h_depth},
         )
         # Independent proof via project export SHA-256
         exp_sq = work / "exp_sq_f100"
@@ -577,10 +578,10 @@ def main() -> None:
             cli_pg.ok(["store", "connect", "pg", pg_clean_url, "--auth", "pg", "--synchronous-commit", "off"])
             seed_store(cli_pg, "pg", fixtures, h_depth=args.h_depth)
 
-            results["arms"]["pg_cli"] = run_cli_bench(cli_pg, "pg", args.n_read, args.n_write)
+            results["arms"]["pg_cli"] = run_cli_bench(cli_pg, "pg", args.n_read, args.n_write, args.h_depth)
             results["arms"]["pg_sdk"] = run_node_sdk_bench(
                 args.node_bin, args.node_pkg, home_pg, "pg",
-                {"n_read": args.n_read, "n_write": args.n_write},
+                {"n_read": args.n_read, "n_write": args.n_write, "h_depth": args.h_depth},
             )
             exp_pg = work / "exp_pg_f100"
             cli_pg.ok(["project", "export", "pg/f100", str(exp_pg)])

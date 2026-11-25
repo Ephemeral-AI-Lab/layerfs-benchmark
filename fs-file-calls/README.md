@@ -8,7 +8,7 @@ Measures the mountless LayerFS 2.0 `file` call family (`read`, `stat`, `list`,
 Compares:
 - **Front end**: CLI (fresh `layerfs` process per call, matching `dsh-layerfs`) vs persistent Node SDK (`@layerfs/node` `client({ home })`).
 - **Route / backend**: native SQLite (`ext4`), native PostgreSQL (`18.6`, with `pg_stat_statements`), and worker routes (`docker`, `lima`, `apple-container` — registered as `NOT_RUN` when unavailable on the host).
-- **Scale & history**: trees `F100`, `F1k`, `F10k` (depth `<= 6`); file sizes `0 B`, `1 KiB`, `64 KiB`, `1 MiB`, `16 MiB`; history depths `H1`, `H100` (and optional `H1000`).
+- **Scale & history**: trees `F100`, `F1k`, `F10k` (depth `<= 6`); file sizes `0 B`, `1 KiB`, `64 KiB`, `1 MiB`, `16 MiB`; history depths `H1` and `H<--h-depth>` (default 50; the label in the report is the depth that was seeded).
 - **Concurrency**: 1, 4, and 8 parallel readers; parallel writers on separate Branches and on one Branch, recording every `Busy` / `Conflict` / `Failed` refusal by code.
 - **Independent proof**: write results verified via subsequent `file.read`/`file.stat` and `project.export` SHA-256 tree hash; read results verified against the fixture manifest.
 
