@@ -39,5 +39,6 @@ Flags: `--n-read` (15), `--n-write` (10), `--trees`, `--h-depths` (default: `--h
 <!-- runs:begin -->
 | Date | LayerFS commit | Outcome | Report |
 | --- | --- | --- | --- |
+| 2026-11-25 | `ca4be0bf3c` | PASS (diagnostic warm): measured the mountless LayerFS 2.0 `file.*` + `commit.diff` calls across CLI and persistent `@layerfs/node` SDK on native SQLite (ext4) (file.stat (F1k) p50: SQLite SDK `2.246 ms`, SQLite CLI `8.695 ms`); rows by status: OK 123, REFUSED 4; 80 cold rows registered as INELIGIBLE (no cold claim); fixture and export proofs passed; 4 unavailable routes recorded as NOT_RUN | [report](../result/2026-11-25/fs-file-calls/ca4be0bf3c4e9df47f9b21caca46cdb1faee48fe/report.md) |
 | 2026-11-22 | `54937e6434` | PASS (diagnostic warm): measured all 15 mountless LayerFS 2.0 `file.*` + `commit.diff` calls across CLI and persistent `@layerfs/node` SDK on native SQLite (ext4) and PostgreSQL 18.6 (F1k `file.stat` p50: SQLite SDK `5.104 ms` vs CLI `17.042 ms`, PG18 SDK `15.822 ms`; independent export SHA-256 proofs passed; 3 unavailable worker routes recorded as NOT_RUN) | [report](../result/2026-11-22/fs-file-calls/54937e64348dc8c2c801fc6d98db28b995a48ac8/report.md) |
 <!-- runs:end -->
