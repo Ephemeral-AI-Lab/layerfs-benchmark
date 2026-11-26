@@ -1321,9 +1321,12 @@ def main() -> None:
                 home_pg.chmod(0o700)
                 cli_pg = CliRunner(args.cli, home_pg, trace_file=args.output / "trace_pg.jsonl")
                 cli_pg.ok(["home", "init"])
-                rc, _o, err = cli_pg.run_stdin(["store", "save-auth", "pg", "--user", args.pg_user, "--password-stdin"], f"{args.pg_password}\n")
-                assert rc == 0, f"save-auth failed: {err.strip()}"
-                cli_pg.ok(["store", "connect", "pg", pg_clean_url, "--auth", "pg", "--synchronous-commit", "off"])
+                # 2.0 grammar (layerfs#786): one connect saves the login read from stdin
+                rc, _o, err = cli_pg.run_stdin(
+                    ["store", "connect", "pg", pg_clean_url, "--user", args.pg_user, "--password-stdin",
+                     "--synchronous-commit", "off"],
+                    f"{args.pg_password}\n")
+                assert rc == 0, f"store connect failed: {redact(err.strip())}"
                 pg_cfg = {"pg_admin_url": args.pg_admin_url, "pg_top_sql": PG_TOP_SQL.format(db=pg_db_name)}
                 run_arm("pg", "postgresql", cli_pg, "pg", home_pg, PgStat(args.pg_admin_url, pg_db_name), pg_cfg,
                         {**base_ident, "pg": pg_ident})
