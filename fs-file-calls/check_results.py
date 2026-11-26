@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Assert the local results.json is complete: every row carries identity.host,
-every OK read row carries proof.manifest with a match, and no row is labelled cold
-unless it is an INELIGIBLE cold row.
+"""Assert the local results.json is complete and honest:
+- every case the run registered (`results["expected"]`) is present in its arm with a status;
+- no arm failed (`failed_arms` is empty) and every entry of `results["proof"]` is True;
+- every row carries identity.host; every OK read row carries a matching proof.manifest;
+- no row is labelled cold unless it is an INELIGIBLE cold row.
 
 usage: python3 check_results.py <results.json>
 """
@@ -11,6 +13,18 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+STATUSES = {"OK", "REFUSED", "FAIL", "NOT_RUN", "INELIGIBLE"}
+
+
+def proof_problems(proof: dict) -> list[str]:
+    bad: list[str] = []
+    for key, value in proof.items():
+        if isinstance(value, dict):
+            bad += [f"{key}.{label}" for label, item in value.items() if (item or {}).get("match") is not True]
+        elif value is not True:
+            bad.append(key)
+    return bad
 
 
 def check(results: dict) -> list[str]:
@@ -34,6 +48,21 @@ def check(results: dict) -> list[str]:
                     errors.append(f"{name}: proof.manifest does not match ({manifest.get('matched')}/{manifest.get('checked')})")
     if not rows_seen:
         errors.append("no rows in results")
+    expected = results.get("expected")
+    if not expected:
+        errors.append("results carries no `expected` registry")
+    for arm, cases in (expected or {}).items():
+        if arm not in results.get("arms", {}):
+            errors.append(f"{arm}: registered arm is absent")
+        have = {r["case"]: r for r in results.get("arms", {}).get(arm, {}).get("rows", [])}
+        for case in cases:
+            if case not in have:
+                errors.append(f"{arm}: registered case missing: {case}")
+            elif have[case].get("status") not in STATUSES:
+                errors.append(f"{arm}: {case}: no valid status ({have[case].get('status')})")
+    for arm, reason in results.get("failed_arms", {}).items():
+        errors.append(f"failed arm {arm}: {reason}")
+    errors += [f"proof not True: {p}" for p in proof_problems(results.get("proof", {}))]
     return errors
 
 

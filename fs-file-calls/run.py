@@ -28,6 +28,7 @@ import json
 import math
 import os
 import platform
+import re
 import shutil
 import signal
 import subprocess
@@ -38,6 +39,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import urlsplit
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "shared" / "src"))
@@ -168,6 +170,35 @@ def register_fixture(root: Path) -> dict:
     }
 
 
+MIN_WINDOW_BYTES = 32 * 1024  # a read window must hold this much (or the whole file): well under the 48 KiB reply budget
+
+
+def read_window_ok(d: dict, expected: str) -> bool:
+    """Reply text is a prefix of the fixture AND as long as the window allows (an empty reply never passes)."""
+    text = d.get("text")
+    if not isinstance(text, str):
+        return False
+    need = min(len(expected.encode("utf-8")), MIN_WINDOW_BYTES)
+    return expected.startswith(text) and len(text.encode("utf-8")) >= need and (bool(text) or not expected)
+
+
+def eval_proof(check, data) -> tuple[bool, str | None]:
+    """A proof that raises (missing key, empty page) is a failed proof with its error text, never a crash."""
+    try:
+        return bool(check(data)), None
+    except Exception as error:  # noqa: BLE001
+        return False, f"{type(error).__name__}: {error}"
+
+
+_URL_USERINFO = re.compile(r"(\w+://)[^/\s@]*@")
+_PASSWORD = re.compile(r"(?i)(password=)[^&\s'\"]+")
+
+
+def redact(text: object) -> str:
+    """Strip URL userinfo and `password=` values before any error text is recorded."""
+    return _PASSWORD.sub(r"\1***", _URL_USERINFO.sub(r"\1***@", str(text)))
+
+
 def build_proofs(fx: dict, h_depths: list[int]) -> dict:
     """case name -> (fixture label, description, check(result) -> bool); shared by both front ends."""
     proofs: dict = {}
@@ -183,7 +214,7 @@ def build_proofs(fx: dict, h_depths: list[int]) -> dict:
         rel = "/sz_16m.txt" if tag == "16m_win2000" else f"/sz_{tag}.txt"
         proofs[f"file.read ({tag})"] = (
             "sizes", f"reply text is a prefix of fixture {rel}",
-            lambda d, rel=rel: isinstance(d.get("text"), str) and text_of(rel).startswith(d["text"]),
+            lambda d, rel=rel: read_window_ok(d, text_of(rel)),
         )
     def tree_proofs(label: str, entries: dict) -> None:  # a function, so each tree binds its own values
         n = len(entries)
@@ -243,7 +274,7 @@ class CaseAbort(RuntimeError):
         if self.cap_s:
             r["cap_s"] = self.cap_s
         if self.message:
-            r["message"] = self.message[:300]
+            r["message"] = redact(self.message)[:300]
         return r
 
 
@@ -429,8 +460,13 @@ PG_SETTINGS = ("shared_buffers", "synchronous_commit", "shared_preload_libraries
 
 
 def psql(url: str, sql: str) -> str:
-    return subprocess.run(["psql", url, "-qAt", "-F", "|", "-c", sql], capture_output=True, text=True,
-                          timeout=60, check=True).stdout
+    try:
+        return subprocess.run(["psql", url, "-qAt", "-F", "|", "-c", sql], capture_output=True, text=True,
+                              timeout=60, check=True).stdout
+    except subprocess.CalledProcessError as error:  # str(error) would carry the URL and its credentials
+        raise RuntimeError(redact(f"psql failed rc={error.returncode}: {(error.stderr or '').strip()[:200]}")) from None
+    except subprocess.TimeoutExpired:
+        raise RuntimeError("psql timed out after 60 s") from None
 
 
 class PgStat:
@@ -599,8 +635,11 @@ if (forked) {
   for (const [tag, body] of writes) {
     const nW = tag === "1m" ? 5 : (tag === `${cfg.big_write_mib}m` ? Math.min(cfg.n_write, 3) : cfg.n_write);
     await runCase(`file.write (${tag})`, "write", async () => {
+      // bodies are built (and flattened) before the clock, as the CLI arm stages its content before it starts
+      const bodies = new Map();
+      for (let i = -1; i < nW; i++) bodies.set(i, Buffer.from(`${body}${i}\n`, "utf8").toString("utf8"));
       const stBefore = (await c.store.get(S, { with: ["stats"], detail: true })).stats;
-      const r = await bench(nW, (i) => c.file.write(PSZ, "sdk_writes", `/w_${tag}.txt`, `${body}${i}\n`, { message: `w-${tag}-${i}` }));
+      const r = await bench(nW, (i) => c.file.write(PSZ, "sdk_writes", `/w_${tag}.txt`, bodies.get(i), { message: `w-${tag}-${i}` }));
       const stAfter = (await c.store.get(S, { with: ["stats"], detail: true })).stats;
       return { ...r, delta_stored_bytes: stAfter.stored_bytes - stBefore.stored_bytes, delta_size_bytes: stAfter.size - stBefore.size };
     });
@@ -710,7 +749,7 @@ console.log(JSON.stringify(out));
             elif "proof" in obj:
                 proof = obj["proof"]
         if rc not in (0, None):
-            note = {"status": "FAIL", "message": f"Node arm exited rc={rc}: {stderr.strip()[-300:]}"}
+            note = {"status": "FAIL", "message": redact(f"Node arm exited rc={rc}: {stderr.strip()[-300:]}")}
     finally:
         Path(cfg_path).unlink(missing_ok=True)
     if note:
@@ -726,6 +765,9 @@ def guarded(rows: list[dict], case: str, kind: str, thunk) -> None:
         rows.append({"case": case, "kind": kind, "status": "OK", **thunk()})
     except CaseAbort as abort:
         rows.append(abort.row(case, kind))
+    except Exception as error:  # noqa: BLE001  a bug or odd reply is one FAIL row, never a lost run
+        rows.append({"case": case, "kind": kind, "status": "FAIL", "n": 0,
+                     "message": redact(f"{type(error).__name__}: {error}")[:300]})
 
 
 def run_cli_bench(cli: CliRunner, store: str, ctx, seed: dict, pg: PgStat | None) -> dict:
@@ -739,17 +781,22 @@ def run_cli_bench(cli: CliRunner, store: str, ctx, seed: dict, pg: PgStat | None
             fn(-1)  # declared warm preconditioning
             if pg:
                 pg.reset()
-            calls, ok_n = [], 0
+            calls, ok_n, errors = [], 0, []
             proof = ctx.proofs.get(name)
             for i in range(n):
                 c = fn(i)
                 calls.append(c)
-                ok_n += bool(proof and proof[2](c["data"]))
+                if proof:
+                    good, err = eval_proof(proof[2], c["data"])
+                    ok_n += good
+                    if err:
+                        errors.append(err)
             row = summarize_calls(calls)
             if proof:
                 row["proof"] = {"manifest": {
                     "fixture": proof[0], "manifest_sha256": ctx.fx[proof[0]]["sha"],
-                    "check": proof[1], "checked": n, "matched": ok_n, "match": ok_n == n}}
+                    "check": proof[1], "checked": n, "matched": ok_n, "match": ok_n == n,
+                    **({"errors": errors[:3]} if errors else {})}}
             if pg:
                 row["pg_statements"] = pg.top(max(n, 1))
             return row
@@ -994,25 +1041,63 @@ def host_identity() -> dict:
             "arch": platform.machine()}
 
 
-def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str) -> None:
-    """Stamp identity, normalise Node rows, run Node-side manifest proofs, register INELIGIBLE cold rows."""
+def expected_cases(front_end: str, trees: list[str], h_depths: list[int], big_mib: int,
+                   ladder: list[int], apply_rows: list[int]) -> list[tuple[str, str]]:
+    """The (case, kind) rows an arm must hold when the run is configured like this; the registry results.json carries."""
+    out: list[tuple[str, str]] = []
+    if front_end == "cli":
+        out += [(f"project.init ({t})", "setup") for t in trees]
+    out += [(f"file.read ({t})", "read") for t in ("1k", "64k", "1m", "16m_win2000")]
+    for t in trees:
+        out += [(f"{c} ({t})", "read") for c in ("file.stat", "file.list first-page", "file.glob", "file.grep rare", "file.grep frequent")]
+    for d in h_depths:
+        out += [(f"file.blame (H{d}, head)", "read"), (f"file.history (H{d}, head)", "read"),
+                (f"file.history (H{d}, pinned)", "read"), (f"commit.diff (H{d}, head)", "read")]
+    tags = ["0b", "1k", "64k", "1m"] + ([f"{big_mib}m"] if big_mib > 0 else [])
+    out += [(f"file.write ({t})", "write") for t in tags]
+    out += [(n, "write") for n in ("file.edit (small)", "file.mkdir", "file.cp (file)", "file.mv (file)", "file.rm (file)")]
+    if front_end == "sdk":
+        out += [(f"file.apply (batch={b})", "write") for b in (1, 10, 100)]
+    out += [(f"limit: file.write content {m} MiB", "limit") for m in ladder]
+    out += [(f"limit: file.apply {n} rows", "limit") for n in apply_rows]
+    out += [(f"limit: commit.diff page limit {n}", "limit") for n in (1000, 1001)]
+    out += [(f"limit: file.read window {n} lines", "limit") for n in (2000, 2001)]
+    return out
+
+
+def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str, expected: list[tuple[str, str]] | None = None) -> None:
+    """Stamp identity, normalise Node rows, run Node-side manifest proofs, fill cases that a failed setup
+    prevented with NOT_RUN, register INELIGIBLE cold rows. One bad row never aborts the arm."""
     ident = {**ident, "backend": backend, "front_end": front_end}
     proofs = arm.pop("_proofs", {})
+    fx = arm.pop("_fx", {})
     out: list[dict] = []
     for row in arm["rows"]:
-        sample = row.pop("_sample", None)
-        row.setdefault("kind", "read" if row["case"] in proofs else "write")
-        row.setdefault("cache_state", "warm (declared preconditioning)")
-        if row["case"].startswith("limit: "):
-            row["source"] = LIMIT_SOURCES[lim_key(row["case"])]
-        if front_end == "sdk" and row["case"] in proofs and row.get("status") == "OK":
-            fixture, desc, check = proofs[row["case"]]
-            matched = 1 if (sample is not None and check(sample)) else 0
-            row["proof"] = {"manifest": {"fixture": fixture, "manifest_sha256": arm["_fx"][fixture]["sha"],
-                                         "check": desc + " (last sample)", "checked": 1, "matched": matched,
-                                         "match": matched == 1}}
+        try:
+            sample = row.pop("_sample", None)
+            row.setdefault("kind", "read" if row["case"] in proofs else "write")
+            row.setdefault("cache_state", "warm (declared preconditioning)")
+            if "message" in row:
+                row["message"] = redact(row["message"])
+            if row["case"].startswith("limit: "):
+                row["source"] = LIMIT_SOURCES[lim_key(row["case"])]
+            if front_end == "sdk" and row["case"] in proofs and row.get("status") == "OK":
+                fixture, desc, check = proofs[row["case"]]
+                good, err = (False, "no sample") if sample is None else eval_proof(check, sample)
+                row["proof"] = {"manifest": {"fixture": fixture, "manifest_sha256": fx[fixture]["sha"],
+                                             "check": desc + " (last sample)", "checked": 1, "matched": int(good),
+                                             "match": good, **({"errors": [err]} if err else {})}}
+        except Exception as error:  # noqa: BLE001
+            row.update(status="FAIL", message=redact(f"finalize: {type(error).__name__}: {error}")[:300])
         row["identity"] = ident
         out.append(row)
+    setup_bad = next((r for r in out if r.get("kind") == "setup" and r.get("status") != "OK"), None)
+    have = {r["case"] for r in out}
+    for case, kind in expected or []:
+        if case not in have and setup_bad:
+            out.append({"case": case, "kind": kind, "status": "NOT_RUN", "n": 0, "identity": ident,
+                        "cache_state": "not run",
+                        "message": f"dependent on failed setup: {setup_bad['case']}"})
     cold: list[dict] = []
     for row in out:
         if row.get("kind") != "read":
@@ -1026,7 +1111,17 @@ def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str) -> None:
     arm["rows"] = out + cold
     for c in arm.get("concurrency", []):
         c["identity"] = ident
-    arm.pop("_fx", None)
+
+
+def proof_problems(proof: dict) -> list[str]:
+    """Every proof must be True; a manifest check that could not run (match None) is a problem too."""
+    bad: list[str] = []
+    for key, value in proof.items():
+        if isinstance(value, dict):
+            bad += [f"{key}.{label}" for label, item in value.items() if (item or {}).get("match") is not True]
+        elif value is not True:
+            bad.append(key)
+    return bad
 
 
 def lim_key(case: str) -> str:
@@ -1133,7 +1228,28 @@ def main() -> None:
         ],
         "proof": {},
         "failed_arms": {},
+        "expected": {},
     }
+
+    def expected_for(front_end: str) -> list[tuple[str, str]]:
+        return expected_cases(front_end, trees, h_depths, args.big_write_mib, write_ladder, apply_rows)
+
+    def names_of(exp: list[tuple[str, str]]) -> list[str]:
+        return [c for c, _ in exp] + [f"{c} [cold]" for c, k in exp if k == "read"]
+
+    def fail_arm(tag: str, backend: str, ident: dict, error: Exception, setup_case: str) -> None:
+        """A setup failure is one FAIL row; every dependent case is NOT_RUN; results and report are still written."""
+        reason = redact(f"{type(error).__name__}: {error}")
+        results["failed_arms"][tag] = reason
+        print(f"{tag} arm failed: {reason}", file=sys.stderr)
+        if f"{tag}_cli" in results["arms"]:
+            return  # the arms had finished; only a later cleanup step failed
+        for fe in ("cli", "sdk"):
+            arm = {"rows": [*pre_rows, {"case": setup_case, "kind": "setup", "status": "FAIL", "n": 0,
+                                         "message": reason[:300]}], "concurrency": []}
+            finalize_arm(arm, ident, backend, fe, expected_for(fe))
+            results["arms"][f"{tag}_{fe}"] = arm
+            results["expected"][f"{tag}_{fe}"] = names_of(expected_for(fe))
 
     def run_arm(tag: str, backend: str, cli: CliRunner, store: str, home: Path, pg: PgStat | None, pg_cfg: dict, ident: dict) -> None:
         seed = seed_store(cli, store, ctx)
@@ -1144,13 +1260,24 @@ def main() -> None:
             "write_ladder_mib": write_ladder, "apply_rows": apply_rows, "sample_path": SAMPLE_PATH,
             "rare": RARE, "common": COMMON, **pg_cfg,
         }
+        # the SDK arm honours the same disk guard as the CLI arm: the allowed probes travel in cfg
+        sdk_guard_rows: list[dict] = []
+        if args.big_write_mib > 0 and not guard(args.big_write_mib * 4):
+            node_cfg["big_write_mib"] = 0
+            sdk_guard_rows.append(guard_row(f"file.write ({args.big_write_mib}m)"))
+        node_cfg["write_ladder_mib"] = [m for m in write_ladder if guard(m * 3)]
+        sdk_guard_rows += [guard_row(f"limit: file.write content {m} MiB", "limit") for m in write_ladder if m not in node_cfg["write_ladder_mib"]]
         sdk_arm = run_node_sdk_bench(args.node_bin, args.node_pkg, home, store, node_cfg, args.node_arm_timeout)
-        sdk_arm["rows"] = list(ctx.pre_rows) + sdk_arm["rows"]
+        seed_bad = [dict(r) for r in cli_arm["rows"] if r.get("kind") == "setup" and r.get("status") != "OK"
+                    and r["case"] not in {x["case"] for x in ctx.pre_rows}]
+        sdk_arm["rows"] = list(ctx.pre_rows) + seed_bad + sdk_guard_rows + sdk_arm["rows"]
         sdk_arm["concurrency"] = []
         for arm in (cli_arm, sdk_arm):
             arm["_proofs"], arm["_fx"] = proofs, fx
-        finalize_arm(cli_arm, ident, backend, "cli")
-        finalize_arm(sdk_arm, ident, backend, "sdk")
+        finalize_arm(cli_arm, ident, backend, "cli", expected_for("cli"))
+        finalize_arm(sdk_arm, ident, backend, "sdk", expected_for("sdk"))
+        results["expected"][f"{tag}_cli"] = names_of(expected_for("cli"))
+        results["expected"][f"{tag}_sdk"] = names_of(expected_for("sdk"))
         results["arms"][f"{tag}_cli"] = cli_arm
         results["arms"][f"{tag}_sdk"] = sdk_arm
         verified = verify_fixtures(cli, store, ctx, work, tag, seed["trees"])
@@ -1161,20 +1288,24 @@ def main() -> None:
 
     pg_db_name = f"bench_file_calls_{os.getpid()}"
     pg_created = False
+    pg_ident = None
     try:
-        # 1. Native SQLite (ext4)
-        home_sq = work / "home_sqlite"
-        home_sq.mkdir(mode=0o700)
-        home_sq.chmod(0o700)
-        cli_sq = CliRunner(args.cli, home_sq, trace_file=args.output / "trace_sqlite.jsonl")
-        cli_sq.ok(["home", "init"])
-        help_j, _ = cli_sq.ok(["help", "--json"])
-        avail_calls = {f"{c['family']}.{c['call']}" for c in help_j["calls"]}
-        missing = [c for c in CALL_INVENTORY if c not in avail_calls]
-        assert not missing, f"Missing expected 2.0 calls: {missing}"
-        cli_sq.ok(["store", "create", "sq"])
-        run_arm("sqlite", "sqlite", cli_sq, "sq", home_sq, None, {}, base_ident)
-        cli_sq.ok(["store", "remove", "sq"])
+        # 1. Native SQLite (ext4); a setup failure is a FAIL row, the results and report are still written
+        try:
+            home_sq = work / "home_sqlite"
+            home_sq.mkdir(mode=0o700)
+            home_sq.chmod(0o700)
+            cli_sq = CliRunner(args.cli, home_sq, trace_file=args.output / "trace_sqlite.jsonl")
+            cli_sq.ok(["home", "init"])
+            help_j, _ = cli_sq.ok(["help", "--json"])
+            avail_calls = {f"{c['family']}.{c['call']}" for c in help_j["calls"]}
+            missing = [c for c in CALL_INVENTORY if c not in avail_calls]
+            assert not missing, f"Missing expected 2.0 calls: {missing}"
+            cli_sq.ok(["store", "create", "sq"])
+            run_arm("sqlite", "sqlite", cli_sq, "sq", home_sq, None, {}, base_ident)
+            cli_sq.ok(["store", "remove", "sq"])
+        except Exception as error:  # noqa: BLE001
+            fail_arm("sqlite", "sqlite", base_ident, error, "setup: sqlite arm (home init, help, store create, seed)")
 
         # 2. Native PostgreSQL 18 (code path validated later; skipped without --pg-admin-url)
         if args.pg_admin_url:
@@ -1183,7 +1314,8 @@ def main() -> None:
                 psql(args.pg_admin_url, f"DROP DATABASE IF EXISTS {pg_db_name} WITH (FORCE);")
                 psql(args.pg_admin_url, f"CREATE DATABASE {pg_db_name} OWNER {args.pg_user};")
                 pg_created = True
-                pg_clean_url = f"postgresql://127.0.0.1:55432/{pg_db_name}?sslmode=disable"
+                admin = urlsplit(args.pg_admin_url)
+                pg_clean_url = f"postgresql://{admin.hostname or '127.0.0.1'}:{admin.port or 5432}/{pg_db_name}?sslmode=disable"
                 home_pg = work / "home_pg"
                 home_pg.mkdir(mode=0o700)
                 home_pg.chmod(0o700)
@@ -1196,9 +1328,9 @@ def main() -> None:
                 run_arm("pg", "postgresql", cli_pg, "pg", home_pg, PgStat(args.pg_admin_url, pg_db_name), pg_cfg,
                         {**base_ident, "pg": pg_ident})
                 cli_pg.ok(["store", "disconnect", "pg"])
-            except Exception as error:  # keep the SQLite results; the PG arm is recorded as failed
-                results["failed_arms"]["pg"] = f"{type(error).__name__}: {error}"
-                print(f"PG arm failed: {error}", file=sys.stderr)
+            except Exception as error:  # noqa: BLE001  keep the SQLite results; the PG arm is recorded as failed
+                fail_arm("pg", "postgresql", {**base_ident, **({"pg": pg_ident} if pg_ident else {})}, error,
+                         "setup: pg arm (identity, create database, home init, store connect, seed)")
         else:
             results["not_run"].append({"route": "native:postgresql", "reason": "NOT_RUN: --pg-admin-url not given"})
     finally:
@@ -1207,9 +1339,7 @@ def main() -> None:
         results["meta"]["disk_free_gb_end"] = round(free_gb(work), 1)
         shutil.rmtree(work, ignore_errors=True)
 
-    results["identity"] = base_ident
-    if "pg_cli" in results["arms"]:
-        results["identity"]["pg"] = results["arms"]["pg_cli"]["rows"][0]["identity"].get("pg")
+    results["identity"] = {**base_ident, **({"pg": pg_ident} if pg_ident and "pg" not in results["failed_arms"] else {})}
 
     # Local JSON & CSV receipts (ignored by git; AGENTS.md:64-65)
     (args.output / "results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
@@ -1237,7 +1367,7 @@ def cell(r: dict | None) -> str:
     if st != "OK":
         extra = r.get("code") or (f"cap {r['cap_s']} s" if r.get("cap_s") else "")
         return f"{st} {extra}".strip()
-    return f"{r['p50_ms']:.2f} / {r['p95_ms']:.2f}"
+    return f"{r['p50_ms']:.2f} / {r['p95_ms']:.2f} (n={r['n']})"
 
 
 def write_report(results: dict, args, head: str) -> None:
@@ -1245,7 +1375,7 @@ def write_report(results: dict, args, head: str) -> None:
     arms = results["arms"]
     ident = results["identity"]
     by = {name: {r["case"]: r for r in a["rows"]} for name, a in arms.items()}
-    pg_ran = "pg_cli" in arms
+    pg_ran = "pg_cli" in arms and "pg" not in results["failed_arms"] and "pg" in ident
     ran = ["native SQLite (ext4)"] + ([f"PostgreSQL {ident['pg']['version']}"] if pg_ran else [])
     warm = [r for a in arms.values() for r in a["rows"] if r.get("kind") in ("read", "write", "limit", "setup")]
     counts: dict[str, int] = {}
@@ -1259,14 +1389,14 @@ def write_report(results: dict, args, head: str) -> None:
         r = by.get(name, {}).get(stat_case)
         if r and r.get("status") == "OK":
             stat_bits.append(f"{label} `{r['p50_ms']} ms`")
-    proofs_ok = all(v is not False for k, v in results["proof"].items() if k.endswith("_match"))
+    proofs_ok = not proof_problems(results["proof"]) and not results["failed_arms"]
     headline = (
         f"**{'PASS' if not fails else 'PARTIAL'} (diagnostic warm): measured the mountless LayerFS 2.0 `file.*` + `commit.diff` calls "
         f"across CLI and persistent `@layerfs/node` SDK on {' and '.join(ran)}"
         + (f" ({stat_case} p50: {', '.join(stat_bits)})" if stat_bits else "")
         + f"; rows by status: {', '.join(f'{k} {v}' for k, v in sorted(counts.items()))}; "
         f"{cold_n} cold rows registered as INELIGIBLE (no cold claim); "
-        f"fixture and export proofs {'passed' if proofs_ok else 'FAILED'}; "
+        f"fixture and export proofs {'passed' if proofs_ok else 'FAILED or arm failed'}; "
         f"{len(results['not_run'])} unavailable routes recorded as NOT_RUN.**"
     )
     host = ident["host"]
