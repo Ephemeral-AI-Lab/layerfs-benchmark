@@ -23,3 +23,4 @@ store-transfer/receipts/
 
 # SDK saved branch/file qualification receipts
 sdk-branch-file/receipts/
+fs-file-calls/receipts/
