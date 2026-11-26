@@ -3,7 +3,9 @@
 
 Measures the 14 mountless LayerFS 2.0 `file.*` calls plus `commit.diff` across:
   - CLI (fresh process per call) vs persistent `@layerfs/node` SDK client
-  - Native SQLite (ext4) vs Native PostgreSQL (with `pg_stat_statements`)
+  - Native SQLite (ext4), Native PostgreSQL (with `pg_stat_statements`), and
+    SQLite on the `docker` machine through its worker (`--routes native,docker`,
+    with `LAYERFS_TRACE_STEP` caller + `worker.*` step breakdown)
   - Trees F100 / F1k / F10k / F100k (`--trees`), file sizes 0B..16MiB (+ optional
     big write payload), history depths H1 / H<d> (`--h-depths`)
   - Concurrency: 1 / 4 / 8 parallel readers & writers (separate + same branch)
@@ -14,7 +16,7 @@ Every case is one row. A refused call becomes a REFUSED row carrying the
 refusal code; a call over the 120 s cap becomes a FAIL row; the run continues.
 Cold-cache rows are registered and gated by `shared/src/measure.py:assess_cache`
 (INELIGIBLE); no row is ever labelled cold. All timings are warm/diagnostic.
-Unavailable routes (docker/lima/apple-container) stay registered as NOT_RUN.
+Unavailable routes (e.g. lima/apple-container on Linux) stay registered as NOT_RUN.
 """
 
 from __future__ import annotations
@@ -66,6 +68,12 @@ TRACE_SRC = (
     "control/crates/layerfs-home/src/trace.rs:24-37 (steps are written only when LAYERFS_TRACE and "
     "LAYERFS_TRACE_STEP are both set; the native route writes `step: dispatch` events only, observed in T1)"
 )
+WORKER_TRACE_SRC = (
+    "control/crates/layerfs-home/src/trace.rs:1-10,82-97 and control/crates/layerfs-control/src/worker_server.rs:27 "
+    "(a worker-routed call asks its worker for its steps: dispatch, route, connect, ready, request, answer from the caller, "
+    "worker.<step> from the worker; route..answer repeat per worker hop and are summed per call)"
+)
+CALLER_STEPS = ("dispatch", "route", "connect", "ready", "request", "answer")
 LIMIT_SOURCES = {
     "file.write content": [
         "core/crates/layerfs-storage/src/store/policy.rs:57 (TRANSACTION_CANONICAL_BYTES_LIMIT 4 MiB-1, metadata bytes of one transaction)",
@@ -430,12 +438,26 @@ def attribution(calls: list[dict]) -> dict:
         for name, us in c.get("steps_us", {}).items():
             per.setdefault(name, []).append(us / 1000.0)
     p50 = {k: round(pct(v, 50), 3) for k, v in sorted(per.items())}
+    worker = any(k.startswith("worker.") for k in p50)
     return {
         "dispatch_ms_p50": p50.get("dispatch"),
         "steps_p50_ms": p50,
-        "unavailable": {s: "UNAVAILABLE on the native route" for s in ("route", "connect", "request") if s not in p50},
-        "source": TRACE_SRC,
+        "unavailable": {} if worker else {s: "UNAVAILABLE on the native route" for s in ("route", "connect", "request") if s not in p50},
+        "source": WORKER_TRACE_SRC if worker else TRACE_SRC,
     }
+
+
+def step_table(rows: list[dict], kind: str) -> list[tuple[str, float, int]]:
+    """Median over the OK rows of `kind` of each step's per-row p50 (ms): (step, median_ms, rows holding it).
+    Caller steps first, in call order, then the worker.* steps by name."""
+    per: dict[str, list[float]] = {}
+    for r in rows:
+        if r.get("kind") != kind or r.get("status") != "OK":
+            continue
+        for name, ms in (r.get("attribution") or {}).get("steps_p50_ms", {}).items():
+            per.setdefault(name, []).append(ms)
+    order = [n for n in CALLER_STEPS if n in per] + sorted(n for n in per if n not in CALLER_STEPS)
+    return [(n, round(pct(per[n], 50), 3), len(per[n])) for n in order]
 
 
 def summarize_calls(calls: list[dict]) -> dict:
@@ -679,9 +701,12 @@ if (forked) {
 
 // Limits as rows (one probe, one row, with its code when refused)
 const single = (dt) => stats([dt]);
-let limitsBranch = true;
-try { await c.branch.fork(PSZ, "sdk_limits", "main"); }
-catch (e) { limitsBranch = false; emit({ case: "branch.fork (sdk_limits)", kind: "setup", n: 0, ...failure(e) }); }
+const withLimits = cfg.limits !== false;  // the worker route runs no limit probes
+let limitsBranch = withLimits;
+if (withLimits) {
+  try { await c.branch.fork(PSZ, "sdk_limits", "main"); }
+  catch (e) { limitsBranch = false; emit({ case: "branch.fork (sdk_limits)", kind: "setup", n: 0, ...failure(e) }); }
+}
 if (limitsBranch) {
   for (const mib of cfg.write_ladder_mib) {
     await runCase(`limit: file.write content ${mib} MiB`, "limit", async () => {
@@ -710,7 +735,7 @@ if (limitsBranch) {
     });
   }
 }
-for (const limit of [2000, 2001]) {
+for (const limit of (withLimits ? [2000, 2001] : [])) {
   await runCase(`limit: file.read window ${limit} lines`, "limit", async () => {
     const [dt, res] = await once(() => c.file.read(PSZ, "main", "/sz_16m.txt", { line: 1, limit }));
     return { ...single(dt), limit: { lines_asked: limit, reply_bytes: Buffer.byteLength(JSON.stringify(res)), text_bytes: Buffer.byteLength(res.text), has_next_line: res.next_line != null } };
@@ -879,8 +904,9 @@ def run_cli_bench(cli: CliRunner, store: str, ctx, seed: dict, pg: PgStat | None
                 return summarize_calls([cli.call(mk(i)) for i in range(n_write)])
             guarded(rows, name, "write", op_thunk)
 
-    rows.extend(run_cli_limits(cli, S, ctx))
-    return {"rows": rows, "concurrency": run_cli_concurrency(cli, S, PSZ, seed)}
+    if ctx.limits:
+        rows.extend(run_cli_limits(cli, S, ctx))
+    return {"rows": rows, "concurrency": run_cli_concurrency(cli, S, PSZ, seed) if ctx.concurrency else []}
 
 
 def run_cli_limits(cli: CliRunner, S: str, ctx) -> list[dict]:
@@ -1042,7 +1068,7 @@ def host_identity() -> dict:
 
 
 def expected_cases(front_end: str, trees: list[str], h_depths: list[int], big_mib: int,
-                   ladder: list[int], apply_rows: list[int]) -> list[tuple[str, str]]:
+                   ladder: list[int], apply_rows: list[int], limits: bool = True) -> list[tuple[str, str]]:
     """The (case, kind) rows an arm must hold when the run is configured like this; the registry results.json carries."""
     out: list[tuple[str, str]] = []
     if front_end == "cli":
@@ -1058,14 +1084,16 @@ def expected_cases(front_end: str, trees: list[str], h_depths: list[int], big_mi
     out += [(n, "write") for n in ("file.edit (small)", "file.mkdir", "file.cp (file)", "file.mv (file)", "file.rm (file)")]
     if front_end == "sdk":
         out += [(f"file.apply (batch={b})", "write") for b in (1, 10, 100)]
-    out += [(f"limit: file.write content {m} MiB", "limit") for m in ladder]
-    out += [(f"limit: file.apply {n} rows", "limit") for n in apply_rows]
-    out += [(f"limit: commit.diff page limit {n}", "limit") for n in (1000, 1001)]
-    out += [(f"limit: file.read window {n} lines", "limit") for n in (2000, 2001)]
+    if limits:
+        out += [(f"limit: file.write content {m} MiB", "limit") for m in ladder]
+        out += [(f"limit: file.apply {n} rows", "limit") for n in apply_rows]
+        out += [(f"limit: commit.diff page limit {n}", "limit") for n in (1000, 1001)]
+        out += [(f"limit: file.read window {n} lines", "limit") for n in (2000, 2001)]
     return out
 
 
-def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str, expected: list[tuple[str, str]] | None = None) -> None:
+def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str, expected: list[tuple[str, str]] | None = None,
+                 route: str = "native") -> None:
     """Stamp identity, normalise Node rows, run Node-side manifest proofs, fill cases that a failed setup
     prevented with NOT_RUN, register INELIGIBLE cold rows. One bad row never aborts the arm."""
     ident = {**ident, "backend": backend, "front_end": front_end}
@@ -1102,7 +1130,7 @@ def finalize_arm(arm: dict, ident: dict, backend: str, front_end: str, expected:
     for row in out:
         if row.get("kind") != "read":
             continue
-        a = assess_cache(None, row["case"], "native", backend)
+        a = assess_cache(None, row["case"], route, backend)
         cold.append({
             "case": f"{row['case']} [cold]", "kind": "cold", "status": a["status"], "n": 0,
             "requested_cache": "cold", "cache_state": "no cold claim: INELIGIBLE",
@@ -1131,6 +1159,43 @@ def lim_key(case: str) -> str:
     raise KeyError(case)
 
 
+def bundle_dir() -> Path:
+    """The sealed Linux bundle the `docker` machine runs (tools/linux_bundle.py seal)."""
+    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    return cache / "layerfs" / "bundle" / "2.0.0" / "linux-x86_64"
+
+
+def docker_names() -> tuple[set[str], set[str]]:
+    """Current Docker container and volume names via the owning Docker CLI (empty sets if docker is unavailable)."""
+    out: list[set[str]] = []
+    for argv in (["docker", "ps", "-a", "--format", "{{.Names}}"], ["docker", "volume", "ls", "--format", "{{.Name}}"]):
+        try:
+            proc = subprocess.run(argv, capture_output=True, text=True, timeout=30, check=False)
+            out.append({x.strip() for x in proc.stdout.splitlines() if x.strip()} if proc.returncode == 0 else set())
+        except (OSError, subprocess.SubprocessError):
+            out.append(set())
+    return out[0], out[1]
+
+
+def docker_identity(cli: "CliRunner", head: str) -> dict:
+    """What the worker route ran: the sealed bundle's build id and the machine record. The bundle must be the
+    pinned source's, or the route is not measuring the commit the rows name."""
+    bundle = json.loads((bundle_dir() / "bundle.json").read_text(encoding="utf-8"))
+    source = bundle.get("source", {})
+    if source.get("head") != head or source.get("dirty") is not False:
+        raise RuntimeError(f"bundle source {source.get('head')} (dirty={source.get('dirty')}) is not clean pinned {head}")
+    machine = cli.ok(["machine", "get", "docker", "--detail"])[0]
+    return {
+        "machine": "docker", "backend": machine.get("backend"), "loopback": machine.get("loopback"),
+        "worker_build_id": f"{bundle['hash'][:12]}/{bundle['files']['layerfs'][:12]}",
+        "bundle": {"path": str(bundle_dir()), "hash": bundle["hash"], "profile": bundle.get("profile"),
+                   "protocol": bundle.get("protocol"), "source_head": source.get("head"),
+                   "source_dirty": source.get("dirty"),
+                   "worker_sha256": bundle["files"]["layerfs"], "daemon_sha256": bundle["files"]["layerfs-daemon"],
+                   "sandbox_image_saved_from": bundle.get("saved_from")},
+    }
+
+
 # ---------------------------------------------------------------- main
 
 def main() -> None:
@@ -1152,10 +1217,13 @@ def main() -> None:
     ap.add_argument("--write-ladder-mib", default="16,64,256", help="file.write content sizes probed as limit rows")
     ap.add_argument("--apply-rows", default="1000,8191,8192", help="file.apply row counts probed as limit rows")
     ap.add_argument("--node-arm-timeout", type=float, default=1800, help="wall cap of one Node SDK arm process, seconds")
+    ap.add_argument("--routes", default="native", help="comma list from native,docker; docker needs the sealed Linux bundle (see README)")
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--report", type=Path, required=True)
     args = ap.parse_args()
 
+    routes = [r for r in args.routes.split(",") if r]
+    assert routes and not [r for r in routes if r not in ("native", "docker")], f"--routes: choose from native,docker, got {routes}"
     trees = [t for t in args.trees.split(",") if t]
     bad = [t for t in trees if t not in TREE_SIZES]
     assert not bad, f"unknown --trees {bad}; choose from {list(TREE_SIZES)}"
@@ -1206,7 +1274,15 @@ def main() -> None:
         "addon_path": str(addon), "host": host_identity(), "route": "native",
     }
     ctx = SimpleNamespace(args=args, fx=fx, proofs=proofs, trees=built_trees, h_depths=h_depths, pre_rows=pre_rows,
-                          write_ladder_mib=write_ladder, apply_rows=apply_rows, guard=guard, guard_row=guard_row)
+                          write_ladder_mib=write_ladder, apply_rows=apply_rows, guard=guard, guard_row=guard_row,
+                          limits=True, concurrency=True)
+    # The worker route runs F10k and smaller, history H1/H100, no 64 MiB write, no limit ladder, no concurrency
+    # (the plan's P3 default: F100k, H1000, 64 MiB and the limits stay on the native routes).
+    docker_trees = [t for t in trees if t != "F100k"]
+    docker_h = [d for d in h_depths if d <= 100]
+    dctx = SimpleNamespace(**{**vars(ctx), "args": SimpleNamespace(**{**vars(args), "big_write_mib": 0}),
+                              "trees": [t for t in built_trees if t in docker_trees], "h_depths": docker_h,
+                              "write_ladder_mib": [], "apply_rows": [], "limits": False, "concurrency": False})
 
     results: dict = {
         "meta": {
@@ -1215,14 +1291,14 @@ def main() -> None:
             "addon_sha256": base_ident["addon_sha256"],
             "host": f"{platform.system()} {platform.release()} ({platform.machine()})",
             "n_read": args.n_read, "n_write": args.n_write, "h_depth": h_depths[-1], "h_depths": h_depths,
-            "trees": built_trees, "big_write_mib": args.big_write_mib, "cap_s": CAP_S,
+            "trees": built_trees, "big_write_mib": args.big_write_mib, "cap_s": CAP_S, "routes": routes,
+            "docker_trees": dctx.trees, "docker_h_depths": docker_h,
             "disk_free_gb_start": free_start,
             "cache_state": "warm (declared preconditioning; OS page cache not dropped — labelled diagnostic)",
         },
         "fixtures": {k: {"manifest_sha256": v["sha"], "files": v["files"], "bytes": v["bytes"]} for k, v in fx.items()},
         "arms": {},
         "not_run": [
-            {"route": "worker:docker", "reason": "NOT_RUN: Docker daemon unavailable on this non-root Linux host"},
             {"route": "worker:lima", "reason": "NOT_RUN: Lima VM unavailable on this Linux host"},
             {"route": "worker:apple-container", "reason": "NOT_RUN: macOS-only route"},
         ],
@@ -1231,13 +1307,15 @@ def main() -> None:
         "expected": {},
     }
 
-    def expected_for(front_end: str) -> list[tuple[str, str]]:
+    def expected_for(front_end: str, route: str = "native") -> list[tuple[str, str]]:
+        if route == "docker":
+            return expected_cases(front_end, docker_trees, docker_h, 0, [], [], limits=False)
         return expected_cases(front_end, trees, h_depths, args.big_write_mib, write_ladder, apply_rows)
 
     def names_of(exp: list[tuple[str, str]]) -> list[str]:
         return [c for c, _ in exp] + [f"{c} [cold]" for c, k in exp if k == "read"]
 
-    def fail_arm(tag: str, backend: str, ident: dict, error: Exception, setup_case: str) -> None:
+    def fail_arm(tag: str, backend: str, ident: dict, error: Exception, setup_case: str, route: str = "native") -> None:
         """A setup failure is one FAIL row; every dependent case is NOT_RUN; results and report are still written."""
         reason = redact(f"{type(error).__name__}: {error}")
         results["failed_arms"][tag] = reason
@@ -1247,40 +1325,41 @@ def main() -> None:
         for fe in ("cli", "sdk"):
             arm = {"rows": [*pre_rows, {"case": setup_case, "kind": "setup", "status": "FAIL", "n": 0,
                                          "message": reason[:300]}], "concurrency": []}
-            finalize_arm(arm, ident, backend, fe, expected_for(fe))
+            finalize_arm(arm, ident, backend, fe, expected_for(fe, route), route)
             results["arms"][f"{tag}_{fe}"] = arm
-            results["expected"][f"{tag}_{fe}"] = names_of(expected_for(fe))
+            results["expected"][f"{tag}_{fe}"] = names_of(expected_for(fe, route))
 
-    def run_arm(tag: str, backend: str, cli: CliRunner, store: str, home: Path, pg: PgStat | None, pg_cfg: dict, ident: dict) -> None:
-        seed = seed_store(cli, store, ctx)
-        cli_arm = run_cli_bench(cli, store, ctx, seed, pg)
+    def run_arm(tag: str, backend: str, cli: CliRunner, store: str, home: Path, pg: PgStat | None, pg_cfg: dict, ident: dict,
+                c=ctx, route: str = "native") -> None:
+        seed = seed_store(cli, store, c)
+        cli_arm = run_cli_bench(cli, store, c, seed, pg)
         node_cfg = {
             "n_read": args.n_read, "n_write": args.n_write, "cap_s": CAP_S, "trees": seed["trees"],
-            "big_trees": list(BIG_TREES), "h_depths": seed["h_depths"], "big_write_mib": args.big_write_mib,
-            "write_ladder_mib": write_ladder, "apply_rows": apply_rows, "sample_path": SAMPLE_PATH,
-            "rare": RARE, "common": COMMON, **pg_cfg,
+            "big_trees": list(BIG_TREES), "h_depths": seed["h_depths"], "big_write_mib": c.args.big_write_mib,
+            "write_ladder_mib": c.write_ladder_mib, "apply_rows": c.apply_rows, "sample_path": SAMPLE_PATH,
+            "rare": RARE, "common": COMMON, "limits": c.limits, **pg_cfg,
         }
         # the SDK arm honours the same disk guard as the CLI arm: the allowed probes travel in cfg
         sdk_guard_rows: list[dict] = []
-        if args.big_write_mib > 0 and not guard(args.big_write_mib * 4):
+        if c.args.big_write_mib > 0 and not guard(c.args.big_write_mib * 4):
             node_cfg["big_write_mib"] = 0
-            sdk_guard_rows.append(guard_row(f"file.write ({args.big_write_mib}m)"))
-        node_cfg["write_ladder_mib"] = [m for m in write_ladder if guard(m * 3)]
-        sdk_guard_rows += [guard_row(f"limit: file.write content {m} MiB", "limit") for m in write_ladder if m not in node_cfg["write_ladder_mib"]]
+            sdk_guard_rows.append(guard_row(f"file.write ({c.args.big_write_mib}m)"))
+        node_cfg["write_ladder_mib"] = [m for m in c.write_ladder_mib if guard(m * 3)]
+        sdk_guard_rows += [guard_row(f"limit: file.write content {m} MiB", "limit") for m in c.write_ladder_mib if m not in node_cfg["write_ladder_mib"]]
         sdk_arm = run_node_sdk_bench(args.node_bin, args.node_pkg, home, store, node_cfg, args.node_arm_timeout)
         seed_bad = [dict(r) for r in cli_arm["rows"] if r.get("kind") == "setup" and r.get("status") != "OK"
-                    and r["case"] not in {x["case"] for x in ctx.pre_rows}]
-        sdk_arm["rows"] = list(ctx.pre_rows) + seed_bad + sdk_guard_rows + sdk_arm["rows"]
+                    and r["case"] not in {x["case"] for x in c.pre_rows}]
+        sdk_arm["rows"] = list(c.pre_rows) + seed_bad + sdk_guard_rows + sdk_arm["rows"]
         sdk_arm["concurrency"] = []
         for arm in (cli_arm, sdk_arm):
             arm["_proofs"], arm["_fx"] = proofs, fx
-        finalize_arm(cli_arm, ident, backend, "cli", expected_for("cli"))
-        finalize_arm(sdk_arm, ident, backend, "sdk", expected_for("sdk"))
-        results["expected"][f"{tag}_cli"] = names_of(expected_for("cli"))
-        results["expected"][f"{tag}_sdk"] = names_of(expected_for("sdk"))
+        finalize_arm(cli_arm, ident, backend, "cli", expected_for("cli", route), route)
+        finalize_arm(sdk_arm, ident, backend, "sdk", expected_for("sdk", route), route)
+        results["expected"][f"{tag}_cli"] = names_of(expected_for("cli", route))
+        results["expected"][f"{tag}_sdk"] = names_of(expected_for("sdk", route))
         results["arms"][f"{tag}_cli"] = cli_arm
         results["arms"][f"{tag}_sdk"] = sdk_arm
-        verified = verify_fixtures(cli, store, ctx, work, tag, seed["trees"])
+        verified = verify_fixtures(cli, store, c, work, tag, seed["trees"])
         results["proof"][f"{tag}_manifest_unchanged_after_writes"] = verified
         if "F100" in verified:
             results["proof"][f"{tag}_f100_export_sha256_match"] = verified["F100"]["match"]
@@ -1290,52 +1369,107 @@ def main() -> None:
     pg_created = False
     pg_ident = None
     try:
-        # 1. Native SQLite (ext4); a setup failure is a FAIL row, the results and report are still written
-        try:
-            home_sq = work / "home_sqlite"
-            home_sq.mkdir(mode=0o700)
-            home_sq.chmod(0o700)
-            cli_sq = CliRunner(args.cli, home_sq, trace_file=args.output / "trace_sqlite.jsonl")
-            cli_sq.ok(["home", "init"])
-            help_j, _ = cli_sq.ok(["help", "--json"])
-            avail_calls = {f"{c['family']}.{c['call']}" for c in help_j["calls"]}
-            missing = [c for c in CALL_INVENTORY if c not in avail_calls]
-            assert not missing, f"Missing expected 2.0 calls: {missing}"
-            cli_sq.ok(["store", "create", "sq"])
-            run_arm("sqlite", "sqlite", cli_sq, "sq", home_sq, None, {}, base_ident)
-            cli_sq.ok(["store", "remove", "sq"])
-        except Exception as error:  # noqa: BLE001
-            fail_arm("sqlite", "sqlite", base_ident, error, "setup: sqlite arm (home init, help, store create, seed)")
-
-        # 2. Native PostgreSQL 18 (code path validated later; skipped without --pg-admin-url)
-        if args.pg_admin_url:
+        if "native" in routes:
+            # 1. Native SQLite (ext4); a setup failure is a FAIL row, the results and report are still written
             try:
-                pg_ident = pg_identity(args.pg_admin_url)
-                psql(args.pg_admin_url, f"DROP DATABASE IF EXISTS {pg_db_name} WITH (FORCE);")
-                psql(args.pg_admin_url, f"CREATE DATABASE {pg_db_name} OWNER {args.pg_user};")
-                pg_created = True
-                admin = urlsplit(args.pg_admin_url)
-                pg_clean_url = f"postgresql://{admin.hostname or '127.0.0.1'}:{admin.port or 5432}/{pg_db_name}?sslmode=disable"
-                home_pg = work / "home_pg"
-                home_pg.mkdir(mode=0o700)
-                home_pg.chmod(0o700)
-                cli_pg = CliRunner(args.cli, home_pg, trace_file=args.output / "trace_pg.jsonl")
-                cli_pg.ok(["home", "init"])
-                # 2.0 grammar (layerfs#786): one connect saves the login read from stdin
-                rc, _o, err = cli_pg.run_stdin(
-                    ["store", "connect", "pg", pg_clean_url, "--user", args.pg_user, "--password-stdin",
-                     "--synchronous-commit", "off"],
-                    f"{args.pg_password}\n")
-                assert rc == 0, f"store connect failed: {redact(err.strip())}"
-                pg_cfg = {"pg_admin_url": args.pg_admin_url, "pg_top_sql": PG_TOP_SQL.format(db=pg_db_name)}
-                run_arm("pg", "postgresql", cli_pg, "pg", home_pg, PgStat(args.pg_admin_url, pg_db_name), pg_cfg,
-                        {**base_ident, "pg": pg_ident})
-                cli_pg.ok(["store", "disconnect", "pg"])
-            except Exception as error:  # noqa: BLE001  keep the SQLite results; the PG arm is recorded as failed
-                fail_arm("pg", "postgresql", {**base_ident, **({"pg": pg_ident} if pg_ident else {})}, error,
-                         "setup: pg arm (identity, create database, home init, store connect, seed)")
+                home_sq = work / "home_sqlite"
+                home_sq.mkdir(mode=0o700)
+                home_sq.chmod(0o700)
+                cli_sq = CliRunner(args.cli, home_sq, trace_file=args.output / "trace_sqlite.jsonl")
+                cli_sq.ok(["home", "init"])
+                help_j, _ = cli_sq.ok(["help", "--json"])
+                avail_calls = {f"{c['family']}.{c['call']}" for c in help_j["calls"]}
+                missing = [c for c in CALL_INVENTORY if c not in avail_calls]
+                assert not missing, f"Missing expected 2.0 calls: {missing}"
+                cli_sq.ok(["store", "create", "sq"])
+                run_arm("sqlite", "sqlite", cli_sq, "sq", home_sq, None, {}, base_ident)
+                cli_sq.ok(["store", "remove", "sq"])
+            except Exception as error:  # noqa: BLE001
+                fail_arm("sqlite", "sqlite", base_ident, error, "setup: sqlite arm (home init, help, store create, seed)")
+
+            # 2. Native PostgreSQL 18 (code path validated later; skipped without --pg-admin-url)
+            if args.pg_admin_url:
+                try:
+                    pg_ident = pg_identity(args.pg_admin_url)
+                    psql(args.pg_admin_url, f"DROP DATABASE IF EXISTS {pg_db_name} WITH (FORCE);")
+                    psql(args.pg_admin_url, f"CREATE DATABASE {pg_db_name} OWNER {args.pg_user};")
+                    pg_created = True
+                    admin = urlsplit(args.pg_admin_url)
+                    pg_clean_url = f"postgresql://{admin.hostname or '127.0.0.1'}:{admin.port or 5432}/{pg_db_name}?sslmode=disable"
+                    home_pg = work / "home_pg"
+                    home_pg.mkdir(mode=0o700)
+                    home_pg.chmod(0o700)
+                    cli_pg = CliRunner(args.cli, home_pg, trace_file=args.output / "trace_pg.jsonl")
+                    cli_pg.ok(["home", "init"])
+                    # 2.0 grammar (layerfs#786): one connect saves the login read from stdin
+                    rc, _o, err = cli_pg.run_stdin(
+                        ["store", "connect", "pg", pg_clean_url, "--user", args.pg_user, "--password-stdin",
+                         "--synchronous-commit", "off"],
+                        f"{args.pg_password}\n")
+                    assert rc == 0, f"store connect failed: {redact(err.strip())}"
+                    pg_cfg = {"pg_admin_url": args.pg_admin_url, "pg_top_sql": PG_TOP_SQL.format(db=pg_db_name)}
+                    run_arm("pg", "postgresql", cli_pg, "pg", home_pg, PgStat(args.pg_admin_url, pg_db_name), pg_cfg,
+                            {**base_ident, "pg": pg_ident})
+                    cli_pg.ok(["store", "disconnect", "pg"])
+                except Exception as error:  # noqa: BLE001  keep the SQLite results; the PG arm is recorded as failed
+                    fail_arm("pg", "postgresql", {**base_ident, **({"pg": pg_ident} if pg_ident else {})}, error,
+                             "setup: pg arm (identity, create database, home init, store connect, seed)")
+            else:
+                results["not_run"].append({"route": "native:postgresql", "reason": "NOT_RUN: --pg-admin-url not given"})
         else:
-            results["not_run"].append({"route": "native:postgresql", "reason": "NOT_RUN: --pg-admin-url not given"})
+            results["not_run"].append({"route": "native:sqlite", "reason": "NOT_RUN: --routes lacks native"})
+            results["not_run"].append({"route": "native:postgresql", "reason": "NOT_RUN: --routes lacks native"})
+
+        # 3. docker machine: SQLite Store through the machine's worker (host Docker Engine), F10k and smaller
+        if "docker" in routes:
+            docker_ident = None
+            cli_dk = None
+            dk_machine_started = False
+            dk_store_made = False
+            owned_ctrs: list[str] = []
+            owned_vols: list[str] = []
+            try:
+                home_dk = work / "home_docker"
+                home_dk.mkdir(mode=0o700)
+                home_dk.chmod(0o700)
+                cli_dk = CliRunner(args.cli, home_dk, trace_file=args.output / "trace_docker.jsonl")
+                cli_dk.ok(["home", "init"])
+                before_ctrs, before_vols = docker_names()
+                cli_dk.ok(["machine", "start", "docker"])
+                dk_machine_started = True
+                after_ctrs, after_vols = docker_names()
+                owned_ctrs = sorted(c for c in (after_ctrs - before_ctrs) if c.startswith("layerfs-") and c.endswith("-docker"))
+                owned_vols = sorted(v for v in (after_vols - before_vols) if v.startswith("layerfs-") and v.endswith("-docker-data"))
+                docker_ident = {**base_ident, "route": "docker", **docker_identity(cli_dk, head),
+                                "owned_docker_resources": {"containers": owned_ctrs, "volumes": owned_vols}}
+                doctor, _ = cli_dk.ok(["machine", "doctor", "docker"])
+                docker_ident["doctor"] = doctor
+                if doctor.get("ok") is not True or doctor.get("findings"):
+                    raise RuntimeError(f"machine doctor docker: {doctor}")
+                cli_dk.ok(["store", "create", "dk", "--machine", "docker"])
+                dk_store_made = True
+                run_arm("docker", "sqlite", cli_dk, "dk", home_dk, None, {}, docker_ident, dctx, "docker")
+            except Exception as error:  # noqa: BLE001  keep the native results; the docker arm is recorded as failed
+                fail_arm("docker", "sqlite", docker_ident or {**base_ident, "route": "docker"}, error,
+                         "setup: docker arm (home init, machine start docker, bundle identity, doctor, store create, seed)", "docker")
+            finally:
+                if cli_dk is not None:
+                    rm_ok = (not dk_store_made) or (cli_dk.raw(["store", "remove", "dk"], trace=False)["rc"] == 0)
+                    stop_ok = (not dk_machine_started) or (cli_dk.raw(["machine", "stop", "docker"], trace=False)["rc"] == 0)
+                    # Release owned provider container/volume only after clean stop (preserve uncertain state; AGENTS.md:33-35)
+                    if rm_ok and stop_ok:
+                        for cname in owned_ctrs:
+                            try:
+                                subprocess.run(["docker", "rm", cname], check=False, capture_output=True, timeout=30)
+                            except (OSError, subprocess.SubprocessError):
+                                pass
+                        for vname in owned_vols:
+                            try:
+                                subprocess.run(["docker", "volume", "rm", vname], check=False, capture_output=True, timeout=30)
+                            except (OSError, subprocess.SubprocessError):
+                                pass
+        else:
+            results["not_run"].append({"route": "worker:docker", "reason": "NOT_RUN: --routes lacks docker"})
     finally:
         if pg_created and args.pg_admin_url:
             subprocess.run(["psql", args.pg_admin_url, "-c", f"DROP DATABASE IF EXISTS {pg_db_name} WITH (FORCE);"], check=False, capture_output=True)
@@ -1373,13 +1507,46 @@ def cell(r: dict | None) -> str:
     return f"{r['p50_ms']:.2f} / {r['p95_ms']:.2f} (n={r['n']})"
 
 
+WORKER_COMPARE = ("file.read (1k)", "file.stat (F1k)", "file.list first-page (F10k)", "file.grep rare (F10k)", "file.write (1k)")
+
+
+def worker_section(results: dict, by: dict, arms: dict) -> list[str]:
+    """Worker route: docker p50 next to native from the same run, and the step table from LAYERFS_TRACE_STEP."""
+    def p50(name: str, case: str) -> str:
+        r = by.get(name, {}).get(case)
+        return f"{r['p50_ms']:.2f}" if r and r.get("status") == "OK" else (r or {}).get("status", "—")
+    lines = ["", "## Worker route (docker machine, SQLite Store)", "",
+             "The same `sqlite` Store grammar, created with `layerfs store create dk --machine docker`; every call goes CLI/SDK -> the machine's worker (a container on the host's Docker Engine) -> daemon. "
+             "Warm diagnostic, no cold claim. Rows run F10k and smaller, history H1/H100; no 64 MiB write, no limit probes, no concurrency on this route. Native p50 is from the same run.", "",
+             "| Case | native SQLite CLI p50 ms | docker CLI p50 ms | native SQLite SDK p50 ms | docker SDK p50 ms |", "| --- | ---: | ---: | ---: | ---: |"]
+    for case in WORKER_COMPARE:
+        lines.append(f"| `{case}` | {p50('sqlite_cli', case)} | {p50('docker_cli', case)} | {p50('sqlite_sdk', case)} | {p50('docker_sdk', case)} |")
+    cli_rows = arms["docker_cli"]["rows"]
+    lines += ["", f"Step table (docker CLI rows, `LAYERFS_TRACE` + `LAYERFS_TRACE_STEP`): median over cases of each case's per-call p50, ms. The SDK arm is not traced. Source: {WORKER_TRACE_SRC}.", "",
+              "| Step | read cases (median ms) | cases | write cases (median ms) | cases |", "| --- | ---: | ---: | ---: | ---: |"]
+    rd, wr = ({n: (ms, k) for n, ms, k in step_table(cli_rows, kind)} for kind in ("read", "write"))
+    order = [n for n in CALLER_STEPS if n in rd or n in wr] + sorted(n for n in {*rd, *wr} if n not in CALLER_STEPS)
+    for n in order:
+        lines.append(f"| `{n}` | {rd.get(n, ('—', 0))[0]} | {rd.get(n, ('—', 0))[1]} | {wr.get(n, ('—', 0))[0]} | {wr.get(n, ('—', 0))[1]} |")
+    lines += ["", "| Case | " + " | ".join(f"`{n}`" for n in order) + " |", "| --- | " + " | ".join("---:" for _ in order) + " |"]
+    for case in WORKER_COMPARE:
+        steps = (by["docker_cli"].get(case, {}).get("attribution") or {}).get("steps_p50_ms", {})
+        lines.append(f"| `{case}` | " + " | ".join(str(steps.get(n, "—")) for n in order) + " |")
+    return lines
+
+
 def write_report(results: dict, args, head: str) -> None:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     arms = results["arms"]
     ident = results["identity"]
     by = {name: {r["case"]: r for r in a["rows"]} for name, a in arms.items()}
+    sqlite_ran = "sqlite_cli" in arms and "sqlite" not in results["failed_arms"]
     pg_ran = "pg_cli" in arms and "pg" not in results["failed_arms"] and "pg" in ident
-    ran = ["native SQLite (ext4)"] + ([f"PostgreSQL {ident['pg']['version']}"] if pg_ran else [])
+    docker_ran = "docker_cli" in arms and "docker" not in results["failed_arms"] and "bundle" in arms["docker_cli"]["rows"][0]["identity"]
+    ran = (["native SQLite (ext4)"] if sqlite_ran else []) + ([f"PostgreSQL {ident['pg']['version']}"] if pg_ran else []) \
+        + (["the docker machine's worker (SQLite)"] if docker_ran else [])
+    if not ran:
+        ran = ["no active backend (all arms failed or skipped)"]
     warm = [r for a in arms.values() for r in a["rows"] if r.get("kind") in ("read", "write", "limit", "setup")]
     counts: dict[str, int] = {}
     for r in warm:
@@ -1388,7 +1555,8 @@ def write_report(results: dict, args, head: str) -> None:
     fails = counts.get("FAIL", 0)
     stat_case = "file.stat (F1k)"
     stat_bits = []
-    for name, label in (("sqlite_sdk", "SQLite SDK"), ("sqlite_cli", "SQLite CLI"), ("pg_sdk", "PG SDK"), ("pg_cli", "PG CLI")):
+    for name, label in (("sqlite_sdk", "SQLite SDK"), ("sqlite_cli", "SQLite CLI"), ("pg_sdk", "PG SDK"), ("pg_cli", "PG CLI"),
+                        ("docker_sdk", "docker-route SDK"), ("docker_cli", "docker-route CLI")):
         r = by.get(name, {}).get(stat_case)
         if r and r.get("status") == "OK":
             stat_bits.append(f"{label} `{r['p50_ms']} ms`")
@@ -1418,6 +1586,14 @@ def write_report(results: dict, args, head: str) -> None:
         lines.append(f"| PostgreSQL | {pg['version']}, pg_stat_statements: {pg['pg_stat_statements']}, store `synchronous_commit=off`; settings `{json.dumps(pg['settings'])}` |")
     else:
         lines.append("| PostgreSQL | NOT_RUN (`--pg-admin-url` not given) |")
+    if docker_ran:
+        wi = arms["docker_cli"]["rows"][0]["identity"]
+        lines.append(f"| Worker route | `docker` machine (backend `{wi['backend']}`), worker build id `{wi['worker_build_id']}`: sealed bundle `{wi['bundle']['hash'][:12]}` "
+                     f"(`{wi['bundle']['profile']}` profile, protocol {wi['bundle']['protocol']}, source `{wi['bundle']['source_head'][:10]}`, worker sha256 `{wi['bundle']['worker_sha256'][:12]}`); `machine doctor docker` clean |")
+    elif "docker" in results["meta"].get("routes", []):
+        lines.append(f"| Worker route | NOT_RUN: {results['failed_arms'].get('docker', 'see Failed arms')[:200]} |")
+    else:
+        lines.append("| Worker route | NOT_RUN (`--routes` lacks docker) |")
     m = results["meta"]
     lines += [
         f"| Sample sizes | reads `N={m['n_read']}` (F10k/F100k/deeper history capped), writes `N={m['n_write']}`, trees {', '.join(m['trees'])}, history {', '.join('H' + str(d) for d in m['h_depths'])} |",
@@ -1430,13 +1606,14 @@ def write_report(results: dict, args, head: str) -> None:
     ]
     for label, f in results["fixtures"].items():
         after = []
-        for tag in ("sqlite", "pg"):
+        for tag in ("sqlite", "pg", "docker"):
             v = results["proof"].get(f"{tag}_manifest_unchanged_after_writes", {}).get(label)
             if v is not None:
                 after.append(f"{tag}: {v['match']}")
         lines.append(f"| {label} | {f['files']} | {f['bytes']} | `{f['manifest_sha256'][:16]}…` | {', '.join(after) or '—'} |")
 
-    cols = [(n, t) for n, t in (("sqlite_sdk", "SQLite SDK"), ("sqlite_cli", "SQLite CLI"), ("pg_sdk", "PG SDK"), ("pg_cli", "PG CLI")) if n in arms]
+    cols = [(n, t) for n, t in (("sqlite_sdk", "SQLite SDK"), ("sqlite_cli", "SQLite CLI"), ("pg_sdk", "PG SDK"), ("pg_cli", "PG CLI"),
+                                ("docker_sdk", "Docker SDK"), ("docker_cli", "Docker CLI")) if n in arms]
     lines += ["", "## Latency by Call (p50 / p95 ms, warm diagnostic)", "",
               "| Case | " + " | ".join(f"{t} p50 / p95" for _, t in cols) + " |", "| --- | " + " | ".join("---:" for _ in cols) + " |"]
     cases = list(dict.fromkeys(r["case"] for a in arms.values() for r in a["rows"] if r.get("kind") in ("read", "write")))
@@ -1446,13 +1623,16 @@ def write_report(results: dict, args, head: str) -> None:
     lines += ["", "## Resources and native dispatch (CLI: per-call rusage; SDK: process deltas per call)", "",
               "| Case | CLI CPU ms p50 | CLI max RSS MiB | CLI dispatch ms p50 | SDK CPU ms/call | SDK RSS delta MiB |", "| --- | ---: | ---: | ---: | ---: | ---: |"]
     for case in cases:
-        c, s = by["sqlite_cli"].get(case, {}), by["sqlite_sdk"].get(case, {})
+        c, s = by.get("sqlite_cli", {}).get(case, {}), by.get("sqlite_sdk", {}).get(case, {})
         if c.get("status") != "OK" and s.get("status") != "OK":
             continue
         mib = lambda v: f"{v / 1048576:.1f}" if isinstance(v, (int, float)) else "—"
         lines.append(f"| `{case}` | {c.get('cpu_ms_p50', '—')} | {mib(c.get('max_rss_bytes'))} | {c.get('dispatch_ms_p50', '—') if c.get('dispatch_ms_p50') is not None else 'UNAVAILABLE'} | {s.get('cpu_ms_per_call', '—')} | {mib(s.get('rss_delta_bytes'))} |")
-    lines += ["", f"Step attribution: native rows carry the `dispatch` step only; `route`, `connect`, `request` are UNAVAILABLE on native. Source: {TRACE_SRC}.",
-              "The step table for worker rows needs the worker route (T6)."]
+    lines += ["", f"Step attribution: native rows carry the `dispatch` step only; `route`, `connect`, `request` are UNAVAILABLE on native. Source: {TRACE_SRC}."]
+    if docker_ran:
+        lines += worker_section(results, by, arms)
+    else:
+        lines.append("The step table for worker rows needs the docker route (`--routes native,docker`); not run here.")
 
     lines += ["", "## Write Commit Storage Growth", "",
               "| Write Case | " + " | ".join(f"{t} `delta_stored_bytes` / `delta_size_bytes`" for n, t in cols if n.endswith("_sdk") or n.endswith("_cli")) + " |",
@@ -1497,13 +1677,26 @@ def write_report(results: dict, args, head: str) -> None:
     if results["failed_arms"]:
         lines += ["", "## Failed arms", ""] + [f"- `{k}`: {v}" for k, v in results["failed_arms"].items()]
 
-    sq_cli, sq_sdk = by["sqlite_cli"].get(stat_case), by["sqlite_sdk"].get(stat_case)
+    sq_cli, sq_sdk = by.get("sqlite_cli", {}).get(stat_case), by.get("sqlite_sdk", {}).get(stat_case)
     lines += ["", "## Main Observations & Cleanup", ""]
     if sq_cli and sq_sdk and sq_cli.get("status") == "OK" and sq_sdk.get("status") == "OK":
         lines.append(f"- **CLI vs persistent SDK**: on SQLite `{stat_case}` a fresh CLI process takes `{sq_cli['p50_ms']} ms` p50 against `{sq_sdk['p50_ms']} ms` for the persistent client.")
-    if pg_ran and by["pg_sdk"].get(stat_case, {}).get("status") == "OK" and sq_sdk and sq_sdk.get("status") == "OK":
+    if pg_ran and by.get("pg_sdk", {}).get(stat_case, {}).get("status") == "OK" and sq_sdk and sq_sdk.get("status") == "OK":
         lines.append(f"- **PostgreSQL vs SQLite**: persistent client `{stat_case}` `{by['pg_sdk'][stat_case]['p50_ms']} ms` (PostgreSQL) against `{sq_sdk['p50_ms']} ms` (SQLite).")
-    lines.append("- **Cleanup**: owned SQLite store removed via `layerfs store remove`" + (", PostgreSQL store disconnected via `layerfs store disconnect`, scratch database dropped" if pg_ran else "") + ", temporary home/fixtures deleted.")
+    dk_sdk, dk_cli = by.get("docker_sdk", {}).get(stat_case), by.get("docker_cli", {}).get(stat_case)
+    if docker_ran and dk_sdk and sq_sdk and dk_sdk.get("status") == "OK" and sq_sdk.get("status") == "OK":
+        cli_tail = (f", and `{dk_cli['p50_ms']} ms` vs `{sq_cli['p50_ms']} ms` on fresh-process CLI"
+                    if dk_cli and sq_cli and dk_cli.get("status") == "OK" and sq_cli.get("status") == "OK" else "")
+        lines.append(f"- **Docker worker route vs native SQLite**: `{stat_case}` p50 is `{dk_sdk['p50_ms']} ms` vs `{sq_sdk['p50_ms']} ms` on persistent SDK{cli_tail}.")
+    cleaned = []
+    if sqlite_ran:
+        cleaned.append("owned SQLite store removed via `layerfs store remove`")
+    if pg_ran:
+        cleaned.append("PostgreSQL store disconnected via `layerfs store disconnect`, scratch database dropped")
+    if docker_ran:
+        cleaned.append("docker-machine Store removed, the private home's `docker` machine stopped (`layerfs machine stop docker`), and its owned stopped `layerfs-*-docker` container and `-data` volume released (the Docker daemon and the cached sandbox image left alone)")
+    cleaned.append("temporary home/fixtures deleted")
+    lines.append("- **Cleanup**: " + ", ".join(cleaned) + ".")
     args.report.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
